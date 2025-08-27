@@ -4,6 +4,7 @@ import path from "path";
 import { fileURLToPath, URL } from "node:url";
 
 export default defineConfig({
+  base: "/smart-electricity-clean/",
   plugins: [react()],
   resolve: {
     extensions: [".js", ".jsx", ".json"],

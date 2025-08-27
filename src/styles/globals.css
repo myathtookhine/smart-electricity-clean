@@ -363,58 +363,82 @@
 
 @keyframes grid-dot-animation {
   0% {
-    bottom: 0px;
-    left: -2px; /* Center of 2px line (width 2px, so center at 1px) */
+    bottom: 210px;
+      /* Start at the top of the final vertical line */
+      left: 40px;
+      /* Start on center of final vertical line */
   }
   30% {
-    bottom: 40px;
-    left: -2px; /* End of first vertical line */
+    bottom: 41px;
+      /* Move down to center of horizontal line */
+      left: 40px;
+      /* Stay on center */
   }
   70% {
-    bottom: 41px; /* Center of horizontal line (height 2px, so center at +1px) */
-    left: 40px; /* Center of final vertical line (left: 43px + 1px for center) */
+    bottom: 40px;
+      /* Move to end of horizontal line */
+      left: -2px;
+      /* Move left to first vertical line center */
   }
   100% {
-    bottom: 210px; /* End of final vertical line (40px + 180px) */
-    left: 40px; /* Stay on center of final vertical line */
+    bottom: 0px;
+      /* End at bottom */
+      left: -2px;
+      /* Stay on center of first vertical line */
   }
 }
 
 @keyframes charger-dot-animation {
   0% {
-    bottom: 0px;
-    left: -1px; /* Center of 2px vertical line (margin: 0 auto centers it) */
+    bottom: 180px;
+      /* Start at top of final vertical line */
+      left: calc(50% + 58px);
+      /* Start on center of final vertical line */
   }
-  25% {
-    bottom: 36px;
-    left: -1px; /* End of first vertical line */
+    35% {
+      bottom: 36px;
+      /* Move down to center of horizontal line */
+      left: calc(40px + 18px);
+      /* Move to horizontal line center */
   }
-  65% {
-    bottom: 36px; /* Center of horizontal line (bottom: 39px + 1px for center) */
-    left: calc(40px + 18px); /* Horizontal line: left 14px + transform -25% + width center = ~46px + 32px */
+    75% {
+      bottom: 36px;
+      /* Stay at center of horizontal line */
+      left: -1px;
+      /* Move left to first vertical line center */
   }
   100% {
-    bottom: 180px; /* End of final vertical line (40px + 140px) */
-    left: calc(50% + 58px); /* Center of final vertical line */
+    bottom: 0px;
+      /* End at bottom */
+      left: -1px;
+      /* Stay on center of first vertical line */
   }
 }
 
 @keyframes car-dot-animation {
   0% {
-    bottom: 0px;
-    right: -2px; /* Center of 2px vertical line */
+    bottom: 90px;
+      /* Start at top of final vertical line */
+      right: 55px;
+      /* Start on center of final vertical line */
   }
   30% {
     bottom: 36px;
-    right: -2px; /* End of first vertical line */
+      /* Move down to center of horizontal line */
+      right: 55px;
+      /* Stay on center */
   }
   70% {
-    bottom: 36px; /* Center of horizontal line */
-    right: 55px; /* Center of final vertical line */
+    bottom: 36px;
+      /* Stay at center of horizontal line */
+      right: -2px;
+      /* Move right to first vertical line center */
   }
   100% {
-    bottom: 90px; /* End of final vertical line */
-    right: 55px; /* Stay on center of final vertical line */
+    bottom: 0px;
+      /* End at bottom */
+      right: -2px;
+      /* Stay on center of first vertical line */
   }
 }
 
