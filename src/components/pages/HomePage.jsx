@@ -13,7 +13,7 @@ export function HomePage() {
           </div>
           <div>
             <h1 className="text-2xl text-foreground font-semibold">
-              Smart Electricity
+              Live Usage Monitor
             </h1>
             <p className="text-sm text-muted-foreground">Energy Management</p>
           </div>
@@ -106,7 +106,7 @@ export function HomePage() {
               <div className="bg-background/90 backdrop-blur-sm border border-border/50 rounded-lg px-2 py-1 text-center shadow-lg">
                 <div className="text-sm font-bold text-foreground">11 kW</div>
                 <div className="text-xs text-muted-foreground uppercase tracking-wide">
-                  Charger
+                  Invertor
                 </div>
               </div>
               {/* Bent connector line pointing to charging station */}

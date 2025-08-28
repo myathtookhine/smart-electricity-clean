@@ -1,10 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   darkMode: ["class"],
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
       colors: {
@@ -26,14 +23,16 @@ export default {
         "destructive-foreground": "var(--destructive-foreground)",
         border: "var(--border)",
         input: "var(--input)",
+        "input-background": "var(--input-background)",
+        "input-foreground": "var(--input-foreground)",
         ring: "var(--ring)",
         "switch-background": "var(--switch-background)",
         chart: {
-          "1": "var(--chart-1)",
-          "2": "var(--chart-2)",
-          "3": "var(--chart-3)",
-          "4": "var(--chart-4)",
-          "5": "var(--chart-5)",
+          1: "var(--chart-1)",
+          2: "var(--chart-2)",
+          3: "var(--chart-3)",
+          4: "var(--chart-4)",
+          5: "var(--chart-5)",
         },
       },
       borderRadius: {
@@ -44,4 +43,4 @@ export default {
     },
   },
   plugins: [],
-}
+};
