@@ -47,11 +47,11 @@ export function Login() {
       </div>
 
       {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-5">
+      {/* <div className="absolute inset-0 opacity-5">
         <div className="absolute top-20 left-10 w-32 h-32 border border-foreground/10 rounded-full"></div>
         <div className="absolute bottom-32 right-16 w-24 h-24 border border-foreground/10 rounded-full"></div>
         <div className="absolute top-1/2 right-10 w-16 h-16 border border-foreground/10 rounded-full"></div>
-      </div>
+      </div> */}
 
       {/* Main Content */}
       <div className="w-full max-w-sm space-y-6">
@@ -99,12 +99,7 @@ export function Login() {
           )}
 
           {/* Login Button */}
-          <Button
-            type="submit"
-            disabled={isLoading}
-            width="full"
-            size="lg"
-          >
+          <Button type="submit" disabled={isLoading} width="full" size="lg">
             {isLoading ? (
               <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
             ) : (
