@@ -1,5 +1,6 @@
-import { Zap, Cloud, ChevronRight } from 'lucide-react';
-import exampleImage from '../../assets/iso-home.png';
+import { Zap, Cloud, ChevronRight } from "lucide-react";
+import exampleImage from "../../assets/iso-home.png";
+import SampleWeatherIcon from "../../assets/partly-cloudy-day-rain.svg";
 
 export function HomePage() {
   return (
@@ -24,9 +25,16 @@ export function HomePage() {
         <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-4 shadow-lg">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-center">
-                <Cloud className="w-6 h-6 text-slate-600 dark:text-slate-400" />
+              {/* Weather Icon */}
+              <div className="w-16 h-16 bg-primary/10 dark:bg-slate-800 rounded-xl flex items-center justify-center border border-primary/20 dark:border-slate-700">
+                <img
+                  src={SampleWeatherIcon}
+                  alt="Weather icon"
+                  className="w-16 h-16"
+                />
               </div>
+
+              {/* Weather Info */}
               <div>
                 <div className="flex items-center space-x-2 mb-1">
                   <span className="text-lg font-semibold text-foreground">
@@ -38,8 +46,10 @@ export function HomePage() {
                 </p>
               </div>
             </div>
+
+            {/* View More Button */}
             <button className="flex items-center space-x-1 px-3 py-1.5 bg-primary/10 hover:bg-primary/20 text-primary text-sm font-medium rounded-lg transition-colors">
-              <span>View More</span>
+              <span>More</span>
               <ChevronRight className="w-3 h-3" />
             </button>
           </div>
@@ -60,9 +70,7 @@ export function HomePage() {
             {/* Solar Panel Label - Top Center */}
             <div className="absolute -top-16 left-1/2 transform -translate-x-1/2">
               <div className="bg-background/90 backdrop-blur-sm border border-border/50 rounded-lg px-2 py-1 text-center shadow-lg">
-                <div className="text-sm font-bold text-foreground">
-                  6.5 kW
-                </div>
+                <div className="text-sm font-bold text-foreground">6.5 kW</div>
                 <div className="text-xs text-muted-foreground uppercase tracking-wide">
                   Solar Panel
                 </div>
@@ -78,9 +86,7 @@ export function HomePage() {
             {/* Grid Export Label - Under image, left side */}
             <div className="absolute top-80 left-0 mt-6">
               <div className="bg-background/90 backdrop-blur-sm border border-border/50 rounded-lg px-2 py-1 text-center shadow-lg">
-                <div className="text-sm font-bold text-green-500">
-                  +1.2 kW
-                </div>
+                <div className="text-sm font-bold text-green-500">+1.2 kW</div>
                 <div className="text-xs text-muted-foreground uppercase tracking-wide">
                   Grid Export
                 </div>
@@ -116,9 +122,7 @@ export function HomePage() {
             {/* Electric Car Label - Under image, right side */}
             <div className="absolute top-80 right-0 mt-6">
               <div className="bg-background/90 backdrop-blur-sm border border-border/50 rounded-lg px-2 py-1 text-center shadow-lg">
-                <div className="text-sm font-bold text-foreground">
-                  7.2 kW
-                </div>
+                <div className="text-sm font-bold text-foreground">7.2 kW</div>
                 <div className="text-xs text-muted-foreground uppercase tracking-wide">
                   Electric Car
                 </div>
