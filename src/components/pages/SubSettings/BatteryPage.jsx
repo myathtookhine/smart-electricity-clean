@@ -1,0 +1,58 @@
+import { Battery, Shield, Cloud, ChevronLeft } from 'lucide-react';
+
+export function BatteryPage({ onBack }) {
+  return (
+    <div className="min-h-full bg-background">
+      {/* Header with Back Button */}
+      <div className="px-6 pt-8 pb-6">
+        <div className="flex items-center space-x-3 mb-2">
+          <button
+            onClick={onBack}
+            className="w-10 h-10 bg-muted/20 rounded-xl flex items-center justify-center hover:bg-muted/30 transition-all duration-300 mr-2"
+          >
+            <ChevronLeft className="w-5 h-5 text-foreground" />
+          </button>
+          <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl flex items-center justify-center shadow-lg">
+            <Battery className="w-7 h-7 text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl text-foreground font-semibold">Battery Page</h1>
+            <p className="text-sm text-muted-foreground">Sub Menu</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Content Area */}
+      <div className="px-6 space-y-6 pb-24">
+        <div className="bg-card/50 backdrop-blur-sm rounded-3xl p-6 shadow-xl border border-border/50">
+          <h3 className="text-xl text-card-foreground font-semibold mb-4">
+            Battery Controls
+          </h3>
+          <div className="space-y-3">
+            <button className="w-full flex items-center justify-between p-4 bg-muted/20 rounded-2xl hover:bg-muted/30 transition-all duration-300">
+              <div className="flex items-center space-x-3">
+                <Battery className="w-4 h-4 text-muted-foreground" />
+                <span className="text-card-foreground">Scheduled Charge</span>
+              </div>
+              <span className="text-xs text-orange-500 font-medium">(Coming soon!)</span>
+            </button>
+            <button className="w-full flex items-center justify-between p-4 bg-muted/20 rounded-2xl hover:bg-muted/30 transition-all duration-300">
+              <div className="flex items-center space-x-3">
+                <Shield className="w-4 h-4 text-muted-foreground" />
+                <span className="text-card-foreground">Reserve Battery Power</span>
+              </div>
+              <span className="text-xs text-orange-500 font-medium">(Coming soon!)</span>
+            </button>
+            <button className="w-full flex items-center justify-between p-4 bg-muted/20 rounded-2xl hover:bg-muted/30 transition-all duration-300">
+              <div className="flex items-center space-x-3">
+                <Cloud className="w-4 h-4 text-muted-foreground" />
+                <span className="text-card-foreground">StormReady Mode</span>
+              </div>
+              <span className="text-xs text-orange-500 font-medium">(Coming soon!)</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

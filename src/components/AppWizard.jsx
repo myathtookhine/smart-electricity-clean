@@ -15,15 +15,21 @@ import {
 } from "lucide-react";
 import { useApp } from "../contexts/AppContext";
 import { useTheme } from "./ThemeProvider";
-import wz1 from "../assets/iso-1-live.png";
-import wz2 from "../assets/iso-2-graph.png";
+import logo from "../assets/duracell-logo.png";
+import wz1 from "../assets/iso-0-welcome.png";
+import wz2 from "../assets/iso-1-live.png";
+import wz3 from "../assets/iso-2-graph.png";
+import wz4 from "../assets/iso-3-menuandsettings.png";
+import wz5 from "../assets/iso-4-noti.png";
+import wz6 from "../assets/iso-5-help.png";
+import wz7 from "../assets/iso-6-ready.png";
 
 const wizardSteps = [
   {
     id: 1,
-    type: "icon",
-    icon: Zap,
-    bgColor: "from-blue-500 to-blue-600",
+    type: "image",
+    image: wz1,
+    bgColor: "",
     title: "Welcome to the Dura App",
     description:
       "Take control of your energy consumption with our comprehensive monitoring solution. Track usage patterns, optimize efficiency, and make informed decisions to reduce costs while contributing to a sustainable future.",
@@ -31,7 +37,7 @@ const wizardSteps = [
   {
     id: 2,
     type: "image",
-    image: wz1,
+    image: wz2,
     bgColor: "",
     title: "Live Usage Monitor",
     description:
@@ -40,7 +46,7 @@ const wizardSteps = [
   {
     id: 3,
     type: "image",
-    image: wz2,
+    image: wz3,
     bgColor: "",
     title: "Charts & Graphs",
     description:
@@ -48,36 +54,36 @@ const wizardSteps = [
   },
   {
     id: 4,
-    type: "icon",
-    icon: Settings,
-    bgColor: "from-orange-500 to-orange-600",
+    type: "image",
+    image: wz4,
+    bgColor: "",
     title: "Menu & Settings",
     description:
       "Customize your energy management experience with comprehensive settings. Configure device preferences, set personalized alerts, manage connected devices, and access advanced features through our intuitive interface.",
   },
   {
     id: 5,
-    type: "icon",
-    icon: Bell,
-    bgColor: "from-red-500 to-red-600",
+    type: "image",
+    image: wz5,
+    bgColor: "",
     title: "Notifications",
     description:
       "Stay informed with intelligent alerts tailored to your usage patterns. Receive timely updates about consumption anomalies, cost-saving opportunities, and system changes to maintain proactive energy management.",
   },
   {
     id: 6,
-    type: "icon",
-    icon: HelpCircle,
-    bgColor: "from-indigo-500 to-indigo-600",
+    type: "image",
+    image: wz6,
+    bgColor: "",
     title: "Need Help?",
     description:
       "Access comprehensive support resources whenever you need assistance. Our help center provides detailed guides, troubleshooting steps, and direct access to technical support for optimal user experience.",
   },
   {
     id: 7,
-    type: "icon",
-    icon: CheckCircle,
-    bgColor: "from-emerald-500 to-emerald-600",
+    type: "image",
+    image: wz7,
+    bgColor: "",
     title: "You're Ready!",
     description:
       "You're now equipped to begin smart energy management. Start monitoring consumption, analyzing trends, and making data-driven decisions to optimize your electricity usage and efficiency.",
@@ -121,13 +127,20 @@ export function AppWizard() {
 
   return (
     <div className="h-full bg-background flex flex-col items-center justify-center p-6 relative overflow-hidden">
-      <div className="absolute top-12 w-full px-6 z-50">
-        <div className="flex justify-between items-center">
+      <div className="absolute top-16 w-full px-6 z-50">
+        <div className="flex justify-between items-start">
           {/* Step Counter */}
           <div className="text-muted-foreground text-sm">
             {currentStep + 1} / {wizardSteps.length}
           </div>
-
+          {/* Logo - display on all steps */}
+          <div className="mb-4">
+            <img
+              src={logo}
+              alt="Duracell Logo"
+              className="w-32 h-auto object-contain"
+            />
+          </div>
           {/* Light/Dark Mode Toggle */}
           <button
             onClick={() => setTheme(theme === "light" ? "dark" : "light")}
@@ -170,17 +183,15 @@ export function AppWizard() {
           {/* Icon/Image Circle */}
 
           {currentWizardStep.type === "icon" ? (
-            <div
-              className={`w-28 h-28 rounded-full ${
-                currentWizardStep.type === "icon"
-                  ? `bg-gradient-to-br ${currentWizardStep.bgColor}`
-                  : ""
-              } flex items-center justify-center mb-6 transform hover:scale-105 transition-transform duration-300 overflow-hidden`}
-            >
-              <Icon className="w-14 h-14 text-white" strokeWidth={1.5} />
+            <div className="flex flex-col items-center justify-center mb-6 overflow-hidden">
+              <div
+                className={`w-28 h-28 rounded-full bg-gradient-to-br ${currentWizardStep.bgColor} flex items-center justify-center`}
+              >
+                <Icon className="w-14 h-14 text-white" strokeWidth={1.5} />
+              </div>
             </div>
           ) : (
-            <div className="flex items-center justify-center mb-6 transform hover:scale-105 transition-transform duration-300 overflow-hidden">
+            <div className="flex flex-col items-center justify-center mb-6 overflow-hidden">
               <img
                 src={currentWizardStep.image}
                 alt={currentWizardStep.title}
