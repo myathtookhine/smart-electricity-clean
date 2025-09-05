@@ -8,16 +8,17 @@ import {
 import { useState, useEffect } from 'react';
 import { Switch } from '../../../ui/switch';
 import { Button } from '../../../ui/button';
-import { Popup } from '../../../ui/popup';
-import { TimePicker } from '@mui/x-date-pickers/TimePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { ThemeProvider } from '@mui/material/styles';
-import { createCustomTheme } from '../../../../theme/muiTheme';
-import { useApp } from '../../../../contexts/AppContext';
-import dayjs from 'dayjs';
+import { BackToHomeButton } from "../../../ui/BackToHomeButton";
+import { Popup } from "../../../ui/popup";
+import { TimePicker } from "@mui/x-date-pickers/TimePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { ThemeProvider } from "@mui/material/styles";
+import { createCustomTheme } from "../../../../theme/muiTheme";
+import { useApp } from "../../../../contexts/AppContext";
+import dayjs from "dayjs";
 
-export function ReserveBatteryPowerPage({ onBack }) {
+export function ReserveBatteryPowerPage({ onBack, onGoHome }) {
   const { batteryState } = useApp();
   const [showOfflineModal, setShowOfflineModal] = useState(false);
   const [hasShownOfflineModal, setHasShownOfflineModal] = useState(false);
@@ -26,13 +27,17 @@ export function ReserveBatteryPowerPage({ onBack }) {
   const [settings, setSettings] = useState({
     enabled: false,
     startTime: dayjs().hour(16).minute(0), // 4:00 PM
-    endTime: dayjs().hour(19).minute(0),   // 7:00 PM
+    endTime: dayjs().hour(19).minute(0), // 7:00 PM
     socReservePercent: 20, // State of Charge Reserve Percentage
   });
 
   // Show offline modal when battery is offline
   useEffect(() => {
-    if (batteryState.isConfigured && !batteryState.isOnline && !hasShownOfflineModal) {
+    if (
+      batteryState.isConfigured &&
+      !batteryState.isOnline &&
+      !hasShownOfflineModal
+    ) {
       setShowOfflineModal(true);
     }
   }, [batteryState.isConfigured, batteryState.isOnline, hasShownOfflineModal]);
@@ -43,28 +48,28 @@ export function ReserveBatteryPowerPage({ onBack }) {
   };
 
   const formatTime = (time) => {
-    return time.format('HH:mm');
+    return time.format("HH:mm");
   };
 
   const isDisabled = batteryState.isConfigured && !batteryState.isOnline;
 
   const handleSave = () => {
     if (isDisabled) return;
-    
+
     const reserveData = {
       enabled: settings.enabled,
-      startTime: settings.startTime.format('HH:mm'),
-      endTime: settings.endTime.format('HH:mm'),
+      startTime: settings.startTime.format("HH:mm"),
+      endTime: settings.endTime.format("HH:mm"),
       socReservePercent: settings.socReservePercent,
     };
-    console.log('Reserve Battery Power saved:', reserveData);
+    console.log("Reserve Battery Power saved:", reserveData);
     // Here you would typically save to your backend/state management
     onBack();
   };
 
   const handleSliderChange = (value) => {
     if (!isDisabled) {
-      setSettings({...settings, socReservePercent: value});
+      setSettings({ ...settings, socReservePercent: value });
     }
   };
 
@@ -81,7 +86,7 @@ export function ReserveBatteryPowerPage({ onBack }) {
           description="The system is currently offline. You can view the settings, but changes cannot be made until the system is back online."
           primaryButton={{
             text: "Understood",
-            onClick: handleCloseOfflineModal
+            onClick: handleCloseOfflineModal,
           }}
         />
 
@@ -356,6 +361,13 @@ export function ReserveBatteryPowerPage({ onBack }) {
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
           }
         `}</style>
+
+        {/* Back to Home Button */}
+        {onGoHome && (
+          <div className="mt-8">
+            <BackToHomeButton onGoHome={onGoHome} />
+          </div>
+        )}
       </div>
     </ThemeProvider>
   );

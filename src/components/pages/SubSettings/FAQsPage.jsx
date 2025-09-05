@@ -1,6 +1,7 @@
 import { ChevronLeft, HelpCircle } from 'lucide-react';
+import { BackToHomeButton } from "../../ui/BackToHomeButton";
 
-export function FAQsPage({ onBack }) {
+export function FAQsPage({ onBack, onGoHome }) {
   return (
     <div className="min-h-full bg-background">
       {/* Header with Back Button */}
@@ -17,7 +18,9 @@ export function FAQsPage({ onBack }) {
           </div>
           <div>
             <h1 className="text-xl text-foreground font-semibold">FAQs</h1>
-            <p className="text-sm text-muted-foreground">Frequently asked questions</p>
+            <p className="text-sm text-muted-foreground">
+              Frequently asked questions
+            </p>
           </div>
         </div>
       </div>
@@ -32,9 +35,18 @@ export function FAQsPage({ onBack }) {
             Coming Soon
           </h3>
           <p className="text-muted-foreground text-lg">
-            Frequently asked questions are being compiled. We're gathering the most common questions and preparing detailed answers to help you quickly find solutions.
+            Frequently asked questions are being compiled. We're gathering the
+            most common questions and preparing detailed answers to help you
+            quickly find solutions.
           </p>
         </div>
+
+        {/* Back to Home Button */}
+        {onGoHome && (
+          <div className="mt-8">
+            <BackToHomeButton onGoHome={onGoHome} />
+          </div>
+        )}
       </div>
     </div>
   );

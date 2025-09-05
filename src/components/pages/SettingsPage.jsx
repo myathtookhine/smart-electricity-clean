@@ -71,6 +71,12 @@ export function SettingsPage({ onSubPageChange, onPageChange }) {
     }
   };
 
+  const handleGoHome = () => {
+    if (onPageChange) {
+      onPageChange("home");
+    }
+  };
+
   const renderMainMenu = () => (
     <>
       {/* Header */}
@@ -216,7 +222,7 @@ export function SettingsPage({ onSubPageChange, onPageChange }) {
             <div className="space-y-3">
               {/* Weather Info Details */}
               <div className="bg-card/50 backdrop-blur-sm rounded-3xl p-6 shadow border border-border/50">
-                <button 
+                <button
                   onClick={handleWeatherNavigation}
                   className="w-full flex items-center justify-between hover:bg-muted/10 rounded-2xl p-2 -m-2 transition-all duration-300"
                 >
@@ -315,34 +321,42 @@ export function SettingsPage({ onSubPageChange, onPageChange }) {
     <div className="min-h-full bg-background">
       {currentView === "main" && renderMainMenu()}
       {currentView === "system-info" && (
-        <SystemInformationPage onBack={navigateBack} />
+        <SystemInformationPage onBack={navigateBack} onGoHome={handleGoHome} />
       )}
-      {currentView === "battery" && <BatteryPage onBack={navigateBack} />}
-      {currentView === "ev-control" && <EVControlPage onBack={navigateBack} />}
+      {currentView === "battery" && (
+        <BatteryPage onBack={navigateBack} onGoHome={handleGoHome} />
+      )}
+      {currentView === "ev-control" && (
+        <EVControlPage onBack={navigateBack} onGoHome={handleGoHome} />
+      )}
       {currentView === "account-settings" && (
         <AccountSettingsPage
           onBack={navigateBack}
           onNavigate={handleNavigate}
+          onGoHome={handleGoHome}
         />
       )}
       {currentView === "edit-account" && (
-        <EditAccountPage onBack={navigateBack} />
+        <EditAccountPage onBack={navigateBack} onGoHome={handleGoHome} />
       )}
       {currentView === "change-password" && (
-        <ChangePasswordPage onBack={navigateBack} />
+        <ChangePasswordPage onBack={navigateBack} onGoHome={handleGoHome} />
       )}
       {currentView === "additional-support" && (
         <AdditionalSupportPage
           onBack={navigateBack}
           onNavigate={handleNavigate}
+          onGoHome={handleGoHome}
         />
       )}
       {currentView === "user-guides" && (
-        <UserGuidesPage onBack={navigateBack} />
+        <UserGuidesPage onBack={navigateBack} onGoHome={handleGoHome} />
       )}
-      {currentView === "faqs" && <FAQsPage onBack={navigateBack} />}
+      {currentView === "faqs" && (
+        <FAQsPage onBack={navigateBack} onGoHome={handleGoHome} />
+      )}
       {currentView === "help-support" && (
-        <HelpSupportPage onBack={navigateBack} />
+        <HelpSupportPage onBack={navigateBack} onGoHome={handleGoHome} />
       )}
     </div>
   );

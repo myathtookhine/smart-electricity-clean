@@ -2,29 +2,30 @@ import { ChevronLeft, Save, User, Mail, Phone, MapPin } from 'lucide-react';
 import { useState } from 'react';
 import { useApp } from '../../../contexts/AppContext';
 import { Button } from '../../ui/button';
-import { Input } from '../../ui/input';
-import { Textarea } from '../../ui/textarea';
+import { BackToHomeButton } from "../../ui/BackToHomeButton";
+import { Input } from "../../ui/input";
+import { Textarea } from "../../ui/textarea";
 
-export function EditAccountPage({ onBack }) {
+export function EditAccountPage({ onBack, onGoHome }) {
   const { user } = useApp();
-  
+
   const [formData, setFormData] = useState({
-    name: user?.name || 'John Doe',
-    email: user?.email || 'john.doe@example.com',
-    phone: user?.phone || '+1 (555) 123-4567',
-    address: user?.address || '123 Main St, City, State 12345'
+    name: user?.name || "John Doe",
+    email: user?.email || "john.doe@example.com",
+    phone: user?.phone || "+1 (555) 123-4567",
+    address: user?.address || "123 Main St, City, State 12345",
   });
 
   const [isSaving, setIsSaving] = useState(false);
 
   const handleChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleSave = async () => {
     setIsSaving(true);
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    await new Promise((resolve) => setTimeout(resolve, 1500));
     setIsSaving(false);
     // Here you would typically update the user context and show success message
     onBack();
@@ -141,6 +142,13 @@ export function EditAccountPage({ onBack }) {
         >
           <span>{isSaving ? "Saving..." : "Save Changes"}</span>
         </Button>
+
+        {/* Back to Home Button */}
+        {onGoHome && (
+          <div className="mt-8">
+            <BackToHomeButton onGoHome={onGoHome} />
+          </div>
+        )}
       </div>
     </div>
   );

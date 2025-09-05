@@ -505,7 +505,7 @@ export function InsightsPage() {
       key: "batteryCharge",
       label: "Battery Charge",
       icon: Battery,
-      color: "#8b5cf6",
+      color: "#22c55e",
       value: summaryReportData.batteryCharge,
     },
   ];
@@ -966,7 +966,7 @@ export function InsightsPage() {
                   "#eab308", // Solar Generation - Yellow
                   theme === "dark" ? "#ffffff" : "#6b7280", // Home Consumption - White/Gray
                   "#3b82f6", // EV Charging - Blue
-                  "#8b5cf6", // Battery Charge - Purple
+                  "#22c55e", // Battery Charge - Green
                 ]}
                 series={[
                   {
@@ -1005,7 +1005,7 @@ export function InsightsPage() {
                         id: 5,
                         value: parseFloat(summaryReportData.batteryCharge),
                         label: "Battery",
-                        color: "#8b5cf6",
+                        color: "#22c55e",
                       },
                     ],
                     innerRadius: 30,
@@ -1060,7 +1060,7 @@ export function InsightsPage() {
                   },
                   {
                     label: "Battery",
-                    color: "#8b5cf6",
+                    color: "#22c55e",
                     value: summaryReportData.batteryCharge,
                   },
                 ].map((item, index) => (

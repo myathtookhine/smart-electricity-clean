@@ -1,9 +1,10 @@
 import { Info, ChevronLeft, Battery, Zap, Copy } from 'lucide-react';
-import { useState } from 'react';
+import { BackToHomeButton } from "../../ui/BackToHomeButton";
+import { useState } from "react";
 
-export function SystemInformationPage({ onBack }) {
+export function SystemInformationPage({ onBack, onGoHome }) {
   const [copyStatus, setCopyStatus] = useState({});
-  
+
   const copyToClipboard = async (text, key) => {
     try {
       await navigator.clipboard.writeText(text);
@@ -12,7 +13,7 @@ export function SystemInformationPage({ onBack }) {
         setCopyStatus({ ...copyStatus, [key]: false });
       }, 2000);
     } catch (err) {
-      console.error('Failed to copy text: ', err);
+      console.error("Failed to copy text: ", err);
     }
   };
 
@@ -33,7 +34,9 @@ export function SystemInformationPage({ onBack }) {
             <Info className="w-7 h-7 text-primary-foreground" />
           </div>
           <div>
-            <h1 className="text-xl text-foreground font-semibold">System Information</h1>
+            <h1 className="text-xl text-foreground font-semibold">
+              System Information
+            </h1>
             <p className="text-sm text-muted-foreground">Device Details</p>
           </div>
         </div>
@@ -59,23 +62,35 @@ export function SystemInformationPage({ onBack }) {
                   Battery Details
                 </h3>
               </div>
-              
+
               <div className="space-y-6">
                 <div>
-                  <label className="block text-sm text-muted-foreground mb-2">Serial Number:</label>
+                  <label className="block text-sm text-muted-foreground mb-2">
+                    Serial Number:
+                  </label>
                   <div className="flex items-center justify-between">
-                    <span className="text-card-foreground font-mono">BAT123456</span>
+                    <span className="text-card-foreground font-mono">
+                      BAT123456
+                    </span>
                     <button
-                      onClick={() => copyToClipboard('BAT123456', 'battery')}
+                      onClick={() => copyToClipboard("BAT123456", "battery")}
                       className="p-2 hover:bg-muted/30 rounded-lg transition-all duration-200"
                       title="Copy serial number"
                     >
-                      <Copy className={`w-4 h-4 ${copyStatus.battery ? 'text-green-500' : 'text-muted-foreground'}`} />
+                      <Copy
+                        className={`w-4 h-4 ${
+                          copyStatus.battery
+                            ? "text-green-500"
+                            : "text-muted-foreground"
+                        }`}
+                      />
                     </button>
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm text-muted-foreground mb-2">Model:</label>
+                  <label className="block text-sm text-muted-foreground mb-2">
+                    Model:
+                  </label>
                   <div className="">
                     <span className="text-card-foreground">Dura5</span>
                   </div>
@@ -93,23 +108,35 @@ export function SystemInformationPage({ onBack }) {
                   Diverter Details
                 </h3>
               </div>
-              
+
               <div className="space-y-6">
                 <div>
-                  <label className="block text-sm text-muted-foreground mb-2">Serial Number:</label>
+                  <label className="block text-sm text-muted-foreground mb-2">
+                    Serial Number:
+                  </label>
                   <div className="flex items-center justify-between">
-                    <span className="text-card-foreground font-mono">DIV789123</span>
+                    <span className="text-card-foreground font-mono">
+                      DIV789123
+                    </span>
                     <button
-                      onClick={() => copyToClipboard('DIV789123', 'diverter')}
+                      onClick={() => copyToClipboard("DIV789123", "diverter")}
                       className="p-2 hover:bg-muted/30 rounded-lg transition-all duration-200"
                       title="Copy serial number"
                     >
-                      <Copy className={`w-4 h-4 ${copyStatus.diverter ? 'text-green-500' : 'text-muted-foreground'}`} />
+                      <Copy
+                        className={`w-4 h-4 ${
+                          copyStatus.diverter
+                            ? "text-green-500"
+                            : "text-muted-foreground"
+                        }`}
+                      />
                     </button>
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm text-muted-foreground mb-2">Model:</label>
+                  <label className="block text-sm text-muted-foreground mb-2">
+                    Model:
+                  </label>
                   <div className="">
                     <span className="text-card-foreground">DuraDiverter</span>
                   </div>
@@ -117,6 +144,13 @@ export function SystemInformationPage({ onBack }) {
               </div>
             </div>
           </>
+        )}
+
+        {/* Back to Home Button */}
+        {onGoHome && (
+          <div className="mt-8">
+            <BackToHomeButton onGoHome={onGoHome} />
+          </div>
         )}
       </div>
     </div>

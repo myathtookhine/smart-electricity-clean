@@ -1,6 +1,7 @@
 import { ChevronLeft, Phone } from 'lucide-react';
+import { BackToHomeButton } from "../../ui/BackToHomeButton";
 
-export function HelpSupportPage({ onBack }) {
+export function HelpSupportPage({ onBack, onGoHome }) {
   return (
     <div className="min-h-full bg-background">
       {/* Header with Back Button */}
@@ -16,8 +17,12 @@ export function HelpSupportPage({ onBack }) {
             <Phone className="w-7 h-7 text-primary-foreground" />
           </div>
           <div>
-            <h1 className="text-xl text-foreground font-semibold">Help & Customer Support</h1>
-            <p className="text-sm text-muted-foreground">Get assistance from our team</p>
+            <h1 className="text-xl text-foreground font-semibold">
+              Help & Customer Support
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Get assistance from our team
+            </p>
           </div>
         </div>
       </div>
@@ -32,9 +37,18 @@ export function HelpSupportPage({ onBack }) {
             Coming Soon
           </h3>
           <p className="text-muted-foreground text-lg">
-            Our customer support system is being set up. Soon you'll be able to contact our support team directly through the app for personalized assistance.
+            Our customer support system is being set up. Soon you'll be able to
+            contact our support team directly through the app for personalized
+            assistance.
           </p>
         </div>
+
+        {/* Back to Home Button */}
+        {onGoHome && (
+          <div className="mt-8">
+            <BackToHomeButton onGoHome={onGoHome} />
+          </div>
+        )}
       </div>
     </div>
   );

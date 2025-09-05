@@ -1,6 +1,7 @@
 import { ChevronLeft, BookOpen, HelpCircle, Phone } from 'lucide-react';
+import { BackToHomeButton } from "../../ui/BackToHomeButton";
 
-export function AdditionalSupportPage({ onBack, onNavigate }) {
+export function AdditionalSupportPage({ onBack, onNavigate, onGoHome }) {
   return (
     <div className="min-h-full bg-background">
       {/* Header with Back Button */}
@@ -16,8 +17,12 @@ export function AdditionalSupportPage({ onBack, onNavigate }) {
             <HelpCircle className="w-7 h-7 text-primary-foreground" />
           </div>
           <div>
-            <h1 className="text-xl text-foreground font-semibold">Additional Support</h1>
-            <p className="text-sm text-muted-foreground">Get help and resources</p>
+            <h1 className="text-xl text-foreground font-semibold">
+              Additional Support
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Get help and resources
+            </p>
           </div>
         </div>
       </div>
@@ -35,8 +40,12 @@ export function AdditionalSupportPage({ onBack, onNavigate }) {
                 <BookOpen className="w-6 h-6 text-primary" />
               </div>
               <div className="flex-1 text-left">
-                <h3 className="text-lg text-card-foreground font-semibold">User Guides</h3>
-                <p className="text-sm text-muted-foreground">Step-by-step instructions and tutorials</p>
+                <h3 className="text-lg text-card-foreground font-semibold">
+                  User Guides
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Step-by-step instructions and tutorials
+                </p>
               </div>
             </div>
           </button>
@@ -53,8 +62,12 @@ export function AdditionalSupportPage({ onBack, onNavigate }) {
                 <HelpCircle className="w-6 h-6 text-primary" />
               </div>
               <div className="flex-1 text-left">
-                <h3 className="text-lg text-card-foreground font-semibold">FAQs</h3>
-                <p className="text-sm text-muted-foreground">Frequently asked questions and answers</p>
+                <h3 className="text-lg text-card-foreground font-semibold">
+                  FAQs
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Frequently asked questions and answers
+                </p>
               </div>
             </div>
           </button>
@@ -71,12 +84,23 @@ export function AdditionalSupportPage({ onBack, onNavigate }) {
                 <Phone className="w-6 h-6 text-primary" />
               </div>
               <div className="flex-1 text-left">
-                <h3 className="text-lg text-card-foreground font-semibold">Help & Customer Support</h3>
-                <p className="text-sm text-muted-foreground">Contact our support team for assistance</p>
+                <h3 className="text-lg text-card-foreground font-semibold">
+                  Help & Customer Support
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Contact our support team for assistance
+                </p>
               </div>
             </div>
           </button>
         </div>
+
+        {/* Back to Home Button */}
+        {onGoHome && (
+          <div className="mt-8">
+            <BackToHomeButton onGoHome={onGoHome} />
+          </div>
+        )}
       </div>
     </div>
   );

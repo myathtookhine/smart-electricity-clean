@@ -7,13 +7,14 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useApp } from "../../../contexts/AppContext";
+import { BackToHomeButton } from "../../ui/BackToHomeButton";
 import {
   ScheduledChargePage,
   ReserveBatteryPowerPage,
   StormReadyModePage,
 } from "./BatteryControl";
 
-export function BatteryPage({ onBack }) {
+export function BatteryPage({ onBack, onGoHome }) {
   const { batteryState, setBatteryState } = useApp();
   const [currentPage, setCurrentPage] = useState("main");
 
@@ -30,15 +31,24 @@ export function BatteryPage({ onBack }) {
 
   // Render sub-pages
   if (currentPage === "scheduled-charge") {
-    return <ScheduledChargePage onBack={handleBackFromSubPage} />;
+    return (
+      <ScheduledChargePage onBack={handleBackFromSubPage} onGoHome={onGoHome} />
+    );
   }
 
   if (currentPage === "reserve-battery") {
-    return <ReserveBatteryPowerPage onBack={handleBackFromSubPage} />;
+    return (
+      <ReserveBatteryPowerPage
+        onBack={handleBackFromSubPage}
+        onGoHome={onGoHome}
+      />
+    );
   }
 
   if (currentPage === "storm-ready") {
-    return <StormReadyModePage onBack={handleBackFromSubPage} />;
+    return (
+      <StormReadyModePage onBack={handleBackFromSubPage} onGoHome={onGoHome} />
+    );
   }
 
   // Main Battery Page
@@ -236,6 +246,13 @@ export function BatteryPage({ onBack }) {
             </button>
           </div>
         </div>
+
+        {/* Back to Home Button */}
+        {onGoHome && (
+          <div className="mt-8">
+            <BackToHomeButton onGoHome={onGoHome} />
+          </div>
+        )}
       </div>
     </div>
   );

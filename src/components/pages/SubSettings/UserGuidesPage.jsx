@@ -1,6 +1,7 @@
 import { ChevronLeft, BookOpen } from 'lucide-react';
+import { BackToHomeButton } from "../../ui/BackToHomeButton";
 
-export function UserGuidesPage({ onBack }) {
+export function UserGuidesPage({ onBack, onGoHome }) {
   return (
     <div className="min-h-full bg-background">
       {/* Header with Back Button */}
@@ -16,8 +17,12 @@ export function UserGuidesPage({ onBack }) {
             <BookOpen className="w-7 h-7 text-primary-foreground" />
           </div>
           <div>
-            <h1 className="text-xl text-foreground font-semibold">User Guides</h1>
-            <p className="text-sm text-muted-foreground">Instructions and tutorials</p>
+            <h1 className="text-xl text-foreground font-semibold">
+              User Guides
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Instructions and tutorials
+            </p>
           </div>
         </div>
       </div>
@@ -32,9 +37,17 @@ export function UserGuidesPage({ onBack }) {
             Coming Soon
           </h3>
           <p className="text-muted-foreground text-lg">
-            User guides and tutorials are currently being prepared. Check back soon for comprehensive documentation and step-by-step instructions.
+            User guides and tutorials are currently being prepared. Check back
+            soon for comprehensive documentation and step-by-step instructions.
           </p>
         </div>
+
+        {/* Back to Home Button */}
+        {onGoHome && (
+          <div className="mt-8">
+            <BackToHomeButton onGoHome={onGoHome} />
+          </div>
+        )}
       </div>
     </div>
   );

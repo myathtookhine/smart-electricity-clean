@@ -1,7 +1,8 @@
 import { User, ChevronLeft, ChevronRight, Edit, Lock, Mail, Phone, UserCircle } from 'lucide-react';
 import { useApp } from '../../../contexts/AppContext';
+import { BackToHomeButton } from "../../ui/BackToHomeButton";
 
-export function AccountSettingsPage({ onBack, onNavigate }) {
+export function AccountSettingsPage({ onBack, onNavigate, onGoHome }) {
   const { user } = useApp();
 
   return (
@@ -19,7 +20,9 @@ export function AccountSettingsPage({ onBack, onNavigate }) {
             <User className="w-7 h-7 text-primary-foreground" />
           </div>
           <div>
-            <h1 className="text-xl text-foreground font-semibold">Account Settings</h1>
+            <h1 className="text-xl text-foreground font-semibold">
+              Account Settings
+            </h1>
             <p className="text-sm text-muted-foreground">Manage your account</p>
           </div>
         </div>
@@ -35,15 +38,15 @@ export function AccountSettingsPage({ onBack, onNavigate }) {
             </div>
             <div className="flex-1">
               <h3 className="text-xl text-card-foreground font-semibold">
-                {user?.name || 'John Doe'}
+                {user?.name || "John Doe"}
               </h3>
               <div className="flex items-center space-x-1 text-sm text-muted-foreground mt-1">
                 <Mail className="w-4 h-4" />
-                <span>{user?.email || 'john.doe@example.com'}</span>
+                <span>{user?.email || "john.doe@example.com"}</span>
               </div>
               <div className="flex items-center space-x-1 text-sm text-muted-foreground mt-1">
                 <Phone className="w-4 h-4" />
-                <span>{user?.phone || '+1 (555) 123-4567'}</span>
+                <span>{user?.phone || "+1 (555) 123-4567"}</span>
               </div>
             </div>
           </div>
@@ -77,6 +80,13 @@ export function AccountSettingsPage({ onBack, onNavigate }) {
             </button>
           </div>
         </div>
+
+        {/* Back to Home Button */}
+        {onGoHome && (
+          <div className="mt-8">
+            <BackToHomeButton onGoHome={onGoHome} />
+          </div>
+        )}
       </div>
     </div>
   );

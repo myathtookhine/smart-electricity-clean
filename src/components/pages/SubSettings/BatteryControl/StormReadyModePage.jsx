@@ -8,10 +8,11 @@ import {
 import { useState, useEffect } from 'react';
 import { Switch } from '../../../ui/switch';
 import { Button } from '../../../ui/button';
-import { Popup } from '../../../ui/popup';
-import { useApp } from '../../../../contexts/AppContext';
+import { BackToHomeButton } from "../../../ui/BackToHomeButton";
+import { Popup } from "../../../ui/popup";
+import { useApp } from "../../../../contexts/AppContext";
 
-export function StormReadyModePage({ onBack }) {
+export function StormReadyModePage({ onBack, onGoHome }) {
   const { batteryState } = useApp();
   const [showOfflineModal, setShowOfflineModal] = useState(false);
   const [hasShownOfflineModal, setHasShownOfflineModal] = useState(false);
@@ -23,7 +24,11 @@ export function StormReadyModePage({ onBack }) {
 
   // Show offline modal when battery is offline
   useEffect(() => {
-    if (batteryState.isConfigured && !batteryState.isOnline && !hasShownOfflineModal) {
+    if (
+      batteryState.isConfigured &&
+      !batteryState.isOnline &&
+      !hasShownOfflineModal
+    ) {
       setShowOfflineModal(true);
     }
   }, [batteryState.isConfigured, batteryState.isOnline, hasShownOfflineModal]);
@@ -37,11 +42,11 @@ export function StormReadyModePage({ onBack }) {
 
   const handleSave = () => {
     if (isDisabled) return;
-    
+
     const stormReadyData = {
       enabled: settings.enabled,
     };
-    console.log('StormReady Mode saved:', stormReadyData);
+    console.log("StormReady Mode saved:", stormReadyData);
     // Here you would typically save to your backend/state management
     onBack();
   };
@@ -58,7 +63,7 @@ export function StormReadyModePage({ onBack }) {
         description="The system is currently offline. You can view the settings, but changes cannot be made until the system is back online."
         primaryButton={{
           text: "Understood",
-          onClick: handleCloseOfflineModal
+          onClick: handleCloseOfflineModal,
         }}
       />
 
@@ -112,13 +117,13 @@ export function StormReadyModePage({ onBack }) {
         {/* Status Display */}
         <div className="bg-card/50 backdrop-blur-sm rounded-3xl p-6 shadow border border-border/50">
           <h3 className="text-lg text-card-foreground font-semibold mb-4 flex items-center">
-            <Shield className="w-5 h-5 text-purple-500 mr-2" />
+            <Shield className="w-5 h-5 text-amber-500 mr-2" />
             Current Status
           </h3>
           <div
             className={`p-4 rounded-2xl ${
               settings.enabled
-                ? "bg-purple-500/10 border border-purple-500/20"
+                ? "bg-amber-500/10 border border-amber-500/20"
                 : "bg-muted/20"
             }`}
           >
@@ -126,13 +131,13 @@ export function StormReadyModePage({ onBack }) {
               <div className="flex items-center space-x-3">
                 <div
                   className={`w-3 h-3 rounded-full ${
-                    settings.enabled ? "bg-purple-500" : "bg-muted-foreground"
+                    settings.enabled ? "bg-amber-500" : "bg-muted-foreground"
                   }`}
                 ></div>
                 <span
                   className={`font-medium ${
                     settings.enabled
-                      ? "text-purple-600"
+                      ? "text-amber-600"
                       : "text-muted-foreground"
                   }`}
                 >
@@ -141,13 +146,11 @@ export function StormReadyModePage({ onBack }) {
                     : "StormReady Inactive"}
                 </span>
               </div>
-              {settings.enabled && <Zap className="w-5 h-5 text-purple-500" />}
+              {settings.enabled && <Zap className="w-5 h-5 text-amber-500" />}
             </div>
             <p
               className={`text-sm mt-2 ${
-                settings.enabled
-                  ? "text-purple-600/80"
-                  : "text-muted-foreground"
+                settings.enabled ? "text-amber-600/80" : "text-muted-foreground"
               }`}
             >
               {settings.enabled
@@ -160,13 +163,13 @@ export function StormReadyModePage({ onBack }) {
         {/* What StormReady Does */}
         <div className="bg-card/50 backdrop-blur-sm rounded-3xl p-6 shadow border border-border/50">
           <h3 className="text-lg text-card-foreground font-semibold mb-4 flex items-center">
-            <Info className="w-5 h-5 text-purple-500 mr-2" />
+            <Info className="w-5 h-5 text-amber-500 mr-2" />
             What StormReady Mode Does
           </h3>
           <div className="space-y-4">
             <div className="flex items-start space-x-4">
-              <div className="w-10 h-10 bg-purple-500/10 rounded-xl flex items-center justify-center flex-shrink-0 mt-1">
-                <Zap className="w-5 h-5 text-purple-500" />
+              <div className="w-10 h-10 bg-amber-500/10 rounded-xl flex items-center justify-center flex-shrink-0 mt-1">
+                <Zap className="w-5 h-5 text-amber-500" />
               </div>
               <div>
                 <h4 className="font-medium text-foreground mb-1">
@@ -180,8 +183,8 @@ export function StormReadyModePage({ onBack }) {
             </div>
 
             <div className="flex items-start space-x-4">
-              <div className="w-10 h-10 bg-purple-500/10 rounded-xl flex items-center justify-center flex-shrink-0 mt-1">
-                <Shield className="w-5 h-5 text-purple-500" />
+              <div className="w-10 h-10 bg-amber-500/10 rounded-xl flex items-center justify-center flex-shrink-0 mt-1">
+                <Shield className="w-5 h-5 text-amber-500" />
               </div>
               <div>
                 <h4 className="font-medium text-foreground mb-1">
@@ -194,8 +197,8 @@ export function StormReadyModePage({ onBack }) {
             </div>
 
             <div className="flex items-start space-x-4">
-              <div className="w-10 h-10 bg-purple-500/10 rounded-xl flex items-center justify-center flex-shrink-0 mt-1">
-                <Cloud className="w-5 h-5 text-purple-500" />
+              <div className="w-10 h-10 bg-amber-500/10 rounded-xl flex items-center justify-center flex-shrink-0 mt-1">
+                <Cloud className="w-5 h-5 text-amber-500" />
               </div>
               <div>
                 <h4 className="font-medium text-foreground mb-1">
@@ -217,7 +220,7 @@ export function StormReadyModePage({ onBack }) {
           </h3>
           <div className="space-y-3 text-sm text-muted-foreground">
             <div className="flex items-start space-x-3">
-              <div className="w-6 h-6 bg-purple-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
+              <div className="w-6 h-6 bg-amber-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
                 1
               </div>
               <p>
@@ -227,7 +230,7 @@ export function StormReadyModePage({ onBack }) {
               </p>
             </div>
             <div className="flex items-start space-x-3">
-              <div className="w-6 h-6 bg-purple-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
+              <div className="w-6 h-6 bg-amber-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
                 2
               </div>
               <p>
@@ -237,7 +240,7 @@ export function StormReadyModePage({ onBack }) {
               </p>
             </div>
             <div className="flex items-start space-x-3">
-              <div className="w-6 h-6 bg-purple-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
+              <div className="w-6 h-6 bg-amber-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
                 3
               </div>
               <p>
@@ -291,6 +294,13 @@ export function StormReadyModePage({ onBack }) {
             Cancel
           </Button>
         </div>
+
+        {/* Back to Home Button */}
+        {onGoHome && (
+          <div className="mt-8">
+            <BackToHomeButton onGoHome={onGoHome} />
+          </div>
+        )}
       </div>
     </div>
   );

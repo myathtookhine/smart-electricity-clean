@@ -11,43 +11,44 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '../../ui/button';
-import { SelectChargeModeModal } from './EVControl/SelectChargeModeModal';
-import { ChargingSchedulePage } from './EVControl/ChargingSchedulePage';
-import { TariffSettingPage } from './EVControl/TariffSettingPage';
+import { BackToHomeButton } from "../../ui/BackToHomeButton";
+import { SelectChargeModeModal } from "./EVControl/SelectChargeModeModal";
+import { ChargingSchedulePage } from "./EVControl/ChargingSchedulePage";
+import { TariffSettingPage } from "./EVControl/TariffSettingPage";
 
-export function EVControlPage({ onBack }) {
+export function EVControlPage({ onBack, onGoHome }) {
   const [showModeSelection, setShowModeSelection] = useState(false);
   const [showScheduling, setShowScheduling] = useState(false);
   const [showTariffSettings, setShowTariffSettings] = useState(false);
   const [currentScheduleMode, setCurrentScheduleMode] = useState(null);
-  const [selectedMode, setSelectedMode] = useState('charge-now'); // Default mode
+  const [selectedMode, setSelectedMode] = useState("charge-now"); // Default mode
   const [tariffConfigured, setTariffConfigured] = useState(false);
   const [currentTariff, setCurrentTariff] = useState(null);
   const [chargingSchedule, setChargingSchedule] = useState(null);
 
   const chargingModes = {
-    'charge-now': {
-      name: 'Charge Now',
+    "charge-now": {
+      name: "Charge Now",
       icon: Zap,
-      color: 'blue',
-      hasScheduling: true
+      color: "blue",
+      hasScheduling: true,
     },
-    'pure-green': {
-      name: 'Solar Charge',
+    "pure-green": {
+      name: "Solar Charge",
       icon: Sun,
-      color: 'green',
-      hasScheduling: false
+      color: "green",
+      hasScheduling: false,
     },
-    'tariff-intelligence': {
-      name: 'Tariff Intelligence',
+    "tariff-intelligence": {
+      name: "Tariff Intelligence",
       icon: Clock,
-      color: 'purple',
-      hasScheduling: true
-    }
+      color: "green",
+      hasScheduling: true,
+    },
   };
 
   const handleModeSelect = (mode) => {
-    if (mode === 'tariff-intelligence' && !tariffConfigured) {
+    if (mode === "tariff-intelligence" && !tariffConfigured) {
       // Don't set the mode yet, wait for setup completion
       return;
     }
@@ -63,7 +64,7 @@ export function EVControlPage({ onBack }) {
   const handleTariffComplete = (tariffData) => {
     setTariffConfigured(true);
     setCurrentTariff(tariffData);
-    setSelectedMode('tariff-intelligence');
+    setSelectedMode("tariff-intelligence");
     setShowTariffSettings(false);
   };
 
@@ -74,7 +75,7 @@ export function EVControlPage({ onBack }) {
 
   const handleScheduleClick = (mode) => {
     setCurrentScheduleMode(mode);
-    if (mode === 'tariff-intelligence') {
+    if (mode === "tariff-intelligence") {
       setShowTariffSettings(true);
     } else {
       setShowScheduling(true);
@@ -86,38 +87,38 @@ export function EVControlPage({ onBack }) {
 
   // Helper function to get color classes
   const getColorClasses = (mode) => {
-    switch(mode) {
-      case 'charge-now':
+    switch (mode) {
+      case "charge-now":
         return {
-          bg: 'bg-blue-500/10',
-          border: 'border-blue-500/20',
-          text: 'text-blue-500',
-          bgSolid: 'bg-blue-500',
-          bgHover: 'hover:bg-blue-600'
+          bg: "bg-blue-500/10",
+          border: "border-blue-500/20",
+          text: "text-blue-500",
+          bgSolid: "bg-blue-500",
+          bgHover: "hover:bg-blue-600",
         };
-      case 'pure-green':
+      case "pure-green":
         return {
-          bg: 'bg-green-500/10',
-          border: 'border-green-500/20',
-          text: 'text-green-500',
-          bgSolid: 'bg-green-500',
-          bgHover: 'hover:bg-green-600'
+          bg: "bg-green-500/10",
+          border: "border-green-500/20",
+          text: "text-green-500",
+          bgSolid: "bg-green-500",
+          bgHover: "hover:bg-green-600",
         };
-      case 'tariff-intelligence':
+      case "tariff-intelligence":
         return {
-          bg: 'bg-purple-500/10',
-          border: 'border-purple-500/20',
-          text: 'text-purple-500',
-          bgSolid: 'bg-purple-500',
-          bgHover: 'hover:bg-purple-600'
+          bg: "bg-purple-500/10",
+          border: "border-purple-500/20",
+          text: "text-purple-500",
+          bgSolid: "bg-purple-500",
+          bgHover: "hover:bg-purple-600",
         };
       default:
         return {
-          bg: 'bg-blue-500/10',
-          border: 'border-blue-500/20',
-          text: 'text-blue-500',
-          bgSolid: 'bg-blue-500',
-          bgHover: 'hover:bg-blue-600'
+          bg: "bg-blue-500/10",
+          border: "border-blue-500/20",
+          text: "text-blue-500",
+          bgSolid: "bg-blue-500",
+          bgHover: "hover:bg-blue-600",
         };
     }
   };
@@ -145,6 +146,7 @@ export function EVControlPage({ onBack }) {
         modeData={chargingModes[currentScheduleMode]}
         onBack={() => setShowScheduling(false)}
         onComplete={handleScheduleComplete}
+        onGoHome={onGoHome}
         tariffName={currentTariff?.name}
       />
     );
@@ -155,6 +157,7 @@ export function EVControlPage({ onBack }) {
       <TariffSettingPage
         onBack={() => setShowTariffSettings(false)}
         onComplete={handleTariffComplete}
+        onGoHome={onGoHome}
       />
     );
   }
@@ -338,6 +341,13 @@ export function EVControlPage({ onBack }) {
             )}
           </div>
         </div>
+
+        {/* Back to Home Button */}
+        {onGoHome && (
+          <div className="mt-8">
+            <BackToHomeButton onGoHome={onGoHome} />
+          </div>
+        )}
       </div>
     </div>
   );

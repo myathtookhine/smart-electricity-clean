@@ -1,53 +1,54 @@
 import { ChevronLeft, Save, Lock, Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '../../ui/button';
-import { Input } from '../../ui/input';
+import { BackToHomeButton } from "../../ui/BackToHomeButton";
+import { Input } from "../../ui/input";
 
-export function ChangePasswordPage({ onBack }) {
+export function ChangePasswordPage({ onBack, onGoHome }) {
   const [formData, setFormData] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: ''
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
   });
 
   const [showPasswords, setShowPasswords] = useState({
     current: false,
     new: false,
-    confirm: false
+    confirm: false,
   });
 
   const [errors, setErrors] = useState({});
   const [isSaving, setIsSaving] = useState(false);
 
   const handleChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
     // Clear error when user starts typing
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: '' }));
+      setErrors((prev) => ({ ...prev, [field]: "" }));
     }
   };
 
   const togglePasswordVisibility = (field) => {
-    setShowPasswords(prev => ({ ...prev, [field]: !prev[field] }));
+    setShowPasswords((prev) => ({ ...prev, [field]: !prev[field] }));
   };
 
   const validateForm = () => {
     const newErrors = {};
 
     if (!formData.currentPassword) {
-      newErrors.currentPassword = 'Current password is required';
+      newErrors.currentPassword = "Current password is required";
     }
 
     if (!formData.newPassword) {
-      newErrors.newPassword = 'New password is required';
+      newErrors.newPassword = "New password is required";
     } else if (formData.newPassword.length < 8) {
-      newErrors.newPassword = 'Password must be at least 8 characters';
+      newErrors.newPassword = "Password must be at least 8 characters";
     }
 
     if (!formData.confirmPassword) {
-      newErrors.confirmPassword = 'Please confirm your new password';
+      newErrors.confirmPassword = "Please confirm your new password";
     } else if (formData.newPassword !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
+      newErrors.confirmPassword = "Passwords do not match";
     }
 
     setErrors(newErrors);
@@ -56,10 +57,10 @@ export function ChangePasswordPage({ onBack }) {
 
   const handleSave = async () => {
     if (!validateForm()) return;
-    
+
     setIsSaving(true);
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    await new Promise((resolve) => setTimeout(resolve, 1500));
     setIsSaving(false);
     // Here you would typically call your password change API
     onBack();
@@ -226,6 +227,13 @@ export function ChangePasswordPage({ onBack }) {
         >
           <span>{isSaving ? "Updating..." : "Update Password"}</span>
         </Button>
+
+        {/* Back to Home Button */}
+        {onGoHome && (
+          <div className="mt-8">
+            <BackToHomeButton onGoHome={onGoHome} />
+          </div>
+        )}
       </div>
     </div>
   );

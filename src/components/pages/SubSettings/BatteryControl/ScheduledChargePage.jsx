@@ -8,16 +8,17 @@ import {
 import { useState, useEffect } from 'react';
 import { Switch } from '../../../ui/switch';
 import { Button } from '../../../ui/button';
-import { Popup } from '../../../ui/popup';
-import { TimePicker } from '@mui/x-date-pickers/TimePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { ThemeProvider } from '@mui/material/styles';
-import { createCustomTheme } from '../../../../theme/muiTheme';
-import { useApp } from '../../../../contexts/AppContext';
-import dayjs from 'dayjs';
+import { BackToHomeButton } from "../../../ui/BackToHomeButton";
+import { Popup } from "../../../ui/popup";
+import { TimePicker } from "@mui/x-date-pickers/TimePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { ThemeProvider } from "@mui/material/styles";
+import { createCustomTheme } from "../../../../theme/muiTheme";
+import { useApp } from "../../../../contexts/AppContext";
+import dayjs from "dayjs";
 
-export function ScheduledChargePage({ onBack }) {
+export function ScheduledChargePage({ onBack, onGoHome }) {
   const { batteryState } = useApp();
   const [showOfflineModal, setShowOfflineModal] = useState(false);
   const [hasShownOfflineModal, setHasShownOfflineModal] = useState(false);
@@ -26,31 +27,35 @@ export function ScheduledChargePage({ onBack }) {
   const [settings, setSettings] = useState({
     enabled: false,
     startTime: dayjs().hour(22).minute(0), // 10:00 PM
-    endTime: dayjs().hour(7).minute(0),    // 7:00 AM
-    frequency: 'weekdays', // 'one-time', 'weekdays', 'weekends', 'specific-days'
+    endTime: dayjs().hour(7).minute(0), // 7:00 AM
+    frequency: "weekdays", // 'one-time', 'weekdays', 'weekends', 'specific-days'
     specificDays: [],
   });
 
   const frequencyOptions = [
-    { value: 'one-time', label: 'One-time' },
-    { value: 'weekdays', label: 'Weekdays' },
-    { value: 'weekends', label: 'Weekends' },
-    { value: 'specific-days', label: 'Specific Days' }
+    { value: "one-time", label: "One-time" },
+    { value: "weekdays", label: "Weekdays" },
+    { value: "weekends", label: "Weekends" },
+    { value: "specific-days", label: "Specific Days" },
   ];
 
   const daysOfWeek = [
-    { value: 'monday', label: 'Mon' },
-    { value: 'tuesday', label: 'Tue' },
-    { value: 'wednesday', label: 'Wed' },
-    { value: 'thursday', label: 'Thu' },
-    { value: 'friday', label: 'Fri' },
-    { value: 'saturday', label: 'Sat' },
-    { value: 'sunday', label: 'Sun' }
+    { value: "monday", label: "Mon" },
+    { value: "tuesday", label: "Tue" },
+    { value: "wednesday", label: "Wed" },
+    { value: "thursday", label: "Thu" },
+    { value: "friday", label: "Fri" },
+    { value: "saturday", label: "Sat" },
+    { value: "sunday", label: "Sun" },
   ];
 
   // Show offline modal when battery is offline
   useEffect(() => {
-    if (batteryState.isConfigured && !batteryState.isOnline && !hasShownOfflineModal) {
+    if (
+      batteryState.isConfigured &&
+      !batteryState.isOnline &&
+      !hasShownOfflineModal
+    ) {
       setShowOfflineModal(true);
     }
   }, [batteryState.isConfigured, batteryState.isOnline, hasShownOfflineModal]);
@@ -61,22 +66,22 @@ export function ScheduledChargePage({ onBack }) {
   };
 
   const formatTime = (time) => {
-    return time.format('HH:mm');
+    return time.format("HH:mm");
   };
 
   const isDisabled = batteryState.isConfigured && !batteryState.isOnline;
 
   const handleSave = () => {
     if (isDisabled) return;
-    
+
     const scheduleData = {
       enabled: settings.enabled,
-      startTime: settings.startTime.format('HH:mm'),
-      endTime: settings.endTime.format('HH:mm'),
+      startTime: settings.startTime.format("HH:mm"),
+      endTime: settings.endTime.format("HH:mm"),
       frequency: settings.frequency,
       specificDays: settings.specificDays,
     };
-    console.log('Scheduled Charge saved:', scheduleData);
+    console.log("Scheduled Charge saved:", scheduleData);
     // Here you would typically save to your backend/state management
     onBack();
   };
@@ -94,7 +99,7 @@ export function ScheduledChargePage({ onBack }) {
           description="The system is currently offline. You can view the settings, but changes cannot be made until the system is back online."
           primaryButton={{
             text: "Understood",
-            onClick: handleCloseOfflineModal
+            onClick: handleCloseOfflineModal,
           }}
         />
 
@@ -354,6 +359,13 @@ export function ScheduledChargePage({ onBack }) {
               Cancel
             </Button>
           </div>
+
+          {/* Back to Home Button */}
+          {onGoHome && (
+            <div className="mt-8">
+              <BackToHomeButton onGoHome={onGoHome} />
+            </div>
+          )}
         </div>
       </div>
     </ThemeProvider>

@@ -12,10 +12,11 @@ import { Switch } from "../ui/switch";
 import { Alert } from "../ui/alert";
 import { useTheme } from "../ThemeProvider";
 import { useState, useEffect } from "react";
-import exampleImage from "../../assets/iso-home.png";
 import WeatherTab from "./weather/WeatherTab";
 import LocationPermissionModal from "../LocationPermissionModal";
 import { useLocation } from "../../hooks/useLocation";
+import exampleImage from "../../assets/iso-home.png";
+import logo from "../../assets/duracell-logo.png";
 
 export function HomePage({ onPageChange }) {
   const { theme, setTheme } = useTheme();
@@ -65,20 +66,11 @@ export function HomePage({ onPageChange }) {
       {/* Header */}
       <div className="px-6 pt-8 pb-2">
         <div className="flex items-center justify-between mb-2">
-          {/* Center: Title and Text */}
-          <div className="flex-1 text-left">
-            <h1 className="text-2xl text-foreground font-semibold">
-              Live Usage Monitor
-            </h1>
-            <p className="text-sm text-muted-foreground">Energy Management</p>
-          </div>
-
-          {/* Right: Notifications */}
-          <div className="flex items-center relative">
-            {/* Light/Dark Mode Toggle */}
+          {/* Light/Dark Mode Toggle */}
+          <div>
             <button
               onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-              className="p-2 rounded-xl bg-muted/20 hover:bg-muted/30 transition-all duration-300 mr-2"
+              className="p-2 rounded-xl bg-muted hover:bg-muted/30 transition-all duration-300 mr-2"
             >
               {theme === "dark" ? (
                 <Sun className="w-5 h-5 text-yellow-500" />
@@ -86,6 +78,22 @@ export function HomePage({ onPageChange }) {
                 <Moon className="w-5 h-5 text-slate-600" />
               )}
             </button>
+          </div>
+          {/* Center: Title and Text */}
+          <div className="text-center">
+            <h1 className="text-2xl text-foreground font-semibold">
+              Live Usage Monitor
+            </h1>
+            <p className="text-sm text-muted-foreground">Energy Management</p>
+            {/* <img
+              src={logo}
+              alt="Duracell Logo"
+              className="w-32 h-auto object-contain"
+            /> */}
+          </div>
+
+          {/* Right: Notifications */}
+          <div className="flex items-center relative">
             <button className="p-2 hover:bg-accent rounded-lg transition-colors">
               <Bell className="w-5 h-5 text-foreground" />
               {notificationCount > 0 && (
@@ -220,9 +228,9 @@ export function HomePage({ onPageChange }) {
       {/* Strom-ready Mode Alert */}
       <div className="px-6 mb-6">
         <Alert
-          type="neutral"
-          title="Strom-ready Mode : Disabled"
-          message="Please check in the settings to enable!"
+          type="success"
+          title="Strom-ready Mode : Monitoring"
+          message="Storm-ready mode is on and monitoring for a storm!"
           customIcon={Zap}
           showIcon={true}
           showMessage={true}
