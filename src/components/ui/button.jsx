@@ -4,19 +4,22 @@ import { cn } from '../utils/cn';
 const buttonVariants = {
   variant: {
     primary: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg",
-    secondary: "bg-muted/20 text-foreground hover:bg-muted/30 border border-border",
-    link: "text-primary hover:text-primary/80 underline-offset-4 hover:underline bg-transparent p-0 h-auto font-normal"
+    secondary:
+      "bg-muted/20 text-foreground hover:bg-muted/30 border border-border",
+    "outline-primary":
+      "border border-primary text-primary bg-transparent hover:bg-primary hover:text-primary-foreground",
+    link: "text-primary hover:text-primary/80 underline-offset-4 hover:underline bg-transparent p-0 h-auto font-normal",
   },
   size: {
     default: "h-12 px-6 py-3",
     sm: "h-10 px-4 py-2",
     lg: "h-14 px-8 py-4",
-    icon: "h-12 w-12"
+    icon: "h-12 w-12",
   },
   width: {
     default: "w-auto",
-    full: "w-full"
-  }
+    full: "w-full",
+  },
 };
 
 const Button = React.forwardRef(({ 

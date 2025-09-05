@@ -1,0 +1,112 @@
+import React from 'react';
+import { useWeather } from '../../../hooks/useWeather';
+import { getWeatherIcon } from '../../../utils/weatherIcons';
+import { MapPin, Thermometer, ArrowRightCircle } from "lucide-react";
+
+const WeatherTab = ({ lat, lon, className = '', onClick, onWeatherClick }) => {
+  const { weather, loading, error } = useWeather(lat, lon);
+
+  if (loading) {
+    return (
+      <div className={`bg-card rounded-lg p-4 cursor-pointer hover:bg-accent transition-colors ${className}`}>
+        <div className="animate-pulse">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="h-6 bg-muted rounded w-20 mb-2"></div>
+              <div className="h-4 bg-muted rounded w-32 mb-1"></div>
+              <div className="h-3 bg-muted rounded w-24"></div>
+            </div>
+            <div className="w-12 h-12 bg-muted rounded-full"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !weather) {
+    return (
+      <div 
+        className={`bg-card rounded-lg p-4 cursor-pointer hover:bg-accent transition-colors ${className}`} 
+        onClick={onClick}
+      >
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="flex items-center space-x-2 mb-1">
+              <Thermometer className="w-4 h-4 text-muted-foreground" />
+              <span className="text-lg font-semibold text-muted-foreground">--°C</span>
+            </div>
+            <p className="text-sm text-muted-foreground">Weather unavailable</p>
+            <p className="text-xs text-muted-foreground">Enable location to see weather</p>
+          </div>
+          <div className="flex-shrink-0">
+            <img 
+              src="/assets/weather/not-available.svg"
+              alt="Weather unavailable"
+              className="w-12 h-12 object-contain opacity-50"
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const handleClick = () => {
+    if (onWeatherClick) {
+      onWeatherClick(); // Navigate to weather page
+    } else if (onClick) {
+      onClick();
+    }
+  };
+
+  return (
+    <div
+      className={`bg-card border rounded-lg p-4 cursor-pointer hover:bg-accent transition-colors ${className} relative`}
+      onClick={handleClick}
+    >
+      {/* Detail button in top right corner */}
+      <button 
+        className="absolute bottom-3 right-3 p-1 rounded-full bg-primary/10 hover:bg-primary/20 text-primary transition-colors"
+        onClick={(e) => {
+          e.stopPropagation(); // Prevent card click
+          if (onWeatherClick) {
+            onWeatherClick();
+          }
+        }}
+        aria-label="View weather details"
+      >
+        <ArrowRightCircle className="w-6 h-6" />
+      </button>
+
+      <div className="flex items-center justify-start">
+        <div className="flex-shrink-0 mr-4">
+          <img
+            src={getWeatherIcon(weather.weather[0].icon)}
+            alt={weather.weather[0].description}
+            className="w-16 h-16 object-contain"
+          />
+        </div>
+        <div>
+          <div className="flex items-center space-x-2 mb-1">
+            <span className="text-lg font-semibold text-foreground">
+              {Math.round(weather.main.temp)}°C
+            </span>
+            <span className="text-xs text-muted-foreground">
+              feels {Math.round(weather.main.feels_like)}°
+            </span>
+          </div>
+          <div className="flex flex-col items-start space-y-1">
+            <p className="text-xs text-muted-foreground capitalize mb-1">
+              {weather.weather[0].description}
+            </p>
+            <div className="flex items-center">
+              <MapPin className="w-4 h-4 text-muted-foreground mr-2" />
+              <p className="text-sm text-muted-foreground">{weather.name}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default WeatherTab;

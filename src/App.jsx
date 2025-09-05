@@ -4,25 +4,30 @@ import { PhoneMockup } from "./components/PhoneMockup";
 import { BottomNavigation } from "./components/BottomNavigation";
 import { HomePage } from "./components/pages/HomePage";
 import { InsightsPage } from "./components/pages/InsightsPage";
+import { WeatherPage } from "./components/pages/weather/WeatherPage";
 import { SettingsPage } from "./components/pages/SettingsPage";
 import { AppProvider, useApp } from "./contexts/AppContext";
+import { WeatherProvider } from "./contexts/WeatherContext";
 import { AppWizard } from "./components/AppWizard";
 import { Login } from "./components/Login";
 
 function AppContent() {
   const [currentPage, setCurrentPage] = useState("home");
+  const [isInSubPage, setIsInSubPage] = useState(false);
   const { isFirstTime, isAuthenticated } = useApp();
 
   const renderPage = () => {
     switch (currentPage) {
       case "home":
-        return <HomePage />;
+        return <HomePage onPageChange={setCurrentPage} />;
       case "insights":
         return <InsightsPage />;
+      case "weather":
+        return <WeatherPage onPageChange={setCurrentPage} />;
       case "settings":
-        return <SettingsPage />;
+        return <SettingsPage onSubPageChange={setIsInSubPage} onPageChange={setCurrentPage} />;
       default:
-        return <HomePage />;
+        return <HomePage onPageChange={setCurrentPage} />;
     }
   };
 
@@ -115,10 +120,12 @@ function AppContent() {
               </div>
 
               {/* Bottom Navigation */}
-              <BottomNavigation
-                activeTab={currentPage}
-                onTabChange={setCurrentPage}
-              />
+              {!isInSubPage && currentPage !== "weather" && (
+                <BottomNavigation
+                  activeTab={currentPage}
+                  onTabChange={setCurrentPage}
+                />
+              )}
             </div>
           )}
         </PhoneMockup>
@@ -130,7 +137,9 @@ function AppContent() {
 function App() {
   return (
     <AppProvider>
-      <AppContent />
+      <WeatherProvider>
+        <AppContent />
+      </WeatherProvider>
     </AppProvider>
   );
 }

@@ -6,29 +6,44 @@ import { Input } from './ui/input';
 import { PasswordInput } from './ui/password-input';
 import { Button } from './ui/button';
 import { Field } from './ui/field';
+import { ForgotPassword } from "./ForgotPassword";
 
 export function Login() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
   const { login } = useApp();
   const { theme, setTheme } = useTheme();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setIsLoading(true);
 
     // Simulate loading time
     setTimeout(() => {
       const success = login(username, password);
       if (!success) {
-        setError('Invalid username or password');
+        setError("Invalid username or password");
       }
       setIsLoading(false);
     }, 1000);
   };
+
+  const handleForgotPassword = () => {
+    setShowForgotPassword(true);
+  };
+
+  const handleBackToLogin = () => {
+    setShowForgotPassword(false);
+  };
+
+  // Show Forgot Password screen if requested
+  if (showForgotPassword) {
+    return <ForgotPassword onBack={handleBackToLogin} />;
+  }
 
   return (
     <div className="h-full bg-background flex flex-col items-center justify-center p-6 relative overflow-hidden">
@@ -109,7 +124,7 @@ export function Login() {
 
           {/* Forgot Password */}
           <div className="text-center">
-            <Button variant="link" type="button">
+            <Button variant="link" type="button" onClick={handleForgotPassword}>
               Forgot password?
             </Button>
           </div>

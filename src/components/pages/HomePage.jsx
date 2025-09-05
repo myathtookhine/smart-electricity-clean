@@ -11,14 +11,50 @@ import {
 import { Switch } from "../ui/switch";
 import { Alert } from "../ui/alert";
 import { useTheme } from "../ThemeProvider";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import exampleImage from "../../assets/iso-home.png";
-import SampleWeatherIcon from "../../assets/partly-cloudy-day-rain.svg";
+import WeatherTab from "./weather/WeatherTab";
+import LocationPermissionModal from "../LocationPermissionModal";
+import { useLocation } from "../../hooks/useLocation";
 
-export function HomePage() {
+export function HomePage({ onPageChange }) {
   const { theme, setTheme } = useTheme();
   const [isAnimationEnabled, setIsAnimationEnabled] = useState(true);
+  const [showLocationModal, setShowLocationModal] = useState(false);
+  const {
+    location,
+    loading: locationLoading,
+    error: locationError,
+    permissionStatus,
+    requestLocation,
+  } = useLocation();
   const notificationCount = 3; // Example notification count
+
+  // Show location modal on initial load if permission not granted
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (permissionStatus === "prompt" && !location) {
+        setShowLocationModal(true);
+      }
+    }, 2000); // Show modal 2 seconds after page load
+
+    return () => clearTimeout(timer);
+  }, [permissionStatus, location]);
+
+  const handleLocationRequest = () => {
+    requestLocation();
+    setShowLocationModal(false);
+  };
+
+  const handleCloseModal = () => {
+    setShowLocationModal(false);
+  };
+
+  const handleWeatherClick = () => {
+    if (onPageChange) {
+      onPageChange("weather");
+    }
+  };
 
   const toggleTheme = () => {
     setTheme(theme === "light" ? "dark" : "light");
@@ -64,38 +100,16 @@ export function HomePage() {
 
       {/* Weather Information */}
       <div className="px-6 mb-6">
-        <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-4 shadow-lg">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              {/* Weather Icon */}
-              <div className="w-16 h-16 bg-primary/10 dark:bg-slate-800 rounded-xl flex items-center justify-center border border-primary/20 dark:border-slate-700">
-                <img
-                  src={SampleWeatherIcon}
-                  alt="Weather icon"
-                  className="w-16 h-16"
-                />
-              </div>
-
-              {/* Weather Info */}
-              <div>
-                <div className="flex items-center space-x-2 mb-1">
-                  <span className="text-lg font-semibold text-foreground">
-                    22°C
-                  </span>
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  Partly cloudy conditions
-                </p>
-              </div>
-            </div>
-
-            {/* View More Button */}
-            <button className="flex items-center space-x-1 px-3 py-1.5 bg-primary/10 hover:bg-primary/20 text-primary text-sm font-medium rounded-lg transition-colors">
-              <span>More</span>
-              <ChevronRight className="w-3 h-3" />
-            </button>
-          </div>
-        </div>
+        <WeatherTab
+          lat={location?.latitude}
+          lon={location?.longitude}
+          onWeatherClick={handleWeatherClick}
+          onClick={() => {
+            if (!location && permissionStatus !== "granted") {
+              setShowLocationModal(true);
+            }
+          }}
+        />
       </div>
 
       {/* Smart Home Visualization */}
@@ -214,6 +228,14 @@ export function HomePage() {
           showMessage={true}
         />
       </div>
+
+      {/* Location Permission Modal */}
+      <LocationPermissionModal
+        isOpen={showLocationModal}
+        onRequestLocation={handleLocationRequest}
+        onClose={handleCloseModal}
+        error={locationError}
+      />
     </div>
   );
 }

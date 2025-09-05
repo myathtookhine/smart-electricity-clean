@@ -84,7 +84,7 @@ const wizardSteps = [
     type: "image",
     image: wz7,
     bgColor: "",
-    title: "You're Ready!",
+    title: "Ready to go!",
     description:
       "You're now equipped to begin smart energy management. Start monitoring consumption, analyzing trends, and making data-driven decisions to optimize your electricity usage and efficiency.",
   },
@@ -183,7 +183,7 @@ export function AppWizard() {
           {/* Icon/Image Circle */}
 
           {currentWizardStep.type === "icon" ? (
-            <div className="flex flex-col items-center justify-center mb-6 overflow-hidden">
+            <div className="flex flex-col items-center justify-center mb-3 overflow-hidden">
               <div
                 className={`w-28 h-28 rounded-full bg-gradient-to-br ${currentWizardStep.bgColor} flex items-center justify-center`}
               >
@@ -191,17 +191,17 @@ export function AppWizard() {
               </div>
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center mb-6 overflow-hidden">
+            <div className="flex flex-col items-center justify-center mb-3 overflow-hidden">
               <img
                 src={currentWizardStep.image}
                 alt={currentWizardStep.title}
-                className="w-80 h-80"
+                className="w-90 h-90"
               />
             </div>
           )}
 
           {/* Title */}
-          <h1 className="text-3xl font-bold text-foreground mb-4">
+          <h1 className="text-3xl font-semibold text-foreground mb-4">
             {currentWizardStep.title}
           </h1>
 

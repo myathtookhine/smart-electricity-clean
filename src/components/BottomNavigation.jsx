@@ -1,10 +1,10 @@
-import { Home, BarChart3, Settings } from 'lucide-react';
+import { Home, BarChart3, Settings } from "lucide-react";
 
 export function BottomNavigation({ activeTab, onTabChange }) {
   const tabs = [
-    { id: 'home', label: 'Home', icon: Home },
-    { id: 'insights', label: 'Insights', icon: BarChart3 },
-    { id: 'settings', label: 'Settings', icon: Settings },
+    { id: "home", label: "Home", icon: Home },
+    { id: "insights", label: "Insights", icon: BarChart3 },
+    { id: "settings", label: "Settings", icon: Settings },
   ];
 
   return (

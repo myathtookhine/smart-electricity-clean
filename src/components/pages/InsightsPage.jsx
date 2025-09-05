@@ -80,7 +80,7 @@ const generateSummaryReportData = (timeView) => {
     batteryCharge: 0,
   };
 
-  // Simulate different values based on time period
+  // Simulate different values based on time period with more variation
   const multiplier =
     timeView === "1day"
       ? 1
@@ -90,13 +90,41 @@ const generateSummaryReportData = (timeView) => {
       ? 30
       : 365;
 
+  // Create more varied data for better pie chart visualization
+  const baseValues = {
+    gridImport: 15.2,
+    gridExport: 8.7,
+    solarGeneration: 25.5,
+    homeConsumption: 18.9,
+    evCharging: 12.3,
+    batteryCharge: 9.6,
+  };
+
   return {
-    gridImport: (15.2 * multiplier + Math.random() * 5).toFixed(1),
-    gridExport: (8.7 * multiplier + Math.random() * 3).toFixed(1),
-    solarGeneration: (22.5 * multiplier + Math.random() * 5).toFixed(1),
-    homeConsumption: (18.9 * multiplier + Math.random() * 4).toFixed(1),
-    evCharging: (12.3 * multiplier + Math.random() * 3).toFixed(1),
-    batteryCharge: (9.6 * multiplier + Math.random() * 2).toFixed(1),
+    gridImport: (
+      baseValues.gridImport * multiplier +
+      Math.random() * 8
+    ).toFixed(1),
+    gridExport: (
+      baseValues.gridExport * multiplier +
+      Math.random() * 5
+    ).toFixed(1),
+    solarGeneration: (
+      baseValues.solarGeneration * multiplier +
+      Math.random() * 10
+    ).toFixed(1),
+    homeConsumption: (
+      baseValues.homeConsumption * multiplier +
+      Math.random() * 7
+    ).toFixed(1),
+    evCharging: (
+      baseValues.evCharging * multiplier +
+      Math.random() * 6
+    ).toFixed(1),
+    batteryCharge: (
+      baseValues.batteryCharge * multiplier +
+      Math.random() * 4
+    ).toFixed(1),
   };
 };
 
@@ -532,7 +560,7 @@ export function InsightsPage() {
       {/* Header */}
       <div className="px-6 pt-8 pb-6">
         <div className="flex items-center space-x-3 mb-2">
-          <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center shadow-lg">
+          <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary/80 rounded-2xl flex items-center justify-center shadow-lg">
             <BarChart3 className="w-7 h-7 text-white" />
           </div>
           <div>
@@ -907,6 +935,150 @@ export function InsightsPage() {
                     📅 Calendar is active
                   </div>
                 )}
+              </div>
+            </div>
+          </div>
+          {/* Summary Pie Chart  */}
+          <div className="bg-card rounded-2xl p-4 shadow-lg border border-border/50">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-card-foreground">
+                Energy Distribution
+              </h3>
+              <div className="text-xs text-muted-foreground">
+                {summaryTimeView === "1day"
+                  ? "Daily"
+                  : summaryTimeView === "7days"
+                  ? "Weekly"
+                  : summaryTimeView === "30days"
+                  ? "Monthly"
+                  : "Yearly"}{" "}
+                Overview
+              </div>
+            </div>
+
+            <div className="flex flex-col items-center">
+              <PieChart
+                width={300}
+                height={200}
+                colors={[
+                  "#ef4444", // Grid Import - Red
+                  "#22c55e", // Grid Export - Green
+                  "#eab308", // Solar Generation - Yellow
+                  theme === "dark" ? "#ffffff" : "#6b7280", // Home Consumption - White/Gray
+                  "#3b82f6", // EV Charging - Blue
+                  "#8b5cf6", // Battery Charge - Purple
+                ]}
+                series={[
+                  {
+                    data: [
+                      {
+                        id: 0,
+                        value: parseFloat(summaryReportData.gridImport),
+                        label: "Grid Import",
+                        color: "#ef4444",
+                      },
+                      {
+                        id: 1,
+                        value: parseFloat(summaryReportData.gridExport),
+                        label: "Grid Export",
+                        color: "#22c55e",
+                      },
+                      {
+                        id: 2,
+                        value: parseFloat(summaryReportData.solarGeneration),
+                        label: "Solar",
+                        color: "#eab308",
+                      },
+                      {
+                        id: 3,
+                        value: parseFloat(summaryReportData.homeConsumption),
+                        label: "Home",
+                        color: theme === "dark" ? "#ffffff" : "#6b7280",
+                      },
+                      {
+                        id: 4,
+                        value: parseFloat(summaryReportData.evCharging),
+                        label: "EV",
+                        color: "#3b82f6",
+                      },
+                      {
+                        id: 5,
+                        value: parseFloat(summaryReportData.batteryCharge),
+                        label: "Battery",
+                        color: "#8b5cf6",
+                      },
+                    ],
+                    innerRadius: 30,
+                    outerRadius: 80,
+                    paddingAngle: 2,
+                    cornerRadius: 0,
+                  },
+                ]}
+                margin={{ top: 20, bottom: 20, left: 20, right: 20 }}
+                legend={{ hidden: true }}
+                sx={{
+                  "& .MuiChartsTooltip-root": {
+                    backgroundColor: theme === "dark" ? "#2a2d30" : "#ffffff",
+                    color: theme === "dark" ? "#ffffff" : "#000000",
+                    border: `1px solid ${
+                      theme === "dark" ? "#4a4d50" : "#e5e5e5"
+                    }`,
+                  },
+                  "& .MuiChartsLegend-root": {
+                    display: "none",
+                  },
+                }}
+              />
+
+              {/* Custom Legend */}
+              <div className="grid grid-cols-2 gap-2 mt-4 w-full max-w-xs">
+                {[
+                  {
+                    label: "Grid Import",
+                    color: "#ef4444",
+                    value: summaryReportData.gridImport,
+                  },
+                  {
+                    label: "Grid Export",
+                    color: "#22c55e",
+                    value: summaryReportData.gridExport,
+                  },
+                  {
+                    label: "Solar",
+                    color: "#eab308",
+                    value: summaryReportData.solarGeneration,
+                  },
+                  {
+                    label: "Home",
+                    color: theme === "dark" ? "#ffffff" : "#6b7280",
+                    value: summaryReportData.homeConsumption,
+                  },
+                  {
+                    label: "EV",
+                    color: "#3b82f6",
+                    value: summaryReportData.evCharging,
+                  },
+                  {
+                    label: "Battery",
+                    color: "#8b5cf6",
+                    value: summaryReportData.batteryCharge,
+                  },
+                ].map((item, index) => (
+                  <div key={index} className="flex items-center space-x-2">
+                    <div
+                      className="w-3 h-3 rounded-full flex-shrink-0"
+                      style={{ backgroundColor: item.color }}
+                    ></div>
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-xs text-muted-foreground truncate">
+                        {item.label}
+                      </span>
+                      <span className="text-xs font-medium text-card-foreground">
+                        {item.value} kWh
+                      </span>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>

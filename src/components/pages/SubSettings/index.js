@@ -1,3 +1,18 @@
-export { InverterPage } from './InverterPage';
-export { BatteryPage } from './BatteryPage';
-export { AppSettingsPage } from './AppSettingsPage';
+export { SystemInformationPage } from "./SystemInformationPage";
+export { BatteryPage } from "./BatteryPage";
+export { EVControlPage } from "./EVControlPage";
+export { TariffSettingPage } from "./EVControl/TariffSettingPage";
+export { AccountSettingsPage } from "./AccountSettingsPage";
+export { EditAccountPage } from "./EditAccountPage";
+export { ChangePasswordPage } from "./ChangePasswordPage";
+export { AdditionalSupportPage } from "./AdditionalSupportPage";
+export { UserGuidesPage } from "./UserGuidesPage";
+export { FAQsPage } from "./FAQsPage";
+export { HelpSupportPage } from "./HelpSupportPage";
+
+// Battery Control Pages
+export {
+  ScheduledChargePage,
+  ReserveBatteryPowerPage,
+  StormReadyModePage,
+} from "./BatteryControl";

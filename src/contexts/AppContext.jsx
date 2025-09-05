@@ -15,15 +15,21 @@ export const AppProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
 
+  // Battery state management
+  const [batteryState, setBatteryState] = useState({
+    isConfigured: true, // true, false
+    isOnline: true, // true, false - only relevant if configured
+  });
+
   useEffect(() => {
     // Check if user has completed wizard before
-    const hasCompletedWizard = localStorage.getItem('hasCompletedWizard');
-    const savedUser = localStorage.getItem('currentUser');
-    
+    const hasCompletedWizard = localStorage.getItem("hasCompletedWizard");
+    const savedUser = localStorage.getItem("currentUser");
+
     if (hasCompletedWizard) {
       setIsFirstTime(false);
     }
-    
+
     if (savedUser) {
       setUser(JSON.parse(savedUser));
       setIsAuthenticated(true);
@@ -32,16 +38,16 @@ export const AppProvider = ({ children }) => {
 
   const completeWizard = () => {
     setIsFirstTime(false);
-    localStorage.setItem('hasCompletedWizard', 'true');
+    localStorage.setItem("hasCompletedWizard", "true");
   };
 
   const login = (username, password) => {
     // Simple authentication
-    if (username === 'john' && password === '123123') {
-      const userData = { username: 'john', name: 'John Doe' };
+    if (username === "john" && password === "123123") {
+      const userData = { username: "john", name: "John Doe" };
       setUser(userData);
       setIsAuthenticated(true);
-      localStorage.setItem('currentUser', JSON.stringify(userData));
+      localStorage.setItem("currentUser", JSON.stringify(userData));
       return true;
     }
     return false;
@@ -50,7 +56,7 @@ export const AppProvider = ({ children }) => {
   const logout = () => {
     setUser(null);
     setIsAuthenticated(false);
-    localStorage.removeItem('currentUser');
+    localStorage.removeItem("currentUser");
   };
 
   const value = {
@@ -60,11 +66,9 @@ export const AppProvider = ({ children }) => {
     completeWizard,
     login,
     logout,
+    batteryState,
+    setBatteryState,
   };
 
-  return (
-    <AppContext.Provider value={value}>
-      {children}
-    </AppContext.Provider>
-  );
+  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };
