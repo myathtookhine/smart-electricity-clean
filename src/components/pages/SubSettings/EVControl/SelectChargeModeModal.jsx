@@ -129,29 +129,34 @@ export function SelectChargeModeModal({
             <ChevronLeft className="w-5 h-5 text-foreground" />
           </button>
           <div>
-            <h1 className="text-xl text-foreground font-semibold">Select Charge Mode</h1>
-            <p className="text-sm text-muted-foreground">Choose your charging strategy</p>
+            <h1 className="text-xl text-foreground font-semibold">
+              Select Charge Mode
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Choose your charging strategy
+            </p>
           </div>
         </div>
       </div>
 
       {/* Mode Cards */}
-      <div className="px-6 space-y-6 pb-24">
+      <div className="px-6 space-y-6 pb-8">
         {Object.entries(chargingModes).map(([key, mode]) => {
           const IconComponent = getModeIcon(key);
           const colors = getColorClasses(key);
           const isSelected = selectedModeLocal === key;
           const details = modeDetails[key];
-          const needsTariffSetup = key === 'tariff-intelligence' && !tariffConfigured;
+          const needsTariffSetup =
+            key === "tariff-intelligence" && !tariffConfigured;
 
           return (
             <div key={key} className="space-y-3">
               {/* Mode Card */}
-              <div 
+              <div
                 className={`bg-card/50 backdrop-blur-sm rounded-3xl p-6 shadow-xl border transition-all duration-300 cursor-pointer ${
-                  isSelected 
-                    ? `${colors.borderActive} ring-2 ${colors.ring}` 
-                    : 'border-border/50 hover:border-border'
+                  isSelected
+                    ? `${colors.borderActive} ring-2 ${colors.ring}`
+                    : "border-border/50 hover:border-border"
                 }`}
                 onClick={() => handleModeSelect(key)}
               >
@@ -166,7 +171,7 @@ export function SelectChargeModeModal({
                       </h3>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center space-x-2">
                     <button
                       onClick={(e) => {
@@ -177,9 +182,11 @@ export function SelectChargeModeModal({
                     >
                       <HelpCircle className="w-8 h-8 text-muted-foreground" />
                     </button>
-                    
+
                     {isSelected && (
-                      <div className={`w-8 h-8 ${colors.bgSolid} rounded-full flex items-center justify-center`}>
+                      <div
+                        className={`w-8 h-8 ${colors.bgSolid} rounded-full flex items-center justify-center`}
+                      >
                         <Check className="w-4 h-4 text-white" />
                       </div>
                     )}
@@ -207,18 +214,22 @@ export function SelectChargeModeModal({
                 <div className="space-y-2">
                   {details.benefits.map((benefit, index) => (
                     <div key={index} className="flex items-center space-x-2">
-                      <div className={`w-1.5 h-1.5 ${colors.bgSolid} rounded-full`}></div>
-                      <span className="text-sm text-muted-foreground">{benefit}</span>
+                      <div
+                        className={`w-1.5 h-1.5 ${colors.bgSolid} rounded-full`}
+                      ></div>
+                      <span className="text-sm text-muted-foreground">
+                        {benefit}
+                      </span>
                     </div>
                   ))}
                 </div>
-
-
               </div>
 
               {/* Tooltip Expansion */}
               {showTooltip === key && (
-                <div className={`${colors.bg} ${colors.border} rounded-2xl p-4 space-y-3`}>
+                <div
+                  className={`${colors.bg} ${colors.border} rounded-2xl p-4 space-y-3`}
+                >
                   <div className="flex items-start space-x-3">
                     <div className={`p-2 ${colors.bg} rounded-lg mt-0.5`}>
                       <HelpCircle className={`w-4 h-4 ${colors.text}`} />
@@ -263,12 +274,12 @@ export function SelectChargeModeModal({
         title="Tariff Configuration Required"
         description="To use Tariff Intelligence, you need to configure your electricity tariff settings. This helps the system identify the cheapest charging periods."
         primaryButton={{
-          text: "Configure Tariff Now",
-          onClick: handleTariffSetupConfirm
+          text: "Configure",
+          onClick: handleTariffSetupConfirm,
         }}
         secondaryButton={{
           text: "Cancel",
-          onClick: handleTariffSetupCancel
+          onClick: handleTariffSetupCancel,
         }}
       />
     </div>

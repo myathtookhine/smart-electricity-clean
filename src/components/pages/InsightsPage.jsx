@@ -13,8 +13,11 @@ import {
   ArrowUp,
   ArrowDown,
   Info,
+  Bell,
+  Moon,
 } from "lucide-react";
 import { useTheme } from "../ThemeProvider";
+import logo from "../../assets/duracell-logo.png";
 
 // Mock data for demonstration - Enhanced bidirectional flow
 const generateHourlyData = () => {
@@ -129,7 +132,8 @@ const generateSummaryReportData = (timeView) => {
 };
 
 export function InsightsPage() {
-  const { theme } = useTheme();
+  const { theme, setTheme } = useTheme();
+  const notificationCount = 3; // Example notification count
   const [timeView, setTimeView] = useState("today"); // 'today', '7days', '30days', '1year'
   const [summaryTimeView, setSummaryTimeView] = useState("1day"); // '1day', '7days', '30days', '1year'
   const [selectedFilters, setSelectedFilters] = useState({
@@ -559,21 +563,49 @@ export function InsightsPage() {
       />
       {/* Header */}
       <div className="px-6 pt-8 pb-6">
-        <div className="flex items-center space-x-3 mb-2">
-          <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary/80 rounded-2xl flex items-center justify-center shadow-lg">
-            <BarChart3 className="w-7 h-7 text-white" />
-          </div>
+        <div className="flex items-center justify-between mb-2">
+          {/* Left: Light/Dark Mode Toggle */}
           <div>
-            <h1 className="text-2xl text-foreground font-semibold">
-              Energy Insights
-            </h1>
-            <p className="text-sm text-muted-foreground">Analytics & Reports</p>
+            <button
+              onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+              className="p-2 rounded-xl bg-muted hover:bg-muted/30 transition-all duration-300 mr-2"
+            >
+              {theme === "dark" ? (
+                <Sun className="w-5 h-5 text-yellow-500" />
+              ) : (
+                <Moon className="w-5 h-5 text-slate-600" />
+              )}
+            </button>
+          </div>
+
+          {/* Center: Logo */}
+          <div className="text-center">
+            <img
+              src={logo}
+              alt="Duracell Logo"
+              className="w-32 h-auto object-contain"
+            />
+          </div>
+
+          {/* Right: Notifications */}
+          <div className="flex items-center relative">
+            <button className="p-2 hover:bg-accent rounded-lg transition-colors">
+              <Bell className="w-5 h-5 text-foreground" />
+              {notificationCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {notificationCount > 9 ? "9+" : notificationCount}
+                </span>
+              )}
+            </button>
           </div>
         </div>
       </div>
 
       {/* Time View Selector */}
       <div className="px-6 mb-6">
+        <h4 className="text-xl text-foreground text-left mb-3">
+          Energy Insights
+        </h4>
         <div className="flex space-x-2">
           {timeViewOptions.map(({ key, label, icon: Icon }) => (
             <button
@@ -593,7 +625,7 @@ export function InsightsPage() {
       </div>
 
       {/* Content Area */}
-      <div className="px-6 space-y-6 pb-24">
+      <div className="px-6 space-y-6 pb-8">
         <div className="bg-card rounded-2xl p-6 shadow-lg">
           {timeView === "today" ? (
             <>
@@ -869,7 +901,7 @@ export function InsightsPage() {
         </div>
 
         <div className="space-y-3">
-          <h4 className="text-xl text-foreground font-semibold text-center mb-3">
+          <h4 className="text-xl text-foreground text-left mb-3">
             Summary Report
           </h4>
 

@@ -207,7 +207,7 @@ export const WeatherPage = ({ onPageChange }) => {
       </div>
 
       {/* Content Area */}
-      <div className="px-6 space-y-6 pb-24">
+      <div className="px-6 space-y-6 pb-12">
         {/* Current Weather */}
         <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-6 shadow-lg">
           <div className="text-center">

@@ -214,7 +214,7 @@ export function StormReadyModePage({ onBack, onGoHome }) {
         </div>
 
         {/* How It Works */}
-        <div className="bg-card/50 backdrop-blur-sm rounded-3xl p-6 shadow border border-border/50">
+        {/* <div className="bg-card/50 backdrop-blur-sm rounded-3xl p-6 shadow border border-border/50">
           <h3 className="text-lg text-card-foreground font-semibold mb-4">
             How It Works
           </h3>
@@ -249,7 +249,7 @@ export function StormReadyModePage({ onBack, onGoHome }) {
               </p>
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* Important Notes */}
         <div className="bg-amber-500/10 border border-amber-500/20 rounded-3xl p-6">

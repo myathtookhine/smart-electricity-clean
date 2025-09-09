@@ -29,7 +29,7 @@ export function AccountSettingsPage({ onBack, onNavigate, onGoHome }) {
       </div>
 
       {/* Content Area */}
-      <div className="px-6 space-y-6 pb-24">
+      <div className="px-6 space-y-6 pb-8">
         {/* Account Info Card */}
         <div className="bg-card/50 backdrop-blur-sm rounded-3xl p-6 shadow-xl border border-border/50">
           <div className="flex items-center space-x-4 mb-4">

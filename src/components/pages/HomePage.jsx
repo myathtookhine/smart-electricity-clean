@@ -64,7 +64,7 @@ export function HomePage({ onPageChange }) {
   return (
     <div className="min-h-full bg-background">
       {/* Header */}
-      <div className="px-6 pt-8 pb-2">
+      <div className="px-6 pt-8 pb-4">
         <div className="flex items-center justify-between mb-2">
           {/* Light/Dark Mode Toggle */}
           <div>
@@ -79,17 +79,13 @@ export function HomePage({ onPageChange }) {
               )}
             </button>
           </div>
-          {/* Center: Title and Text */}
+          {/* Logo */}
           <div className="text-center">
-            <h1 className="text-2xl text-foreground font-semibold">
-              Live Usage Monitor
-            </h1>
-            <p className="text-sm text-muted-foreground">Energy Management</p>
-            {/* <img
+            <img
               src={logo}
               alt="Duracell Logo"
               className="w-32 h-auto object-contain"
-            /> */}
+            />
           </div>
 
           {/* Right: Notifications */}
@@ -120,6 +116,11 @@ export function HomePage({ onPageChange }) {
         />
       </div>
 
+      <div className="px-6 mb-2">
+        <h4 className="text-xl text-foreground text-left mb-3">
+          Live Usage Monitor
+        </h4>
+      </div>
       {/* Smart Home Visualization */}
       <div className="px-6 mb-0 flex justify-center home-image-wrapper">
         <div className="w-full max-w-sm relative pb-20">

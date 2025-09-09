@@ -16,18 +16,31 @@ function AppContent() {
   const [isInSubPage, setIsInSubPage] = useState(false);
   const { isFirstTime, isAuthenticated } = useApp();
 
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    // Reset sub-page state when navigating to main pages
+    if (["home", "insights", "weather"].includes(page)) {
+      setIsInSubPage(false);
+    }
+  };
+
   const renderPage = () => {
     switch (currentPage) {
       case "home":
-        return <HomePage onPageChange={setCurrentPage} />;
+        return <HomePage onPageChange={handlePageChange} />;
       case "insights":
         return <InsightsPage />;
       case "weather":
-        return <WeatherPage onPageChange={setCurrentPage} />;
+        return <WeatherPage onPageChange={handlePageChange} />;
       case "settings":
-        return <SettingsPage onSubPageChange={setIsInSubPage} onPageChange={setCurrentPage} />;
+        return (
+          <SettingsPage
+            onSubPageChange={setIsInSubPage}
+            onPageChange={handlePageChange}
+          />
+        );
       default:
-        return <HomePage onPageChange={setCurrentPage} />;
+        return <HomePage onPageChange={handlePageChange} />;
     }
   };
 
@@ -123,7 +136,7 @@ function AppContent() {
               {!isInSubPage && currentPage !== "weather" && (
                 <BottomNavigation
                   activeTab={currentPage}
-                  onTabChange={setCurrentPage}
+                  onTabChange={handlePageChange}
                 />
               )}
             </div>

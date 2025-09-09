@@ -18,6 +18,7 @@ import { useTheme } from "../ThemeProvider";
 import { Switch } from "../ui/switch";
 import { useApp } from "../../contexts/AppContext";
 import { useState, useEffect } from "react";
+import logo from "../../assets/duracell-logo.png";
 import {
   SystemInformationPage,
   BatteryPage,
@@ -34,6 +35,7 @@ import {
 export function SettingsPage({ onSubPageChange, onPageChange }) {
   const { theme, setTheme } = useTheme();
   const { user, logout, batteryState } = useApp();
+  const notificationCount = 3; // Example notification count
   const [currentView, setCurrentView] = useState("main"); // 'main', 'system-info', 'battery', 'ev-control', 'account-settings', 'edit-account', 'change-password', 'additional-support', 'user-guides', 'faqs', 'help-support'
   const [navigationStack, setNavigationStack] = useState(["main"]);
 
@@ -67,7 +69,7 @@ export function SettingsPage({ onSubPageChange, onPageChange }) {
 
   const handleWeatherNavigation = () => {
     if (onPageChange) {
-      onPageChange('weather');
+      onPageChange("weather");
     }
   };
 
@@ -81,17 +83,44 @@ export function SettingsPage({ onSubPageChange, onPageChange }) {
     <>
       {/* Header */}
       <div className="px-6 pt-8 pb-6">
-        <div className="flex items-center space-x-3 mb-2">
-          <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary/80 rounded-2xl flex items-center justify-center shadow-lg">
-            <Settings className="w-7 h-7 text-secondary-foreground" />
-          </div>
+        <div className="flex items-center justify-between mb-2">
+          {/* Left: Light/Dark Mode Toggle */}
           <div>
-            <h1 className="text-2xl text-foreground font-semibold">Settings</h1>
-            <p className="text-sm text-muted-foreground">App Preferences</p>
+            <button
+              onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+              className="p-2 rounded-xl bg-muted hover:bg-muted/30 transition-all duration-300 mr-2"
+            >
+              {theme === "dark" ? (
+                <Sun className="w-5 h-5 text-yellow-500" />
+              ) : (
+                <Moon className="w-5 h-5 text-slate-600" />
+              )}
+            </button>
+          </div>
+
+          {/* Center: Logo */}
+          <div className="text-center">
+            <img
+              src={logo}
+              alt="Duracell Logo"
+              className="w-32 h-auto object-contain"
+            />
+          </div>
+
+          {/* Right: Notifications */}
+          <div className="flex items-center relative">
+            <button className="p-2 hover:bg-accent rounded-lg transition-colors">
+              <Bell className="w-5 h-5 text-foreground" />
+              {notificationCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {notificationCount > 9 ? "9+" : notificationCount}
+                </span>
+              )}
+            </button>
           </div>
         </div>
       </div>
-      <div className="px-6 space-y-6 pb-24">
+      <div className="px-6 space-y-6 pb-8">
         {/* Main Settings Menu */}
         <div className="space-y-6">
           {/* My Account Section */}

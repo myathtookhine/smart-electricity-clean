@@ -160,7 +160,7 @@ export function ChargingSchedulePage({
         </div>
 
         {/* Direct Schedule Form */}
-        <div className="px-6 space-y-6 pb-24">
+        <div className="px-6 space-y-6 pb-8">
           {/* Charging Time Period */}
           <div className="bg-card/50 backdrop-blur-sm rounded-3xl p-6 shadow-xl border border-border/50">
             <h3 className="text-lg text-card-foreground font-semibold mb-4">

@@ -55,7 +55,7 @@ export function EditAccountPage({ onBack, onGoHome }) {
       </div>
 
       {/* Form Content */}
-      <div className="px-6 space-y-6 pb-24">
+      <div className="px-6 space-y-6 pb-8">
         <div className="bg-card/50 backdrop-blur-sm rounded-3xl p-6 shadow-xl border border-border/50">
           <h3 className="text-xl text-card-foreground font-semibold mb-6">
             Personal Information
