@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { PhoneMockup } from "./components/PhoneMockup";
 import { BottomNavigation } from "./components/BottomNavigation";
@@ -6,6 +6,7 @@ import { HomePage } from "./components/pages/HomePage";
 import { InsightsPage } from "./components/pages/InsightsPage";
 import { WeatherPage } from "./components/pages/weather/WeatherPage";
 import { SettingsPage } from "./components/pages/SettingsPage";
+import { NotificationPage } from "./components/pages/NotificationPage";
 import { AppProvider, useApp } from "./contexts/AppContext";
 import { WeatherProvider } from "./contexts/WeatherContext";
 import { AppWizard } from "./components/AppWizard";
@@ -14,7 +15,29 @@ import { Login } from "./components/Login";
 function AppContent() {
   const [currentPage, setCurrentPage] = useState("home");
   const [isInSubPage, setIsInSubPage] = useState(false);
+  const [currentTime, setCurrentTime] = useState("");
   const { isFirstTime, isAuthenticated } = useApp();
+
+  // Update current time every second
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
+      const timeString = now.toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+      });
+      setCurrentTime(timeString);
+    };
+
+    // Update immediately
+    updateTime();
+
+    // Update every second
+    const interval = setInterval(updateTime, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -29,7 +52,7 @@ function AppContent() {
       case "home":
         return <HomePage onPageChange={handlePageChange} />;
       case "insights":
-        return <InsightsPage />;
+        return <InsightsPage onPageChange={handlePageChange} />;
       case "weather":
         return <WeatherPage onPageChange={handlePageChange} />;
       case "settings":
@@ -39,6 +62,8 @@ function AppContent() {
             onPageChange={handlePageChange}
           />
         );
+      case "notifications":
+        return <NotificationPage onPageChange={handlePageChange} />;
       default:
         return <HomePage onPageChange={handlePageChange} />;
     }
@@ -61,7 +86,7 @@ function AppContent() {
               <div className="flex justify-between items-center px-8 py-3 bg-background">
                 {/* Left side - Time */}
                 <div className="text-sm font-semibold text-foreground">
-                  9:41
+                  {currentTime}
                 </div>
 
                 {/* Right side - Signal, WiFi, Battery */}

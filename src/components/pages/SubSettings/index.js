@@ -5,6 +5,7 @@ export { TariffSettingPage } from "./EVControl/TariffSettingPage";
 export { AccountSettingsPage } from "./AccountSettingsPage";
 export { EditAccountPage } from "./EditAccountPage";
 export { ChangePasswordPage } from "./ChangePasswordPage";
+export { CostSummaryPage } from "./CostSummaryPage";
 export { AdditionalSupportPage } from "./AdditionalSupportPage";
 export { UserGuidesPage } from "./UserGuidesPage";
 export { FAQsPage } from "./FAQsPage";

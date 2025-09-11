@@ -1,9 +1,20 @@
-import { User, ChevronLeft, ChevronRight, Edit, Lock, Mail, Phone, UserCircle } from 'lucide-react';
-import { useApp } from '../../../contexts/AppContext';
+import {
+  User,
+  ChevronLeft,
+  ChevronRight,
+  Edit,
+  Lock,
+  Mail,
+  Phone,
+  UserCircle,
+  LogOut,
+} from "lucide-react";
+import { useApp } from "../../../contexts/AppContext";
 import { BackToHomeButton } from "../../ui/BackToHomeButton";
+import { Button } from "../../ui/button";
 
 export function AccountSettingsPage({ onBack, onNavigate, onGoHome }) {
-  const { user } = useApp();
+  const { user, logout } = useApp();
 
   return (
     <div className="min-h-full bg-background">
@@ -62,8 +73,10 @@ export function AccountSettingsPage({ onBack, onNavigate, onGoHome }) {
               onClick={() => onNavigate("edit-account")}
               className="w-full flex items-center justify-between py-4 bg-muted/20 rounded-2xl hover:bg-muted/30 transition-all duration-300"
             >
-              <div className="flex items-center space-x-6">
-                <Edit className="w-4 h-4 text-primary" />
+              <div className="flex items-center space-x-4">
+                <div className="p-2 bg-primary/10 rounded-xl">
+                  <Edit className="w-5 h-5 text-primary" />
+                </div>
                 <span className="text-card-foreground">Edit Account Info</span>
               </div>
               <ChevronRight className="w-4 h-4 text-muted-foreground" />
@@ -72,13 +85,29 @@ export function AccountSettingsPage({ onBack, onNavigate, onGoHome }) {
               onClick={() => onNavigate("change-password")}
               className="w-full flex items-center justify-between py-4 bg-muted/20 rounded-2xl hover:bg-muted/30 transition-all duration-300"
             >
-              <div className="flex items-center space-x-6">
-                <Lock className="w-4 h-4 text-primary" />
+              <div className="flex items-center space-x-4">
+                <div className="p-2 bg-primary/10 rounded-xl">
+                  <Lock className="w-5 h-5 text-primary" />
+                </div>
                 <span className="text-card-foreground">Change Password</span>
               </div>
               <ChevronRight className="w-4 h-4 text-muted-foreground" />
             </button>
           </div>
+        </div>
+
+        {/* Sign Out Section */}
+        <div className="bg-card/50 backdrop-blur-sm rounded-3xl p-6 shadow-xl border border-border/50">
+          <Button
+            onClick={logout}
+            width="full"
+            size="lg"
+            variant="link"
+            className="w-full"
+          >
+            <LogOut className="w-4 h-4 mr-2" />
+            Sign Out My Account
+          </Button>
         </div>
 
         {/* Back to Home Button */}

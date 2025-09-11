@@ -13,14 +13,21 @@ import { Popup } from "../../../ui/popup";
 import { useApp } from "../../../../contexts/AppContext";
 
 export function StormReadyModePage({ onBack, onGoHome }) {
-  const { batteryState } = useApp();
+  const { batteryState, stormReadyMode, setStormReadyMode } = useApp();
   const [showOfflineModal, setShowOfflineModal] = useState(false);
   const [hasShownOfflineModal, setHasShownOfflineModal] = useState(false);
 
-  // Form state
+  // Form state - sync with context
   const [settings, setSettings] = useState({
-    enabled: false,
+    enabled: stormReadyMode.enabled,
   });
+
+  // Sync settings with context when context changes
+  useEffect(() => {
+    setSettings({
+      enabled: stormReadyMode.enabled,
+    });
+  }, [stormReadyMode.enabled]);
 
   // Show offline modal when battery is offline
   useEffect(() => {
@@ -43,12 +50,36 @@ export function StormReadyModePage({ onBack, onGoHome }) {
   const handleSave = () => {
     if (isDisabled) return;
 
+    // Update context state
+    setStormReadyMode((prev) => ({
+      ...prev,
+      enabled: settings.enabled,
+      isMonitoring: settings.enabled, // Start monitoring when enabled
+    }));
+
     const stormReadyData = {
       enabled: settings.enabled,
     };
     console.log("StormReady Mode saved:", stormReadyData);
     // Here you would typically save to your backend/state management
     onBack();
+  };
+
+  // Handle switch change
+  const handleSwitchChange = (checked) => {
+    if (!isDisabled) {
+      setSettings({ ...settings, enabled: checked });
+    }
+  };
+
+  // Debug function to simulate storm active mode
+  const handleDebugStormActive = () => {
+    setStormReadyMode((prev) => ({
+      ...prev,
+      isActive: !prev.isActive,
+      stormDetected: !prev.isActive,
+      manuallyTriggered: !prev.isActive, // Mark as manually triggered for debug
+    }));
   };
 
   return (
@@ -105,9 +136,7 @@ export function StormReadyModePage({ onBack, onGoHome }) {
             </div>
             <Switch
               checked={settings.enabled}
-              onCheckedChange={(checked) =>
-                !isDisabled && setSettings({ ...settings, enabled: checked })
-              }
+              onCheckedChange={handleSwitchChange}
               disabled={isDisabled}
               className={isDisabled ? "opacity-50" : ""}
             />
@@ -122,40 +151,64 @@ export function StormReadyModePage({ onBack, onGoHome }) {
           </h3>
           <div
             className={`p-4 rounded-2xl ${
-              settings.enabled
-                ? "bg-amber-500/10 border border-amber-500/20"
-                : "bg-muted/20"
+              !settings.enabled
+                ? "bg-muted/20"
+                : stormReadyMode.isActive
+                ? "bg-yellow-500/10 border border-yellow-500/20"
+                : "bg-green-500/10 border border-green-500/20"
             }`}
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <div
                   className={`w-3 h-3 rounded-full ${
-                    settings.enabled ? "bg-amber-500" : "bg-muted-foreground"
+                    !settings.enabled
+                      ? "bg-muted-foreground"
+                      : stormReadyMode.isActive
+                      ? "bg-yellow-500"
+                      : "bg-green-500"
                   }`}
                 ></div>
                 <span
                   className={`font-medium ${
-                    settings.enabled
-                      ? "text-amber-600"
-                      : "text-muted-foreground"
+                    !settings.enabled
+                      ? "text-muted-foreground"
+                      : stormReadyMode.isActive
+                      ? "text-yellow-600"
+                      : "text-green-600"
                   }`}
                 >
-                  {settings.enabled
-                    ? "StormReady Active"
-                    : "StormReady Inactive"}
+                  {!settings.enabled
+                    ? "StormReady Mode: Disabled"
+                    : stormReadyMode.isActive
+                    ? "StormReady Mode: Active"
+                    : "StormReady Mode: Monitoring"}
                 </span>
               </div>
-              {settings.enabled && <Zap className="w-5 h-5 text-amber-500" />}
+              {settings.enabled && (
+                <Zap
+                  className={`w-5 h-5 ${
+                    stormReadyMode.isActive
+                      ? "text-yellow-500"
+                      : "text-green-500"
+                  }`}
+                />
+              )}
             </div>
             <p
               className={`text-sm mt-2 ${
-                settings.enabled ? "text-amber-600/80" : "text-muted-foreground"
+                !settings.enabled
+                  ? "text-muted-foreground"
+                  : stormReadyMode.isActive
+                  ? "text-yellow-600/80"
+                  : "text-green-600/80"
               }`}
             >
-              {settings.enabled
-                ? "Your battery is prepared for severe weather conditions"
-                : "StormReady mode is currently disabled"}
+              {!settings.enabled
+                ? "StormReady mode is currently disabled"
+                : stormReadyMode.isActive
+                ? "System is actively charging battery due to storm detection"
+                : "System is monitoring weather conditions for storms"}
             </p>
           </div>
         </div>
@@ -276,6 +329,32 @@ export function StormReadyModePage({ onBack, onGoHome }) {
             </div>
           </div>
         </div>
+
+        {/* Debug Controls (Development) */}
+        {settings.enabled && (
+          <div className="bg-card/50 backdrop-blur-sm rounded-3xl p-6 shadow border border-border/50">
+            <h3 className="text-lg text-card-foreground font-semibold mb-4">
+              Debug Controls (Development)
+            </h3>
+            <div className="space-y-3">
+              <button
+                onClick={handleDebugStormActive}
+                className={`py-2 px-4 rounded-xl transition-colors text-sm ${
+                  stormReadyMode.isActive
+                    ? "bg-green-500/10 border border-green-500/20 text-green-600 hover:bg-green-500/20"
+                    : "bg-yellow-500/10 border border-yellow-500/20 text-yellow-600 hover:bg-yellow-500/20"
+                }`}
+              >
+                {stormReadyMode.isActive
+                  ? "Stop Storm Active Mode"
+                  : "Simulate Storm Active Mode"}
+              </button>
+              <p className="text-xs text-muted-foreground">
+                This button simulates storm detection for testing purposes
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Action Buttons */}
         <div className="space-y-3">

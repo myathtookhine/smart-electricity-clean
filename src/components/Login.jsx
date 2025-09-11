@@ -1,23 +1,32 @@
 import React, { useState } from 'react';
-import { Zap, LockKeyhole, User, Moon, Sun } from 'lucide-react';
-import { useApp } from '../contexts/AppContext';
-import { useTheme } from './ThemeProvider';
-import { Input } from './ui/input';
-import { PasswordInput } from './ui/password-input';
-import { Button } from './ui/button';
-import { Field } from './ui/field';
+import { Zap, Moon, Sun, Globe } from "lucide-react";
+import { useApp } from "../contexts/AppContext";
+import { useTheme } from "./ThemeProvider";
+import { Input } from "./ui/input";
+import { PasswordInput } from "./ui/password-input";
+import { Button } from "./ui/button";
+import { Field } from "./ui/field";
 import { ForgotPassword } from "./ForgotPassword";
+import { RegisterUser } from "./RegisterUser";
+import { LanguageChangeModal } from "./LanguageChangeModal";
+import duracellLogo from "../assets/duracell-logo.png";
 
 export function Login() {
+  const [userType, setUserType] = useState("monitoring"); // "monitoring" or "service"
+  const [currentView, setCurrentView] = useState("login"); // "login", "register", "forgot-password"
+
+  // Login form states
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [showLanguageModal, setShowLanguageModal] = useState(false);
+  const [currentLanguage, setCurrentLanguage] = useState("en");
   const { login } = useApp();
   const { theme, setTheme } = useTheme();
 
-  const handleSubmit = async (e) => {
+  const handleLoginSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setIsLoading(true);
@@ -33,22 +42,46 @@ export function Login() {
   };
 
   const handleForgotPassword = () => {
-    setShowForgotPassword(true);
+    setCurrentView("forgot-password");
+  };
+
+  const handleRegisterUser = () => {
+    setCurrentView("register");
   };
 
   const handleBackToLogin = () => {
-    setShowForgotPassword(false);
+    setCurrentView("login");
+  };
+
+  const handleLanguageChange = (languageCode) => {
+    setCurrentLanguage(languageCode);
+    console.log("Language changed to:", languageCode);
+    // Here you would typically update your i18n context or global language state
   };
 
   // Show Forgot Password screen if requested
-  if (showForgotPassword) {
+  if (currentView === "forgot-password") {
     return <ForgotPassword onBack={handleBackToLogin} />;
+  }
+
+  // Show Register screen if requested
+  if (currentView === "register") {
+    return <RegisterUser userType={userType} onBack={handleBackToLogin} />;
   }
 
   return (
     <div className="h-full bg-background flex flex-col items-center justify-center p-6 relative overflow-hidden">
-      {/* Light/Dark Mode Toggle - Top Right */}
-      <div className="absolute top-12 right-6 z-50">
+      {/* Top Right Controls */}
+      <div className="absolute top-12 right-6 z-50 flex items-center space-x-3">
+        {/* Language Toggle */}
+        <button
+          onClick={() => setShowLanguageModal(true)}
+          className="p-2 rounded-xl bg-muted/20 hover:bg-muted/30 transition-all duration-300"
+        >
+          <Globe className="w-5 h-5 text-foreground" />
+        </button>
+
+        {/* Light/Dark Mode Toggle */}
         <button
           onClick={() => setTheme(theme === "light" ? "dark" : "light")}
           className="p-2 rounded-xl bg-muted/20 hover:bg-muted/30 transition-all duration-300"
@@ -71,20 +104,45 @@ export function Login() {
       {/* Main Content */}
       <div className="w-full max-w-sm space-y-6">
         {/* Logo */}
-        <div className="text-center mb-24">
-          <div className="w-16 h-16 bg-gradient-to-br from-primary to-primary/80 rounded-3xl flex items-center justify-center shadow-2xl mx-auto mb-4">
+        <div className="text-center mb-8">
+          {/* <div className="w-16 h-16 bg-gradient-to-br from-primary to-primary/80 rounded-3xl flex items-center justify-center shadow-2xl mx-auto mb-4">
             <Zap className="w-8 h-8 text-white" strokeWidth={1.5} />
+          </div> */}
+          <div className="text-center">
+            <img
+              src={duracellLogo}
+              alt="DURACELL ENERGY"
+              className="h-12 mx-auto mb-4 brightness-0 invert dark:brightness-100 dark:invert-0"
+            />
           </div>
-          <h1 className="text-2xl font-bold text-foreground mb-2">
-            Welcome Back
-          </h1>
-          <p className="text-muted-foreground">
-            Sign in to continue to Dura App
-          </p>
+        </div>
+
+        {/* User Type Tabs */}
+        <div className="flex bg-muted/30 rounded-full p-1.5 mb-6 border border-muted/40 space-x-2">
+          <button
+            onClick={() => setUserType("monitoring")}
+            className={`flex-1 py-3 px-4 rounded-full text-sm font-medium transition-all duration-300 ${
+              userType === "monitoring"
+                ? "bg-primary text-background font-semibold shadow-lg shadow-primary/25"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted/20 bg-background/50 border border-muted/30"
+            }`}
+          >
+            Monitoring
+          </button>
+          <button
+            onClick={() => setUserType("service")}
+            className={`flex-1 py-3 px-4 rounded-full text-sm font-medium transition-all duration-300 ${
+              userType === "service"
+                ? "bg-primary text-background font-semibold shadow-lg shadow-primary/25"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted/20 bg-background/50 border border-muted/30"
+            }`}
+          >
+            Service
+          </button>
         </div>
 
         {/* Login Form */}
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleLoginSubmit} className="space-y-6">
           {/* Username Field */}
           <Field label="Username">
             <Input
@@ -128,25 +186,31 @@ export function Login() {
               Forgot password?
             </Button>
           </div>
-        </form>
 
-        {/* Register Section */}
-        <div className="text-center space-y-3">
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-border"></div>
+          {/* Register New User Button */}
+          <div className="text-center space-y-3">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-border"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-4 bg-background text-muted-foreground">
+                  Don't have an account?
+                </span>
+              </div>
             </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-background text-muted-foreground">
-                Don't have an account?
-              </span>
-            </div>
+
+            <Button
+              type="button"
+              variant="secondary"
+              width="full"
+              size="lg"
+              onClick={handleRegisterUser}
+            >
+              Register New User
+            </Button>
           </div>
-
-          <Button type="button" variant="secondary" width="full" size="lg">
-            Create Account
-          </Button>
-        </div>
+        </form>
 
         {/* Copyright */}
         <div className="text-center pt-4">
@@ -155,6 +219,14 @@ export function Login() {
           </p>
         </div>
       </div>
+
+      {/* Language Change Modal */}
+      <LanguageChangeModal
+        isOpen={showLanguageModal}
+        onClose={() => setShowLanguageModal(false)}
+        currentLanguage={currentLanguage}
+        onLanguageChange={handleLanguageChange}
+      />
     </div>
   );
 }

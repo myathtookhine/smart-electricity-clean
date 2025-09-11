@@ -12,9 +12,11 @@ import {
   Rocket,
   Moon,
   Sun,
+  Globe,
 } from "lucide-react";
 import { useApp } from "../contexts/AppContext";
 import { useTheme } from "./ThemeProvider";
+import { LanguageChangeModal } from "./LanguageChangeModal";
 import logo from "../assets/duracell-logo.png";
 import wz1 from "../assets/iso-0-welcome.png";
 import wz2 from "../assets/iso-1-live.png";
@@ -93,7 +95,8 @@ const wizardSteps = [
 export function AppWizard() {
   const [currentStep, setCurrentStep] = useState(0);
   const [direction, setDirection] = useState("forward");
-  const { completeWizard } = useApp();
+  const [isLanguageModalOpen, setIsLanguageModalOpen] = useState(false);
+  const { completeWizard, currentLanguage, changeLanguage } = useApp();
   const { theme, setTheme } = useTheme();
 
   const handleNext = () => {
@@ -121,6 +124,11 @@ export function AppWizard() {
     completeWizard();
   };
 
+  const handleLanguageChange = (languageCode) => {
+    changeLanguage(languageCode);
+    setIsLanguageModalOpen(false);
+  };
+
   const currentWizardStep = wizardSteps[currentStep];
   const Icon = currentWizardStep.icon;
   const isLastStep = currentStep === wizardSteps.length - 1;
@@ -129,18 +137,6 @@ export function AppWizard() {
     <div className="h-full bg-background flex flex-col items-center justify-center p-6 relative overflow-hidden">
       <div className="absolute top-16 w-full px-6 z-50">
         <div className="flex justify-between items-start">
-          {/* Step Counter */}
-          <div className="text-muted-foreground text-sm">
-            {currentStep + 1} / {wizardSteps.length}
-          </div>
-          {/* Logo - display on all steps */}
-          <div className="mb-4">
-            <img
-              src={logo}
-              alt="Duracell Logo"
-              className="w-32 h-auto object-contain"
-            />
-          </div>
           {/* Light/Dark Mode Toggle */}
           <button
             onClick={() => setTheme(theme === "light" ? "dark" : "light")}
@@ -152,6 +148,21 @@ export function AppWizard() {
               <Moon className="w-5 h-5 text-slate-600" />
             )}
           </button>
+          {/* Logo - display on all steps */}
+          <div className="mb-4">
+            <img
+              src={logo}
+              alt="Duracell Logo"
+              className="w-32 h-auto object-contain"
+            />
+          </div>
+          {/* Language Selection */}
+          <button
+            onClick={() => setIsLanguageModalOpen(true)}
+            className="p-2 rounded-xl bg-muted/20 hover:bg-muted/30 transition-all duration-300"
+          >
+            <Globe className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+          </button>{" "}
         </div>
       </div>
 
@@ -217,7 +228,7 @@ export function AppWizard() {
         {/* Primary Action Button */}
         <button
           onClick={isLastStep ? handleGetStarted : handleNext}
-          className="w-full bg-primary text-white font-semibold py-4 px-6 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center space-x-2"
+          className="w-full bg-primary text-background font-semibold py-4 px-6 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center space-x-2"
         >
           {isLastStep ? (
             <>
@@ -259,6 +270,14 @@ export function AppWizard() {
           )}
         </div>
       </div>
+
+      {/* Language Change Modal */}
+      <LanguageChangeModal
+        isOpen={isLanguageModalOpen}
+        onClose={() => setIsLanguageModalOpen(false)}
+        currentLanguage={currentLanguage}
+        onLanguageChange={handleLanguageChange}
+      />
     </div>
   );
 }

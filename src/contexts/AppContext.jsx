@@ -14,6 +14,7 @@ export const AppProvider = ({ children }) => {
   const [isFirstTime, setIsFirstTime] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
+  const [currentLanguage, setCurrentLanguage] = useState("en");
 
   // Battery state management
   const [batteryState, setBatteryState] = useState({
@@ -21,10 +22,20 @@ export const AppProvider = ({ children }) => {
     isOnline: true, // true, false - only relevant if configured
   });
 
+  // Storm Ready Mode state management
+  const [stormReadyMode, setStormReadyMode] = useState({
+    enabled: false, // User has enabled the feature
+    isMonitoring: false, // System is monitoring weather for storms
+    isActive: false, // System is actively charging due to storm
+    stormDetected: false, // Weather API detected storm conditions
+    manuallyTriggered: false, // Debug mode or manually triggered
+  });
+
   useEffect(() => {
     // Check if user has completed wizard before
     const hasCompletedWizard = localStorage.getItem("hasCompletedWizard");
     const savedUser = localStorage.getItem("currentUser");
+    const savedLanguage = localStorage.getItem("currentLanguage");
 
     if (hasCompletedWizard) {
       setIsFirstTime(false);
@@ -33,6 +44,10 @@ export const AppProvider = ({ children }) => {
     if (savedUser) {
       setUser(JSON.parse(savedUser));
       setIsAuthenticated(true);
+    }
+
+    if (savedLanguage) {
+      setCurrentLanguage(savedLanguage);
     }
   }, []);
 
@@ -59,6 +74,58 @@ export const AppProvider = ({ children }) => {
     localStorage.removeItem("currentUser");
   };
 
+  const changeLanguage = (languageCode) => {
+    setCurrentLanguage(languageCode);
+    localStorage.setItem("currentLanguage", languageCode);
+  };
+
+  // Storm detection function - checks weather conditions
+  const checkForStormConditions = (weatherData) => {
+    if (!weatherData || !stormReadyMode.enabled) return;
+
+    // Check for storm-related weather conditions
+    const stormConditions = [
+      "thunderstorm",
+      "heavy rain",
+      "severe",
+      "storm",
+      "tornado",
+      "hurricane",
+      "hail",
+    ];
+
+    const currentWeather =
+      weatherData.weather?.[0]?.description?.toLowerCase() || "";
+    const mainWeather = weatherData.weather?.[0]?.main?.toLowerCase() || "";
+
+    // Check if any storm condition exists
+    const isStormDetected = stormConditions.some(
+      (condition) =>
+        currentWeather.includes(condition) ||
+        mainWeather.includes("thunderstorm")
+    );
+
+    // Update storm ready mode if storm detected
+    if (isStormDetected && !stormReadyMode.isActive) {
+      setStormReadyMode((prev) => ({
+        ...prev,
+        stormDetected: true,
+        isActive: true,
+      }));
+    } else if (
+      !isStormDetected &&
+      stormReadyMode.isActive &&
+      !stormReadyMode.manuallyTriggered
+    ) {
+      // Reset if no storm and wasn't manually triggered
+      setStormReadyMode((prev) => ({
+        ...prev,
+        stormDetected: false,
+        isActive: false,
+      }));
+    }
+  };
+
   const value = {
     isFirstTime,
     isAuthenticated,
@@ -68,6 +135,11 @@ export const AppProvider = ({ children }) => {
     logout,
     batteryState,
     setBatteryState,
+    stormReadyMode,
+    setStormReadyMode,
+    checkForStormConditions,
+    currentLanguage,
+    changeLanguage,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

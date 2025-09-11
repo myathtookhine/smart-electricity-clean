@@ -1,6 +1,7 @@
-import React from 'react';
-import { useWeather } from '../../../hooks/useWeather';
-import { getWeatherIcon } from '../../../utils/weatherIcons';
+import React, { useEffect } from "react";
+import { useWeather } from "../../../hooks/useWeather";
+import { useApp } from "../../../contexts/AppContext";
+import { getWeatherIcon } from "../../../utils/weatherIcons";
 import {
   MapPin,
   Thermometer,
@@ -10,6 +11,14 @@ import {
 
 const WeatherTab = ({ lat, lon, className = "", onClick, onWeatherClick }) => {
   const { weather, loading, error } = useWeather(lat, lon);
+  const { checkForStormConditions } = useApp();
+
+  // Monitor weather for storm conditions when weather data updates
+  useEffect(() => {
+    if (weather && !loading && !error) {
+      checkForStormConditions(weather);
+    }
+  }, [weather, loading, error, checkForStormConditions]);
 
   if (loading) {
     return (

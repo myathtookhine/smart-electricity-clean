@@ -15,11 +15,13 @@ import { useState, useEffect } from "react";
 import WeatherTab from "./weather/WeatherTab";
 import LocationPermissionModal from "../LocationPermissionModal";
 import { useLocation } from "../../hooks/useLocation";
+import { useApp } from "../../contexts/AppContext";
 import exampleImage from "../../assets/iso-home.png";
 import logo from "../../assets/duracell-logo.png";
 
 export function HomePage({ onPageChange }) {
   const { theme, setTheme } = useTheme();
+  const { stormReadyMode } = useApp();
   const [isAnimationEnabled, setIsAnimationEnabled] = useState(true);
   const [showLocationModal, setShowLocationModal] = useState(false);
   const {
@@ -30,6 +32,38 @@ export function HomePage({ onPageChange }) {
     requestLocation,
   } = useLocation();
   const notificationCount = 3; // Example notification count
+
+  // Determine storm ready alert properties based on current state
+  const getStormReadyAlert = () => {
+    if (!stormReadyMode.enabled) {
+      return {
+        type: "neutral",
+        title: "StormReady Mode: Disabled",
+        message: "Storm-ready mode is currently disabled.",
+        customIcon: Zap,
+        showIcon: true,
+        showMessage: true,
+      };
+    } else if (stormReadyMode.isActive) {
+      return {
+        type: "warning",
+        title: "StormReady Mode: Active",
+        message: "System is actively charging battery due to storm detection!",
+        customIcon: Zap,
+        showIcon: true,
+        showMessage: true,
+      };
+    } else {
+      return {
+        type: "success",
+        title: "StormReady Mode: Monitoring",
+        message: "Storm-ready mode is on and monitoring for a storm!",
+        customIcon: Zap,
+        showIcon: true,
+        showMessage: true,
+      };
+    }
+  };
 
   // Show location modal on initial load if permission not granted
   useEffect(() => {
@@ -90,7 +124,10 @@ export function HomePage({ onPageChange }) {
 
           {/* Right: Notifications */}
           <div className="flex items-center relative">
-            <button className="p-2 hover:bg-accent rounded-lg transition-colors">
+            <button
+              onClick={() => onPageChange && onPageChange("notifications")}
+              className="p-2 hover:bg-accent rounded-lg transition-colors"
+            >
               <Bell className="w-5 h-5 text-foreground" />
               {notificationCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
@@ -226,16 +263,9 @@ export function HomePage({ onPageChange }) {
         </div>
       </div>
 
-      {/* Strom-ready Mode Alert */}
+      {/* Storm Ready Mode Alert */}
       <div className="px-6 mb-6">
-        <Alert
-          type="success"
-          title="Strom-ready Mode : Monitoring"
-          message="Storm-ready mode is on and monitoring for a storm!"
-          customIcon={Zap}
-          showIcon={true}
-          showMessage={true}
-        />
+        <Alert {...getStormReadyAlert()} />
       </div>
 
       {/* Location Permission Modal */}

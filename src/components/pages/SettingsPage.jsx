@@ -13,9 +13,11 @@ import {
   Battery,
   ChevronLeft,
   ChevronRight,
+  DollarSign,
 } from "lucide-react";
 import { useTheme } from "../ThemeProvider";
 import { Switch } from "../ui/switch";
+import { Button } from "../ui/button";
 import { useApp } from "../../contexts/AppContext";
 import { useState, useEffect } from "react";
 import logo from "../../assets/duracell-logo.png";
@@ -26,6 +28,7 @@ import {
   AccountSettingsPage,
   EditAccountPage,
   ChangePasswordPage,
+  CostSummaryPage,
   AdditionalSupportPage,
   UserGuidesPage,
   FAQsPage,
@@ -36,7 +39,7 @@ export function SettingsPage({ onSubPageChange, onPageChange }) {
   const { theme, setTheme } = useTheme();
   const { user, logout, batteryState } = useApp();
   const notificationCount = 3; // Example notification count
-  const [currentView, setCurrentView] = useState("main"); // 'main', 'system-info', 'battery', 'ev-control', 'account-settings', 'edit-account', 'change-password', 'additional-support', 'user-guides', 'faqs', 'help-support'
+  const [currentView, setCurrentView] = useState("main"); // 'main', 'system-info', 'battery', 'ev-control', 'account-settings', 'edit-account', 'change-password', 'cost-summary', 'additional-support', 'user-guides', 'faqs', 'help-support'
   const [navigationStack, setNavigationStack] = useState(["main"]);
 
   // Notify parent about sub-page state
@@ -109,7 +112,10 @@ export function SettingsPage({ onSubPageChange, onPageChange }) {
 
           {/* Right: Notifications */}
           <div className="flex items-center relative">
-            <button className="p-2 hover:bg-accent rounded-lg transition-colors">
+            <button
+              onClick={() => onPageChange && onPageChange("notifications")}
+              className="p-2 hover:bg-accent rounded-lg transition-colors"
+            >
               <Bell className="w-5 h-5 text-foreground" />
               {notificationCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
@@ -121,6 +127,9 @@ export function SettingsPage({ onSubPageChange, onPageChange }) {
         </div>
       </div>
       <div className="px-6 space-y-6 pb-8">
+        <div className="mb-2 px-2">
+          <h4 className="text-xl text-foreground text-left mb-3">Settings</h4>
+        </div>
         {/* Main Settings Menu */}
         <div className="space-y-6">
           {/* My Account Section */}
@@ -135,12 +144,30 @@ export function SettingsPage({ onSubPageChange, onPageChange }) {
                   onClick={() => handleNavigate("account-settings")}
                   className="w-full flex items-center justify-between hover:bg-muted/10 rounded-2xl p-2 -m-2 transition-all duration-300"
                 >
-                  <div className="flex items-center space-x-3">
-                    <div className="p-2 bg-primary/10 rounded-xl">
+                  <div className="flex items-center space-x-4">
+                    <div className="p-2 bg-muted rounded-full">
                       <User className="w-5 h-5 text-primary" />
                     </div>
-                    <span className="text-xl text-card-foreground font-semibold">
+                    <span className="text-xl text-card-foreground ">
                       Account Settings
+                    </span>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                </button>
+              </div>
+
+              {/* Cost Summary */}
+              <div className="bg-card/50 backdrop-blur-sm rounded-3xl p-6 shadow border border-border/50">
+                <button
+                  onClick={() => handleNavigate("cost-summary")}
+                  className="w-full flex items-center justify-between hover:bg-muted/10 rounded-2xl p-2 -m-2 transition-all duration-300"
+                >
+                  <div className="flex items-center space-x-4">
+                    <div className="p-2 bg-muted rounded-full">
+                      <DollarSign className="w-5 h-5 text-primary" />
+                    </div>
+                    <span className="text-xl text-card-foreground ">
+                      Cost Summary
                     </span>
                   </div>
                   <ChevronRight className="w-5 h-5 text-muted-foreground" />
@@ -161,11 +188,11 @@ export function SettingsPage({ onSubPageChange, onPageChange }) {
                   onClick={() => handleNavigate("ev-control")}
                   className="w-full flex items-center justify-between hover:bg-muted/10 rounded-2xl p-2 -m-2 transition-all duration-300"
                 >
-                  <div className="flex items-center space-x-3">
-                    <div className="p-2 bg-primary/10 rounded-xl">
+                  <div className="flex items-center space-x-4">
+                    <div className="p-2 bg-muted rounded-full">
                       <Car className="w-5 h-5 text-primary" />
                     </div>
-                    <span className="text-xl text-card-foreground font-semibold">
+                    <span className="text-xl text-card-foreground ">
                       EV Control
                     </span>
                   </div>
@@ -184,9 +211,9 @@ export function SettingsPage({ onSubPageChange, onPageChange }) {
                       : "opacity-50 cursor-not-allowed"
                   }`}
                 >
-                  <div className="flex items-center space-x-3">
+                  <div className="flex items-center space-x-4">
                     <div
-                      className={`p-2 rounded-xl ${
+                      className={`p-2 bg-muted rounded-full ${
                         batteryState.isConfigured
                           ? "bg-primary/10"
                           : "bg-muted/20"
@@ -202,7 +229,7 @@ export function SettingsPage({ onSubPageChange, onPageChange }) {
                     </div>
                     <div>
                       <span
-                        className={`text-xl font-semibold block text-left ${
+                        className={`text-xl  block text-left ${
                           batteryState.isConfigured
                             ? "text-card-foreground"
                             : "text-muted-foreground"
@@ -229,11 +256,11 @@ export function SettingsPage({ onSubPageChange, onPageChange }) {
                   onClick={() => handleNavigate("system-info")}
                   className="w-full flex items-center justify-between hover:bg-muted/10 rounded-2xl p-2 -m-2 transition-all duration-300"
                 >
-                  <div className="flex items-center space-x-3">
-                    <div className="p-2 bg-primary/10 rounded-xl">
+                  <div className="flex items-center space-x-4">
+                    <div className="p-2 bg-muted rounded-full">
                       <Info className="w-5 h-5 text-primary" />
                     </div>
-                    <span className="text-xl text-card-foreground font-semibold">
+                    <span className="text-xl text-card-foreground ">
                       System Information
                     </span>
                   </div>
@@ -255,11 +282,11 @@ export function SettingsPage({ onSubPageChange, onPageChange }) {
                   onClick={handleWeatherNavigation}
                   className="w-full flex items-center justify-between hover:bg-muted/10 rounded-2xl p-2 -m-2 transition-all duration-300"
                 >
-                  <div className="flex items-center space-x-3">
-                    <div className="p-2 bg-primary/10 rounded-xl">
+                  <div className="flex items-center space-x-4">
+                    <div className="p-2 bg-muted rounded-full">
                       <Cloud className="w-5 h-5 text-primary" />
                     </div>
-                    <span className="text-xl text-card-foreground font-semibold">
+                    <span className="text-xl text-card-foreground ">
                       Weather Info Details
                     </span>
                   </div>
@@ -281,11 +308,11 @@ export function SettingsPage({ onSubPageChange, onPageChange }) {
                   onClick={() => handleNavigate("additional-support")}
                   className="w-full flex items-center justify-between hover:bg-muted/10 rounded-2xl p-2 -m-2 transition-all duration-300"
                 >
-                  <div className="flex items-center space-x-3">
-                    <div className="p-2 bg-primary/10 rounded-xl">
+                  <div className="flex items-center space-x-4">
+                    <div className="p-2 bg-muted rounded-full">
                       <HelpCircle className="w-5 h-5 text-primary" />
                     </div>
-                    <span className="text-xl text-card-foreground font-semibold">
+                    <span className="text-xl text-card-foreground ">
                       Additional Support
                     </span>
                   </div>
@@ -304,18 +331,18 @@ export function SettingsPage({ onSubPageChange, onPageChange }) {
               {/* Dark Mode Toggle */}
               <div className="bg-card/50 backdrop-blur-sm rounded-3xl p-6 shadow border border-border/50">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
+                  <div className="flex items-center space-x-4">
                     {theme === "dark" ? (
-                      <div className="p-2 bg-primary/10 rounded-xl">
+                      <div className="p-2 bg-muted rounded-full">
                         <Moon className="w-5 h-5 text-primary" />
                       </div>
                     ) : (
-                      <div className="p-2 bg-primary/10 rounded-xl">
+                      <div className="p-2 bg-muted rounded-full">
                         <Sun className="w-5 h-5 text-primary" />
                       </div>
                     )}
                     <div>
-                      <div className="text-xl text-card-foreground font-semibold">
+                      <div className="text-xl text-card-foreground ">
                         Dark Mode
                       </div>
                       <div className="text-sm text-muted-foreground">
@@ -334,14 +361,6 @@ export function SettingsPage({ onSubPageChange, onPageChange }) {
             </div>
           </div>
         </div>
-
-        {/* Logout Button */}
-        <button
-          onClick={logout}
-          className="w-full bg-gradient-to-r from-red-500/20 to-red-500/10 border border-red-500/30 rounded-2xl p-4 text-red-400 font-semibold hover:from-red-500/30 hover:to-red-500/20 transition-all duration-300"
-        >
-          Sign Out
-        </button>
       </div>
     </>
   );
@@ -370,6 +389,9 @@ export function SettingsPage({ onSubPageChange, onPageChange }) {
       )}
       {currentView === "change-password" && (
         <ChangePasswordPage onBack={navigateBack} onGoHome={handleGoHome} />
+      )}
+      {currentView === "cost-summary" && (
+        <CostSummaryPage onBack={navigateBack} onGoHome={handleGoHome} />
       )}
       {currentView === "additional-support" && (
         <AdditionalSupportPage

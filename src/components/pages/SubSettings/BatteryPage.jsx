@@ -127,14 +127,20 @@ export function BatteryPage({ onBack, onGoHome }) {
                   : "opacity-50 cursor-not-allowed"
               }`}
             >
-              <div className="flex items-center space-x-6">
-                <Battery
-                  className={`w-4 h-4 ${
-                    batteryState.isConfigured
-                      ? "text-primary"
-                      : "text-muted-foreground"
+              <div className="flex items-center space-x-4">
+                <div
+                  className={`p-2 rounded-xl ${
+                    batteryState.isConfigured ? "bg-primary/10" : "bg-muted/20"
                   }`}
-                />
+                >
+                  <Battery
+                    className={`w-5 h-5 ${
+                      batteryState.isConfigured
+                        ? "text-primary"
+                        : "text-muted-foreground"
+                    }`}
+                  />
+                </div>
                 <span
                   className={`${
                     batteryState.isConfigured
@@ -158,14 +164,20 @@ export function BatteryPage({ onBack, onGoHome }) {
                   : "opacity-50 cursor-not-allowed"
               }`}
             >
-              <div className="flex items-center space-x-6">
-                <Shield
-                  className={`w-4 h-4 ${
-                    batteryState.isConfigured
-                      ? "text-primary"
-                      : "text-muted-foreground"
+              <div className="flex items-center space-x-4">
+                <div
+                  className={`p-2 rounded-xl ${
+                    batteryState.isConfigured ? "bg-primary/10" : "bg-muted/20"
                   }`}
-                />
+                >
+                  <Shield
+                    className={`w-5 h-5 ${
+                      batteryState.isConfigured
+                        ? "text-primary"
+                        : "text-muted-foreground"
+                    }`}
+                  />
+                </div>
                 <span
                   className={`${
                     batteryState.isConfigured
@@ -189,14 +201,20 @@ export function BatteryPage({ onBack, onGoHome }) {
                   : "opacity-50 cursor-not-allowed"
               }`}
             >
-              <div className="flex items-center space-x-6">
-                <Cloud
-                  className={`w-4 h-4 ${
-                    batteryState.isConfigured
-                      ? "text-primary"
-                      : "text-muted-foreground"
+              <div className="flex items-center space-x-4">
+                <div
+                  className={`p-2 rounded-xl ${
+                    batteryState.isConfigured ? "bg-primary/10" : "bg-muted/20"
                   }`}
-                />
+                >
+                  <Cloud
+                    className={`w-5 h-5 ${
+                      batteryState.isConfigured
+                        ? "text-primary"
+                        : "text-muted-foreground"
+                    }`}
+                  />
+                </div>
                 <span
                   className={`${
                     batteryState.isConfigured

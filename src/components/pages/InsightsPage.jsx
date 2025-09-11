@@ -131,7 +131,7 @@ const generateSummaryReportData = (timeView) => {
   };
 };
 
-export function InsightsPage() {
+export function InsightsPage({ onPageChange }) {
   const { theme, setTheme } = useTheme();
   const notificationCount = 3; // Example notification count
   const [timeView, setTimeView] = useState("today"); // 'today', '7days', '30days', '1year'
@@ -589,7 +589,10 @@ export function InsightsPage() {
 
           {/* Right: Notifications */}
           <div className="flex items-center relative">
-            <button className="p-2 hover:bg-accent rounded-lg transition-colors">
+            <button
+              onClick={() => onPageChange && onPageChange("notifications")}
+              className="p-2 hover:bg-accent rounded-lg transition-colors"
+            >
               <Bell className="w-5 h-5 text-foreground" />
               {notificationCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
@@ -669,13 +672,19 @@ export function InsightsPage() {
                     <BarChart
                       width={timeView === "today" ? 600 : 450}
                       height={280}
-                      colors={getLineConfig().map((line) =>
-                        line.dataKey === "house"
-                          ? theme === "dark"
-                            ? "#ffffff"
-                            : "#6b7280"
-                          : line.color
-                      )}
+                      colors={getLineConfig().map((line) => {
+                        // Use gradient URLs for different data types
+                        if (line.dataKey === "grid")
+                          return "url(#gridGradient)";
+                        if (line.dataKey === "solar")
+                          return "url(#solarGradient)";
+                        if (line.dataKey === "battery")
+                          return "url(#batteryGradient)";
+                        if (line.dataKey === "ev") return "url(#evGradient)";
+                        if (line.dataKey === "house")
+                          return "url(#houseGradient)";
+                        return line.color;
+                      })}
                       series={getLineConfig().map((line) => ({
                         data: getChartData().map(
                           (item) => item[line.dataKey] || 0
@@ -741,7 +750,101 @@ export function InsightsPage() {
                           color: theme === "dark" ? "#ffffff" : "#000000",
                         },
                       }}
-                    />
+                    >
+                      {/* Define gradients for bar chart */}
+                      <defs>
+                        <linearGradient
+                          id="gridGradient"
+                          x1="0%"
+                          y1="0%"
+                          x2="0%"
+                          y2="100%"
+                        >
+                          <stop
+                            offset="0%"
+                            stopColor="#ef4444"
+                            stopOpacity={0.8}
+                          />
+                          <stop
+                            offset="100%"
+                            stopColor="#dc2626"
+                            stopOpacity={1}
+                          />
+                        </linearGradient>
+                        <linearGradient
+                          id="solarGradient"
+                          x1="0%"
+                          y1="0%"
+                          x2="0%"
+                          y2="100%"
+                        >
+                          <stop
+                            offset="0%"
+                            stopColor="#fbbf24"
+                            stopOpacity={0.8}
+                          />
+                          <stop
+                            offset="100%"
+                            stopColor="#eab308"
+                            stopOpacity={1}
+                          />
+                        </linearGradient>
+                        <linearGradient
+                          id="batteryGradient"
+                          x1="0%"
+                          y1="0%"
+                          x2="0%"
+                          y2="100%"
+                        >
+                          <stop
+                            offset="0%"
+                            stopColor="#60a5fa"
+                            stopOpacity={0.8}
+                          />
+                          <stop
+                            offset="100%"
+                            stopColor="#3b82f6"
+                            stopOpacity={1}
+                          />
+                        </linearGradient>
+                        <linearGradient
+                          id="evGradient"
+                          x1="0%"
+                          y1="0%"
+                          x2="0%"
+                          y2="100%"
+                        >
+                          <stop
+                            offset="0%"
+                            stopColor="#a78bfa"
+                            stopOpacity={0.8}
+                          />
+                          <stop
+                            offset="100%"
+                            stopColor="#8b5cf6"
+                            stopOpacity={1}
+                          />
+                        </linearGradient>
+                        <linearGradient
+                          id="houseGradient"
+                          x1="0%"
+                          y1="0%"
+                          x2="0%"
+                          y2="100%"
+                        >
+                          <stop
+                            offset="0%"
+                            stopColor={theme === "dark" ? "#e5e7eb" : "#9ca3af"}
+                            stopOpacity={0.8}
+                          />
+                          <stop
+                            offset="100%"
+                            stopColor={theme === "dark" ? "#d1d5db" : "#6b7280"}
+                            stopOpacity={1}
+                          />
+                        </linearGradient>
+                      </defs>
+                    </BarChart>
                   </div>
                 </div>
               </div>
@@ -792,13 +895,19 @@ export function InsightsPage() {
                           : 700
                       }
                       height={280}
-                      colors={getLineConfig().map((line) =>
-                        line.dataKey === "house"
-                          ? theme === "dark"
-                            ? "#ffffff"
-                            : "#6b7280"
-                          : line.color
-                      )}
+                      colors={getLineConfig().map((line) => {
+                        // Use gradient URLs for different data types
+                        if (line.dataKey === "grid")
+                          return "url(#gridGradient2)";
+                        if (line.dataKey === "solar")
+                          return "url(#solarGradient2)";
+                        if (line.dataKey === "battery")
+                          return "url(#batteryGradient2)";
+                        if (line.dataKey === "ev") return "url(#evGradient2)";
+                        if (line.dataKey === "house")
+                          return "url(#houseGradient2)";
+                        return line.color;
+                      })}
                       series={getLineConfig().map((line) => ({
                         data: getChartData().map(
                           (item) => item[line.dataKey] || 0
@@ -864,7 +973,101 @@ export function InsightsPage() {
                           color: theme === "dark" ? "#ffffff" : "#000000",
                         },
                       }}
-                    />
+                    >
+                      {/* Define gradients for second bar chart */}
+                      <defs>
+                        <linearGradient
+                          id="gridGradient2"
+                          x1="0%"
+                          y1="0%"
+                          x2="0%"
+                          y2="100%"
+                        >
+                          <stop
+                            offset="0%"
+                            stopColor="#ef4444"
+                            stopOpacity={0.8}
+                          />
+                          <stop
+                            offset="100%"
+                            stopColor="#dc2626"
+                            stopOpacity={1}
+                          />
+                        </linearGradient>
+                        <linearGradient
+                          id="solarGradient2"
+                          x1="0%"
+                          y1="0%"
+                          x2="0%"
+                          y2="100%"
+                        >
+                          <stop
+                            offset="0%"
+                            stopColor="#fbbf24"
+                            stopOpacity={0.8}
+                          />
+                          <stop
+                            offset="100%"
+                            stopColor="#eab308"
+                            stopOpacity={1}
+                          />
+                        </linearGradient>
+                        <linearGradient
+                          id="batteryGradient2"
+                          x1="0%"
+                          y1="0%"
+                          x2="0%"
+                          y2="100%"
+                        >
+                          <stop
+                            offset="0%"
+                            stopColor="#60a5fa"
+                            stopOpacity={0.8}
+                          />
+                          <stop
+                            offset="100%"
+                            stopColor="#3b82f6"
+                            stopOpacity={1}
+                          />
+                        </linearGradient>
+                        <linearGradient
+                          id="evGradient2"
+                          x1="0%"
+                          y1="0%"
+                          x2="0%"
+                          y2="100%"
+                        >
+                          <stop
+                            offset="0%"
+                            stopColor="#a78bfa"
+                            stopOpacity={0.8}
+                          />
+                          <stop
+                            offset="100%"
+                            stopColor="#8b5cf6"
+                            stopOpacity={1}
+                          />
+                        </linearGradient>
+                        <linearGradient
+                          id="houseGradient2"
+                          x1="0%"
+                          y1="0%"
+                          x2="0%"
+                          y2="100%"
+                        >
+                          <stop
+                            offset="0%"
+                            stopColor={theme === "dark" ? "#e5e7eb" : "#9ca3af"}
+                            stopOpacity={0.8}
+                          />
+                          <stop
+                            offset="100%"
+                            stopColor={theme === "dark" ? "#d1d5db" : "#6b7280"}
+                            stopOpacity={1}
+                          />
+                        </linearGradient>
+                      </defs>
+                    </BarChart>
                   </div>
                 </div>
               </div>
@@ -993,12 +1196,12 @@ export function InsightsPage() {
                 width={300}
                 height={200}
                 colors={[
-                  "#ef4444", // Grid Import - Red
-                  "#22c55e", // Grid Export - Green
-                  "#eab308", // Solar Generation - Yellow
-                  theme === "dark" ? "#ffffff" : "#6b7280", // Home Consumption - White/Gray
-                  "#3b82f6", // EV Charging - Blue
-                  "#22c55e", // Battery Charge - Green
+                  "url(#pieGridImportGradient)", // Grid Import - Red gradient
+                  "url(#pieGridExportGradient)", // Grid Export - Green gradient
+                  "url(#pieSolarGradient)", // Solar Generation - Yellow gradient
+                  "url(#pieHomeGradient)", // Home Consumption - Gray gradient
+                  "url(#pieEvGradient)", // EV Charging - Blue gradient
+                  "url(#pieBatteryGradient)", // Battery Charge - Green gradient
                 ]}
                 series={[
                   {
@@ -1007,37 +1210,37 @@ export function InsightsPage() {
                         id: 0,
                         value: parseFloat(summaryReportData.gridImport),
                         label: "Grid Import",
-                        color: "#ef4444",
+                        color: "url(#pieGridImportGradient)",
                       },
                       {
                         id: 1,
                         value: parseFloat(summaryReportData.gridExport),
                         label: "Grid Export",
-                        color: "#22c55e",
+                        color: "url(#pieGridExportGradient)",
                       },
                       {
                         id: 2,
                         value: parseFloat(summaryReportData.solarGeneration),
                         label: "Solar",
-                        color: "#eab308",
+                        color: "url(#pieSolarGradient)",
                       },
                       {
                         id: 3,
                         value: parseFloat(summaryReportData.homeConsumption),
                         label: "Home",
-                        color: theme === "dark" ? "#ffffff" : "#6b7280",
+                        color: "url(#pieHomeGradient)",
                       },
                       {
                         id: 4,
                         value: parseFloat(summaryReportData.evCharging),
                         label: "EV",
-                        color: "#3b82f6",
+                        color: "url(#pieEvGradient)",
                       },
                       {
                         id: 5,
                         value: parseFloat(summaryReportData.batteryCharge),
                         label: "Battery",
-                        color: "#22c55e",
+                        color: "url(#pieBatteryGradient)",
                       },
                     ],
                     innerRadius: 30,
@@ -1060,7 +1263,68 @@ export function InsightsPage() {
                     display: "none",
                   },
                 }}
-              />
+              >
+                {/* Define gradients for pie chart */}
+                <defs>
+                  <radialGradient
+                    id="pieGridImportGradient"
+                    cx="50%"
+                    cy="50%"
+                    r="50%"
+                  >
+                    <stop offset="0%" stopColor="#fca5a5" stopOpacity={0.9} />
+                    <stop offset="100%" stopColor="#ef4444" stopOpacity={1} />
+                  </radialGradient>
+                  <radialGradient
+                    id="pieGridExportGradient"
+                    cx="50%"
+                    cy="50%"
+                    r="50%"
+                  >
+                    <stop offset="0%" stopColor="#86efac" stopOpacity={0.9} />
+                    <stop offset="100%" stopColor="#22c55e" stopOpacity={1} />
+                  </radialGradient>
+                  <radialGradient
+                    id="pieSolarGradient"
+                    cx="50%"
+                    cy="50%"
+                    r="50%"
+                  >
+                    <stop offset="0%" stopColor="#fde047" stopOpacity={0.9} />
+                    <stop offset="100%" stopColor="#eab308" stopOpacity={1} />
+                  </radialGradient>
+                  <radialGradient
+                    id="pieHomeGradient"
+                    cx="50%"
+                    cy="50%"
+                    r="50%"
+                  >
+                    <stop
+                      offset="0%"
+                      stopColor={theme === "dark" ? "#f3f4f6" : "#d1d5db"}
+                      stopOpacity={0.9}
+                    />
+                    <stop
+                      offset="100%"
+                      stopColor={theme === "dark" ? "#e5e7eb" : "#6b7280"}
+                      stopOpacity={1}
+                    />
+                  </radialGradient>
+                  <radialGradient id="pieEvGradient" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stopColor="#93c5fd" stopOpacity={0.9} />
+                    <stop offset="100%" stopColor="#3b82f6" stopOpacity={1} />
+                  </radialGradient>
+                  <radialGradient
+                    id="pieBatteryGradient"
+                    cx="50%"
+                    cy="50%"
+                    r="50%"
+                  >
+                    <stop offset="0%" stopColor="#86efac" stopOpacity={0.9} />
+                    <stop offset="100%" stopColor="#16a34a" stopOpacity={1} />
+                  </radialGradient>
+                </defs>
+              </PieChart>
 
               {/* Custom Legend */}
               <div className="grid grid-cols-2 gap-2 mt-4 w-full max-w-xs">
@@ -1069,37 +1333,51 @@ export function InsightsPage() {
                     label: "Grid Import",
                     color: "#ef4444",
                     value: summaryReportData.gridImport,
+                    gradient:
+                      "linear-gradient(135deg, #fca5a5 0%, #ef4444 100%)",
                   },
                   {
                     label: "Grid Export",
                     color: "#22c55e",
                     value: summaryReportData.gridExport,
+                    gradient:
+                      "linear-gradient(135deg, #86efac 0%, #22c55e 100%)",
                   },
                   {
                     label: "Solar",
                     color: "#eab308",
                     value: summaryReportData.solarGeneration,
+                    gradient:
+                      "linear-gradient(135deg, #fde047 0%, #eab308 100%)",
                   },
                   {
                     label: "Home",
-                    color: theme === "dark" ? "#ffffff" : "#6b7280",
+                    color: theme === "dark" ? "#e5e7eb" : "#6b7280",
                     value: summaryReportData.homeConsumption,
+                    gradient:
+                      theme === "dark"
+                        ? "linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%)"
+                        : "linear-gradient(135deg, #d1d5db 0%, #6b7280 100%)",
                   },
                   {
                     label: "EV",
                     color: "#3b82f6",
                     value: summaryReportData.evCharging,
+                    gradient:
+                      "linear-gradient(135deg, #93c5fd 0%, #3b82f6 100%)",
                   },
                   {
                     label: "Battery",
-                    color: "#22c55e",
+                    color: "#16a34a",
                     value: summaryReportData.batteryCharge,
+                    gradient:
+                      "linear-gradient(135deg, #86efac 0%, #16a34a 100%)",
                   },
                 ].map((item, index) => (
                   <div key={index} className="flex items-center space-x-2">
                     <div
                       className="w-3 h-3 rounded-full flex-shrink-0"
-                      style={{ backgroundColor: item.color }}
+                      style={{ background: item.gradient }}
                     ></div>
                     <div className="flex flex-col min-w-0">
                       <span className="text-xs text-muted-foreground truncate">

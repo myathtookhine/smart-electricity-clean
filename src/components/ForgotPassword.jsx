@@ -1,19 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Mail, CheckCircle } from 'lucide-react';
-import { useTheme } from './ThemeProvider';
-import { Input } from './ui/input';
-import { Button } from './ui/button';
-import { Field } from './ui/field';
-import { Popup } from './ui/popup';
+import { ArrowLeft, Mail, CheckCircle, Moon, Sun, Globe } from "lucide-react";
+import { useTheme } from "./ThemeProvider";
+import { Input } from "./ui/input";
+import { Button } from "./ui/button";
+import { Field } from "./ui/field";
+import { Popup } from "./ui/popup";
+import { LanguageChangeModal } from "./LanguageChangeModal";
 
 export function ForgotPassword({ onBack }) {
-  const [email, setEmail] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [countdown, setCountdown] = useState(0);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-  const { theme } = useTheme();
+  const [showLanguageModal, setShowLanguageModal] = useState(false);
+  const [currentLanguage, setCurrentLanguage] = useState("en");
+  const { theme, setTheme } = useTheme();
 
   // Email validation regex
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -39,21 +42,23 @@ export function ForgotPassword({ onBack }) {
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    return `${mins.toString().padStart(2, "0")}:${secs
+      .toString()
+      .padStart(2, "0")}`;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     // Validate email
     if (!email.trim()) {
-      setError('Email address is required');
+      setError("Email address is required");
       return;
     }
 
     if (!emailRegex.test(email.trim())) {
-      setError('Please enter a valid email address');
+      setError("Please enter a valid email address");
       return;
     }
 
@@ -63,7 +68,7 @@ export function ForgotPassword({ onBack }) {
     setTimeout(() => {
       setIsLoading(false);
       setShowConfirmation(true);
-      
+
       // Start 60-second countdown
       setCountdown(60);
       setIsButtonDisabled(true);
@@ -78,9 +83,38 @@ export function ForgotPassword({ onBack }) {
     setShowConfirmation(false);
   };
 
+  const handleLanguageChange = (languageCode) => {
+    setCurrentLanguage(languageCode);
+    console.log("Language changed to:", languageCode);
+    // Here you would typically update your i18n context or global language state
+  };
+
   return (
     <>
       <div className="h-full bg-background flex flex-col items-center justify-center p-6 relative overflow-hidden">
+        {/* Top Right Controls */}
+        <div className="absolute top-12 right-6 z-50 flex items-center space-x-3">
+          {/* Language Toggle */}
+          <button
+            onClick={() => setShowLanguageModal(true)}
+            className="p-2 rounded-xl bg-muted/20 hover:bg-muted/30 transition-all duration-300"
+          >
+            <Globe className="w-5 h-5 text-foreground" />
+          </button>
+
+          {/* Light/Dark Mode Toggle */}
+          <button
+            onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+            className="p-2 rounded-xl bg-muted/20 hover:bg-muted/30 transition-all duration-300"
+          >
+            {theme === "dark" ? (
+              <Sun className="w-5 h-5 text-yellow-500" />
+            ) : (
+              <Moon className="w-5 h-5 text-slate-600" />
+            )}
+          </button>
+        </div>
+
         {/* Back Button - Top Left */}
         <div className="absolute top-12 left-6 z-50">
           <button
@@ -102,7 +136,8 @@ export function ForgotPassword({ onBack }) {
               Reset Password
             </h1>
             <p className="text-muted-foreground text-center">
-              Enter your email address and we'll send you instructions to reset your password
+              Enter your email address and we'll send you instructions to reset
+              your password
             </p>
           </div>
 
@@ -116,7 +151,7 @@ export function ForgotPassword({ onBack }) {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email address"
                 required
-                className={error ? 'border-red-500 focus:border-red-500' : ''}
+                className={error ? "border-red-500 focus:border-red-500" : ""}
               />
             </Field>
 
@@ -129,12 +164,14 @@ export function ForgotPassword({ onBack }) {
 
             {/* Reset Button */}
             <div className="space-y-2">
-              <Button 
-                type="submit" 
-                disabled={isLoading || isButtonDisabled} 
-                width="full" 
+              <Button
+                type="submit"
+                disabled={isLoading || isButtonDisabled}
+                width="full"
                 size="lg"
-                className={isButtonDisabled ? 'opacity-50 cursor-not-allowed' : ''}
+                className={
+                  isButtonDisabled ? "opacity-50 cursor-not-allowed" : ""
+                }
               >
                 {isLoading ? (
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
@@ -142,12 +179,15 @@ export function ForgotPassword({ onBack }) {
                   "Reset Password"
                 )}
               </Button>
-              
+
               {/* Countdown Timer */}
               {countdown > 0 && (
                 <div className="text-center">
                   <p className="text-sm text-muted-foreground">
-                    You can request another reset in <span className="font-medium text-primary">{formatTime(countdown)}</span>
+                    You can request another reset in{" "}
+                    <span className="font-medium text-primary">
+                      {formatTime(countdown)}
+                    </span>
                   </p>
                 </div>
               )}
@@ -169,6 +209,14 @@ export function ForgotPassword({ onBack }) {
           </div>
         </div>
       </div>
+
+      {/* Language Change Modal */}
+      <LanguageChangeModal
+        isOpen={showLanguageModal}
+        onClose={() => setShowLanguageModal(false)}
+        currentLanguage={currentLanguage}
+        onLanguageChange={handleLanguageChange}
+      />
 
       {/* Confirmation Popup */}
       <Popup
