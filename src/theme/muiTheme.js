@@ -82,12 +82,13 @@ export const createCustomTheme = () => {
       MuiPaper: {
         styleOverrides: {
           root: {
-            backgroundColor: "hsl(var(--popover)) !important",
-            border: "1px solid hsl(var(--border))",
-            borderRadius: "12px",
-            boxShadow:
-              "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
-            color: "hsl(var(--foreground)) !important",
+            backgroundColor: "#374151 !important", // Solid gray background
+            backdropFilter: "none !important",
+            border: "2px solid hsl(var(--border))",
+            borderRadius: "16px !important",
+            boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.1) !important",
+            color: "white !important",
+            opacity: "1 !important",
           },
         },
       },
@@ -149,6 +150,130 @@ export const createCustomTheme = () => {
         styleOverrides: {
           root: {
             color: "hsl(var(--foreground)) !important",
+          },
+        },
+      },
+      MuiPickersPopper: {
+        styleOverrides: {
+          root: {
+            zIndex: 9999,
+            "& .MuiPaper-root": {
+              backgroundColor: "#374151 !important", // Solid gray background
+              backdropFilter: "none !important",
+              border: "2px solid hsl(var(--border))",
+              borderRadius: "16px !important",
+              boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.1) !important",
+              maxHeight: "400px",
+              overflow: "auto",
+              scrollBehavior: "smooth",
+            },
+          },
+        },
+      },
+      MuiPickersLayout: {
+        styleOverrides: {
+          root: {
+            backgroundColor: "#374151 !important", // Solid gray background
+            backdropFilter: "none !important",
+            "& .MuiPickersLayout-contentWrapper": {
+              backgroundColor: "#374151 !important", // Solid gray background
+            },
+          },
+        },
+      },
+      MuiMultiSectionDigitalClock: {
+        styleOverrides: {
+          root: {
+            backgroundColor: "#374151 !important", // Solid gray background
+            "& .MuiMultiSectionDigitalClockSection-root": {
+              backgroundColor: "#374151 !important", // Solid gray background
+              maxHeight: "300px",
+              overflowY: "auto",
+              scrollBehavior: "smooth",
+              "&::-webkit-scrollbar": {
+                width: "8px",
+              },
+              "&::-webkit-scrollbar-track": {
+                backgroundColor: "#4B5563", // Darker gray for scrollbar track
+                borderRadius: "4px",
+              },
+              "&::-webkit-scrollbar-thumb": {
+                backgroundColor: "hsl(var(--primary))",
+                borderRadius: "4px",
+                "&:hover": {
+                  backgroundColor: "hsl(var(--primary))",
+                },
+              },
+            },
+            "& .MuiMultiSectionDigitalClockSection-item": {
+              backgroundColor: "transparent !important",
+              color: "white !important", // White text for hours, minutes, seconds
+              fontWeight: "600 !important",
+              fontSize: "16px !important",
+              padding: "12px 16px !important",
+              margin: "2px 8px !important",
+              borderRadius: "8px !important",
+              transition: "all 0.2s ease !important",
+              "&:hover": {
+                backgroundColor: "#4B5563 !important", // Darker gray on hover
+                color: "white !important",
+                fontWeight: "700 !important",
+              },
+              "&.Mui-selected": {
+                backgroundColor: "hsl(var(--primary)) !important",
+                color: "white !important", // White text for selected item
+                fontWeight: "700 !important",
+                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15) !important",
+              },
+            },
+          },
+        },
+      },
+      MuiDigitalClock: {
+        styleOverrides: {
+          root: {
+            backgroundColor: "#374151 !important", // Solid gray background
+            maxHeight: "300px",
+            overflowY: "auto",
+            scrollBehavior: "smooth",
+            "&::-webkit-scrollbar": {
+              width: "8px",
+            },
+            "&::-webkit-scrollbar-track": {
+              backgroundColor: "#4B5563", // Darker gray for scrollbar track
+              borderRadius: "4px",
+            },
+            "&::-webkit-scrollbar-thumb": {
+              backgroundColor: "hsl(var(--primary))",
+              borderRadius: "4px",
+              "&:hover": {
+                backgroundColor: "hsl(var(--primary))",
+              },
+            },
+          },
+          list: {
+            backgroundColor: "#374151 !important", // Solid gray background
+          },
+          item: {
+            backgroundColor: "transparent !important",
+            color: "white !important", // White text for hours, minutes, seconds
+            fontWeight: "600 !important",
+            fontSize: "16px !important",
+            padding: "12px 16px !important",
+            margin: "2px 8px !important",
+            borderRadius: "8px !important",
+            transition: "all 0.2s ease !important",
+            "&:hover": {
+              backgroundColor: "#4B5563 !important", // Darker gray on hover
+              color: "white !important",
+              fontWeight: "700 !important",
+            },
+            "&.Mui-selected": {
+              backgroundColor: "hsl(var(--primary)) !important",
+              color: "white !important", // White text for selected item
+              fontWeight: "700 !important",
+              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15) !important",
+            },
           },
         },
       },

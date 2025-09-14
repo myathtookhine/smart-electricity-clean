@@ -31,6 +31,8 @@ import {
   CostSummaryPage,
   AdditionalSupportPage,
   UserGuidesPage,
+  EVControlGuidePage,
+  BatteryConfigGuidePage,
   FAQsPage,
   HelpSupportPage,
 } from "./SubSettings";
@@ -39,7 +41,7 @@ export function SettingsPage({ onSubPageChange, onPageChange }) {
   const { theme, setTheme } = useTheme();
   const { user, logout, batteryState } = useApp();
   const notificationCount = 3; // Example notification count
-  const [currentView, setCurrentView] = useState("main"); // 'main', 'system-info', 'battery', 'ev-control', 'account-settings', 'edit-account', 'change-password', 'cost-summary', 'additional-support', 'user-guides', 'faqs', 'help-support'
+  const [currentView, setCurrentView] = useState("main"); // 'main', 'system-info', 'battery', 'ev-control', 'account-settings', 'edit-account', 'change-password', 'cost-summary', 'additional-support', 'user-guides', 'ev-control-guide', 'battery-config-guide', 'faqs', 'help-support'
   const [navigationStack, setNavigationStack] = useState(["main"]);
 
   // Notify parent about sub-page state
@@ -148,7 +150,7 @@ export function SettingsPage({ onSubPageChange, onPageChange }) {
                     <div className="p-2 bg-muted rounded-full">
                       <User className="w-5 h-5 text-primary" />
                     </div>
-                    <span className="text-xl text-card-foreground ">
+                    <span className="text-md text-card-foreground">
                       Account Settings
                     </span>
                   </div>
@@ -166,7 +168,7 @@ export function SettingsPage({ onSubPageChange, onPageChange }) {
                     <div className="p-2 bg-muted rounded-full">
                       <DollarSign className="w-5 h-5 text-primary" />
                     </div>
-                    <span className="text-xl text-card-foreground ">
+                    <span className="text-md text-card-foreground">
                       Cost Summary
                     </span>
                   </div>
@@ -192,7 +194,7 @@ export function SettingsPage({ onSubPageChange, onPageChange }) {
                     <div className="p-2 bg-muted rounded-full">
                       <Car className="w-5 h-5 text-primary" />
                     </div>
-                    <span className="text-xl text-card-foreground ">
+                    <span className="text-md text-card-foreground">
                       EV Control
                     </span>
                   </div>
@@ -211,7 +213,7 @@ export function SettingsPage({ onSubPageChange, onPageChange }) {
                       : "opacity-50 cursor-not-allowed"
                   }`}
                 >
-                  <div className="flex items-center space-x-4">
+                  <div className="flex justify-start items-center space-x-4">
                     <div
                       className={`p-2 bg-muted rounded-full ${
                         batteryState.isConfigured
@@ -229,7 +231,7 @@ export function SettingsPage({ onSubPageChange, onPageChange }) {
                     </div>
                     <div>
                       <span
-                        className={`text-xl  block text-left ${
+                        className={`text-md block text-left ${
                           batteryState.isConfigured
                             ? "text-card-foreground"
                             : "text-muted-foreground"
@@ -260,7 +262,7 @@ export function SettingsPage({ onSubPageChange, onPageChange }) {
                     <div className="p-2 bg-muted rounded-full">
                       <Info className="w-5 h-5 text-primary" />
                     </div>
-                    <span className="text-xl text-card-foreground ">
+                    <span className="text-md text-card-foreground">
                       System Information
                     </span>
                   </div>
@@ -286,7 +288,7 @@ export function SettingsPage({ onSubPageChange, onPageChange }) {
                     <div className="p-2 bg-muted rounded-full">
                       <Cloud className="w-5 h-5 text-primary" />
                     </div>
-                    <span className="text-xl text-card-foreground ">
+                    <span className="text-md text-card-foreground">
                       Weather Info Details
                     </span>
                   </div>
@@ -312,7 +314,7 @@ export function SettingsPage({ onSubPageChange, onPageChange }) {
                     <div className="p-2 bg-muted rounded-full">
                       <HelpCircle className="w-5 h-5 text-primary" />
                     </div>
-                    <span className="text-xl text-card-foreground ">
+                    <span className="text-md text-card-foreground">
                       Additional Support
                     </span>
                   </div>
@@ -342,7 +344,7 @@ export function SettingsPage({ onSubPageChange, onPageChange }) {
                       </div>
                     )}
                     <div>
-                      <div className="text-xl text-card-foreground ">
+                      <div className="text-md text-card-foreground">
                         Dark Mode
                       </div>
                       <div className="text-sm text-muted-foreground">
@@ -401,7 +403,17 @@ export function SettingsPage({ onSubPageChange, onPageChange }) {
         />
       )}
       {currentView === "user-guides" && (
-        <UserGuidesPage onBack={navigateBack} onGoHome={handleGoHome} />
+        <UserGuidesPage 
+          onBack={navigateBack} 
+          onNavigate={handleNavigate}
+          onGoHome={handleGoHome} 
+        />
+      )}
+      {currentView === "ev-control-guide" && (
+        <EVControlGuidePage onBack={navigateBack} onGoHome={handleGoHome} />
+      )}
+      {currentView === "battery-config-guide" && (
+        <BatteryConfigGuidePage onBack={navigateBack} onGoHome={handleGoHome} />
       )}
       {currentView === "faqs" && (
         <FAQsPage onBack={navigateBack} onGoHome={handleGoHome} />

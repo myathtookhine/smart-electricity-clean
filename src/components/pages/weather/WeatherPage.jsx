@@ -1,7 +1,8 @@
 import React from 'react';
 import { useWeather } from '../../../hooks/useWeather';
 import { useLocation } from '../../../hooks/useLocation';
-import { getWeatherIcon } from '../../../utils/weatherIcons';
+import { useApp } from "../../../contexts/AppContext";
+import { getWeatherIcon } from "../../../utils/weatherIcons";
 import {
   ChevronLeft,
   MapPinPlus,
@@ -19,7 +20,8 @@ import { Button } from "../../ui/button";
 import { BackToHomeButton } from "../../ui/BackToHomeButton";
 import { useState } from "react";
 
-export const WeatherPage = ({ onPageChange }) => {
+export const WeatherPage = ({ onPageChange, fromPage }) => {
+  const { stormReadyMode } = useApp();
   const {
     location,
     loading: locationLoading,
@@ -38,6 +40,38 @@ export const WeatherPage = ({ onPageChange }) => {
   const loading = locationLoading || weatherLoading;
   const error = locationError || weatherError;
 
+  // Determine storm ready alert properties based on current state
+  const getStormReadyAlert = () => {
+    if (!stormReadyMode.enabled) {
+      return {
+        type: "neutral",
+        title: "StormReady Mode: Disabled",
+        message: "Please check in the settings to enable!",
+        customIcon: Zap,
+        showIcon: true,
+        showMessage: true,
+      };
+    } else if (stormReadyMode.isActive) {
+      return {
+        type: "warning",
+        title: "StormReady Mode: Active",
+        message: "System is actively charging battery due to storm detection!",
+        customIcon: Zap,
+        showIcon: true,
+        showMessage: true,
+      };
+    } else {
+      return {
+        type: "success",
+        title: "StormReady Mode: Monitoring",
+        message: "Storm-ready mode is on and monitoring for a storm!",
+        customIcon: Zap,
+        showIcon: true,
+        showMessage: true,
+      };
+    }
+  };
+
   const handleLocationRequest = () => {
     requestLocation();
     setShowLocationModal(false);
@@ -45,7 +79,9 @@ export const WeatherPage = ({ onPageChange }) => {
 
   const handleBackClick = () => {
     if (onPageChange) {
-      onPageChange("home");
+      // If we came from settings, go back to settings; otherwise go to home
+      const targetPage = fromPage === "settings" ? "settings" : "home";
+      onPageChange(targetPage);
     }
   };
 
@@ -208,6 +244,9 @@ export const WeatherPage = ({ onPageChange }) => {
 
       {/* Content Area */}
       <div className="px-6 space-y-6 pb-12">
+        {/* Storm-ready Mode Alert */}
+        <Alert {...getStormReadyAlert()} />
+
         {/* Current Weather */}
         <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-6 shadow-lg">
           <div className="text-center">
@@ -370,16 +409,6 @@ export const WeatherPage = ({ onPageChange }) => {
             </div>
           </div>
         )}
-
-        {/* Storm-ready Mode Alert */}
-        <Alert
-          type="neutral"
-          title="Strom-ready Mode : Disabled"
-          message="Please check in the settings to enable!"
-          customIcon={Zap}
-          showIcon={true}
-          showMessage={true}
-        />
 
         {/* Back to Home Button */}
         <div className="mt-8 px-6">

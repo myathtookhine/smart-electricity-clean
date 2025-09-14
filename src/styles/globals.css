@@ -500,6 +500,102 @@ html {
     0 0 16px rgba(139, 92, 246, 0.6),
     0 0 24px rgba(139, 92, 246, 0.4);
   filter: blur(0.5px);
+  z-index: 10;
+  }
+  
+  /* L1 Connector - Bend from left bubble to inverter */
+  .l1-connector {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  .l1-connector .line-down {
+    width: 2px;
+    height: 20px;
+    background-color: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(4px);
+    opacity: 1;
+    margin: 0 auto;
+  }
+  
+  .l1-connector .line-right {
+    width: 64px;
+    height: 2px;
+    background-color: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(4px);
+    opacity: 1;
+    position: absolute;
+    top: 20px;
+    left: 1px;
+  }
+  
+  .l1-connector .line-down-final {
+    width: 2px;
+    height: 4px;
+    background-color: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(4px);
+    opacity: 1;
+    position: absolute;
+    top: 20px;
+    left: 63px;
+  }
+  
+  /* L2 Connector - Direct line from center bubble to inverter */
+  .l2-connector {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  .l2-connector .line-down-direct {
+    width: 3px;
+    height: 24px;
+    background-color: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(4px);
+    opacity: 1;
+    margin: 0 auto;
+  }
+  
+  /* L3 Connector - Bend from right bubble to inverter */
+  .l3-connector {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  .l3-connector .line-down {
+    width: 2px;
+    height: 20px;
+    background-color: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(4px);
+    opacity: 1;
+    margin: 0 auto;
+  }
+  
+  .l3-connector .line-left {
+    width: 64px;
+    height: 2px;
+    background-color: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(4px);
+    opacity: 1;
+    position: absolute;
+    top: 20px;
+    right: 1px;
+  }
+  
+  .l3-connector .line-down-final {
+    width: 2px;
+    height: 4px;
+    background-color: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(4px);
+    opacity: 1;
+    position: absolute;
+    top: 20px;
+    right: 63px;
 }
 /* Scrollbar hide utility */
 .scrollbar-hide {
@@ -615,4 +711,136 @@ html {
   .scrollbar-modern::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.4);
   }
+}
+/* Inverter Submenu Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-10px) scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(10px) scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+/* Additional animation for bubbles appearing from bottom */
+@keyframes slideInFromBottom {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.7);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes connectorFadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* Inverter submenu branch animations - all appear from bottom */
+.inverter-submenu {
+  animation: fadeInUp 0.2s ease-out;
+}
+
+.inverter-submenu .l1-branch {
+  animation: slideInFromBottom 0.4s ease-out;
+}
+
+.inverter-submenu .l1-branch>div:first-child {
+  animation: slideInFromBottom 0.4s ease-out;
+}
+
+.inverter-submenu .l1-connector {
+  animation: connectorFadeIn 0.3s ease-out 0.5s both;
+}
+
+.inverter-submenu .l2-branch {
+  animation: slideInFromBottom 0.5s ease-out 0.1s both;
+}
+
+.inverter-submenu .l2-branch>div:first-child {
+  animation: slideInFromBottom 0.5s ease-out 0.1s both;
+}
+
+.inverter-submenu .l2-connector {
+  animation: connectorFadeIn 0.3s ease-out 0.6s both;
+}
+
+.inverter-submenu .l3-branch {
+  animation: slideInFromBottom 0.6s ease-out 0.2s both;
+}
+
+.inverter-submenu .l3-branch>div:first-child {
+  animation: slideInFromBottom 0.6s ease-out 0.2s both;
+}
+
+.inverter-submenu .l3-connector {
+  animation: connectorFadeIn 0.3s ease-out 0.7s both;
+}
+
+/* Connecting line pulse animation */
+@keyframes pulse-line {
+
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scaleY(1);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scaleY(1.1);
+  }
+}
+
+.inverter-submenu .connecting-line {
+  animation: pulse-line 2s ease-in-out infinite;
+  transition: all 0.3s ease;
 }

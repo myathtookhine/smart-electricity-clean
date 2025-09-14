@@ -120,6 +120,36 @@ export function TariffSettingPage({ onBack, onComplete, onGoHome }) {
                           lowCostStartTime: newValue,
                         })
                       }
+                      views={["hours", "minutes"]}
+                      format="HH:mm"
+                      timeSteps={{ hours: 1, minutes: 15 }}
+                      slotProps={{
+                        actionBar: {
+                          actions: ["clear", "cancel", "accept"],
+                        },
+                        popper: {
+                          placement: "bottom",
+                          modifiers: [
+                            {
+                              name: "preventOverflow",
+                              enabled: true,
+                              options: {
+                                altAxis: true,
+                                altBoundary: true,
+                                tether: true,
+                                rootBoundary: "viewport",
+                              },
+                            },
+                          ],
+                        },
+                        digitalClock: {
+                          sx: {
+                            maxHeight: "300px !important",
+                            overflowY: "auto !important",
+                            scrollBehavior: "smooth !important",
+                          },
+                        },
+                      }}
                     />
                   </div>
                   <p className="text-xs text-muted-foreground text-center mt-3">
@@ -141,6 +171,36 @@ export function TariffSettingPage({ onBack, onComplete, onGoHome }) {
                           lowCostEndTime: newValue,
                         })
                       }
+                      views={["hours", "minutes"]}
+                      format="HH:mm"
+                      timeSteps={{ hours: 1, minutes: 15 }}
+                      slotProps={{
+                        actionBar: {
+                          actions: ["clear", "cancel", "accept"],
+                        },
+                        popper: {
+                          placement: "bottom",
+                          modifiers: [
+                            {
+                              name: "preventOverflow",
+                              enabled: true,
+                              options: {
+                                altAxis: true,
+                                altBoundary: true,
+                                tether: true,
+                                rootBoundary: "viewport",
+                              },
+                            },
+                          ],
+                        },
+                        digitalClock: {
+                          sx: {
+                            maxHeight: "300px !important",
+                            overflowY: "auto !important",
+                            scrollBehavior: "smooth !important",
+                          },
+                        },
+                      }}
                     />
                   </div>
                   <p className="text-xs text-muted-foreground text-center mt-3">

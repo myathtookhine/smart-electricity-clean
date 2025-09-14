@@ -8,6 +8,8 @@ export { ChangePasswordPage } from "./ChangePasswordPage";
 export { CostSummaryPage } from "./CostSummaryPage";
 export { AdditionalSupportPage } from "./AdditionalSupportPage";
 export { UserGuidesPage } from "./UserGuidesPage";
+export { EVControlGuidePage } from "./EVControlGuidePage";
+export { BatteryConfigGuidePage } from "./BatteryConfigGuidePage";
 export { FAQsPage } from "./FAQsPage";
 export { HelpSupportPage } from "./HelpSupportPage";
 

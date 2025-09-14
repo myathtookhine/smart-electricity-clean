@@ -5,6 +5,8 @@ const buttonVariants = {
   variant: {
     primary:
       "bg-primary text-background text-md font-bold text-bold hover:bg-primary/90 shadow-lg",
+    "outline-primary":
+      "border-2 border-primary text-primary text-md font-bold hover:bg-primary hover:text-background bg-transparent shadow-lg",
     secondary:
       "bg-muted/20 text-foreground text-md font-bold hover:bg-muted/30 border border-border",
     link: "text-primary text-md font-bold hover:text-primary/80 underline-offset-4 hover:underline bg-transparent p-0 h-auto font-normal",

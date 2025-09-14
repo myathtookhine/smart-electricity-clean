@@ -1,7 +1,13 @@
-import { ChevronLeft, BookOpen } from 'lucide-react';
+import {
+  ChevronLeft,
+  BookOpen,
+  Zap,
+  Battery,
+  ChevronRight,
+} from "lucide-react";
 import { BackToHomeButton } from "../../ui/BackToHomeButton";
 
-export function UserGuidesPage({ onBack, onGoHome }) {
+export function UserGuidesPage({ onBack, onNavigate, onGoHome }) {
   return (
     <div className="min-h-full bg-background">
       {/* Header with Back Button */}
@@ -27,19 +33,52 @@ export function UserGuidesPage({ onBack, onGoHome }) {
         </div>
       </div>
 
-      {/* Coming Soon Content */}
-      <div className="px-6 pb-24">
-        <div className="bg-card/50 backdrop-blur-sm rounded-3xl p-12 shadow border border-border/50 text-center">
-          <div className="w-20 h-20 bg-gradient-to-br from-primary/20 to-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
-            <BookOpen className="w-10 h-10 text-primary" />
-          </div>
-          <h3 className="text-2xl text-card-foreground font-semibold mb-4">
-            Coming Soon
-          </h3>
-          <p className="text-muted-foreground text-lg">
-            User guides and tutorials are currently being prepared. Check back
-            soon for comprehensive documentation and step-by-step instructions.
-          </p>
+      {/* Content Area */}
+      <div className="px-6 space-y-6 pb-24">
+        {/* EV Control Guide */}
+        <div className="bg-card/50 backdrop-blur-sm rounded-3xl p-6 shadow border border-border/50">
+          <button
+            onClick={() => onNavigate("ev-control-guide")}
+            className="w-full hover:bg-muted/10 rounded-2xl p-2 -m-2 transition-all duration-300"
+          >
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-xl">
+                <Zap className="w-6 h-6 text-green-600 dark:text-green-400" />
+              </div>
+              <div className="flex-1 text-left">
+                <h3 className="text-lg text-card-foreground font-semibold">
+                  EV Control
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Learn how to control and manage your electric vehicle
+                </p>
+              </div>
+              <ChevronRight className="w-5 h-5 text-muted-foreground" />
+            </div>
+          </button>
+        </div>
+
+        {/* Battery Configuration Guide */}
+        <div className="bg-card/50 backdrop-blur-sm rounded-3xl p-6 shadow border border-border/50">
+          <button
+            onClick={() => onNavigate("battery-config-guide")}
+            className="w-full hover:bg-muted/10 rounded-2xl p-2 -m-2 transition-all duration-300"
+          >
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-xl">
+                <Battery className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+              </div>
+              <div className="flex-1 text-left">
+                <h3 className="text-lg text-card-foreground font-semibold">
+                  Battery Configuration
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Configure and optimize your battery settings
+                </p>
+              </div>
+              <ChevronRight className="w-5 h-5 text-muted-foreground" />
+            </div>
+          </button>
         </div>
 
         {/* Back to Home Button */}

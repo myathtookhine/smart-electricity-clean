@@ -7,6 +7,7 @@ import {
   Moon,
   Play,
   Pause,
+  RotateCcw,
 } from "lucide-react";
 import { Switch } from "../ui/switch";
 import { Alert } from "../ui/alert";
@@ -24,6 +25,7 @@ export function HomePage({ onPageChange }) {
   const { stormReadyMode } = useApp();
   const [isAnimationEnabled, setIsAnimationEnabled] = useState(true);
   const [showLocationModal, setShowLocationModal] = useState(false);
+  const [showInverterSubmenu, setShowInverterSubmenu] = useState(false);
   const {
     location,
     loading: locationLoading,
@@ -154,9 +156,22 @@ export function HomePage({ onPageChange }) {
       </div>
 
       <div className="px-6 mb-2">
-        <h4 className="text-xl text-foreground text-left mb-3">
-          Live Usage Monitor
-        </h4>
+        <div className="flex items-center justify-between mb-3">
+          <h4 className="text-xl text-foreground text-left">
+            Live Usage Monitor
+          </h4>
+          <button
+            onClick={() => {
+              // Add refresh logic here
+              console.log("Refreshing live usage data...");
+            }}
+            className="flex flex-row items-center space-x-2 p-2 px-4 rounded-lg bg-muted hover:bg-muted/70 transition-all duration-200 hover:scale-105"
+            title="Refresh live data"
+          >
+            <RotateCcw className="w-3 h-3 text-foreground" />
+            <span className="text-sm text-foreground">Refresh</span>
+          </button>
+        </div>
       </div>
       {/* Smart Home Visualization */}
       <div className="px-6 mb-0 flex justify-center home-image-wrapper">
@@ -226,12 +241,77 @@ export function HomePage({ onPageChange }) {
 
             {/* Charging Station Label - Under image, center */}
             <div className="absolute top-80 left-1/2 transform -translate-x-1/2 mt-6">
-              <div className="bg-background/90 backdrop-blur-sm border border-border/50 rounded-lg px-2 py-1 text-center shadow-lg">
+              <button
+                onClick={() => setShowInverterSubmenu(!showInverterSubmenu)}
+                className={`bg-background/90 backdrop-blur-sm border border-border/50 rounded-lg px-2 py-1 text-center shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 ${
+                  showInverterSubmenu ? "ring-2 ring-blue-500" : ""
+                }`}
+              >
                 <div className="text-sm font-bold text-foreground">11 kW</div>
                 <div className="text-xs text-muted-foreground uppercase tracking-wide">
                   Invertor
                 </div>
-              </div>
+              </button>
+
+              {/* Floating Sub-Menu with L1, L2, L3 branches */}
+              {showInverterSubmenu && (
+                <div className="absolute bottom-full mb-8 left-1/2 transform -translate-x-1/2 inverter-submenu z-50">
+                  {/* Row of circular bubbles */}
+                  <div className="flex items-center justify-center space-x-8">
+                    {/* L1 Branch */}
+                    <div className="relative l1-branch z-40">
+                      <div className="w-16 h-16 bg-white/95 backdrop-blur-sm border-2 border-white-500 rounded-md flex flex-col items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                        <div className="text-xs font-medium text-blue-500 mt-1">
+                          3.7kW
+                        </div>
+                        <div className="text-base text-blue-500 font-bold">
+                          L1
+                        </div>
+                      </div>
+                      {/* Bend connector from L1 to Inverter */}
+                      <div className="l1-connector">
+                        <div className="line-down"></div>
+                        <div className="line-right"></div>
+                        <div className="line-down-final"></div>
+                      </div>
+                    </div>
+
+                    {/* L2 Branch */}
+                    <div className="relative l2-branch z-40">
+                      <div className="w-16 h-16 bg-white/95 backdrop-blur-sm border-2 border-white-500 rounded-md flex flex-col items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                        <div className="text-xs font-medium text-blue-500 mt-1">
+                          3.6kW
+                        </div>
+                        <div className="text-base text-blue-500 font-bold">
+                          L2
+                        </div>
+                      </div>
+                      {/* Direct line from L2 to Inverter (center) */}
+                      <div className="l2-connector">
+                        <div className="line-down-direct"></div>
+                      </div>
+                    </div>
+
+                    {/* L3 Branch */}
+                    <div className="relative l3-branch z-40">
+                      <div className="w-16 h-16 bg-white/95 backdrop-blur-sm border-2 border-white-500 rounded-md flex flex-col items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                        <div className="text-xs font-medium text-blue-500 mt-1">
+                          3.7kW
+                        </div>
+                        <div className="text-base text-blue-500 font-bold">
+                          L3
+                        </div>
+                      </div>
+                      {/* Bend connector from L3 to Inverter */}
+                      <div className="l3-connector">
+                        <div className="line-down"></div>
+                        <div className="line-left"></div>
+                        <div className="line-down-final"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
               {/* Bent connector line pointing to charging station */}
               <div className="charger-connector">
                 <div className="line-up"></div>

@@ -14,6 +14,7 @@ import { Login } from "./components/Login";
 
 function AppContent() {
   const [currentPage, setCurrentPage] = useState("home");
+  const [previousPage, setPreviousPage] = useState("home");
   const [isInSubPage, setIsInSubPage] = useState(false);
   const [currentTime, setCurrentTime] = useState("");
   const { isFirstTime, isAuthenticated } = useApp();
@@ -40,6 +41,7 @@ function AppContent() {
   }, []);
 
   const handlePageChange = (page) => {
+    setPreviousPage(currentPage);
     setCurrentPage(page);
     // Reset sub-page state when navigating to main pages
     if (["home", "insights", "weather"].includes(page)) {
@@ -54,7 +56,12 @@ function AppContent() {
       case "insights":
         return <InsightsPage onPageChange={handlePageChange} />;
       case "weather":
-        return <WeatherPage onPageChange={handlePageChange} />;
+        return (
+          <WeatherPage
+            onPageChange={handlePageChange}
+            fromPage={previousPage}
+          />
+        );
       case "settings":
         return (
           <SettingsPage

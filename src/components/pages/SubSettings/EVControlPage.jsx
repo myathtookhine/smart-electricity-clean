@@ -251,7 +251,7 @@ export function EVControlPage({ onBack, onGoHome }) {
           </div>
 
           <Button
-            variant="primary"
+            variant="outline-primary"
             width="full"
             onClick={() => setShowModeSelection(true)}
             className="flex items-center gap-2 mt-4"
@@ -328,7 +328,7 @@ export function EVControlPage({ onBack, onGoHome }) {
                       width="full"
                       variant="outline-primary"
                       onClick={() => handleScheduleClick(selectedMode)}
-                      className={`flex items-center gap-2 ${currentColors.text} ${currentColors.border} hover:${currentColors.bg}`}
+                      className={`flex items-center gap-2 ${currentColors.text} hover:${currentColors.text} ${currentColors.border} hover:${currentColors.bg}`}
                     >
                       <Clock className="w-4 h-4" />
                       {selectedMode === "tariff-intelligence"
