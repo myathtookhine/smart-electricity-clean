@@ -16,6 +16,11 @@ export const AppProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [currentLanguage, setCurrentLanguage] = useState("en");
 
+  // New onboarding flow state
+  const [onboardingStep, setOnboardingStep] = useState(null); // 'loginMode', 'systemBinding', 'guidedHandover', null
+  const [isOnboardingComplete, setIsOnboardingComplete] = useState(false);
+  const [showGuidedHandoverModal, setShowGuidedHandoverModal] = useState(false);
+
   // Battery state management
   const [batteryState, setBatteryState] = useState({
     isConfigured: true, // true, false
@@ -36,6 +41,9 @@ export const AppProvider = ({ children }) => {
     const hasCompletedWizard = localStorage.getItem("hasCompletedWizard");
     const savedUser = localStorage.getItem("currentUser");
     const savedLanguage = localStorage.getItem("currentLanguage");
+    const hasCompletedOnboarding = localStorage.getItem(
+      "hasCompletedOnboarding"
+    );
 
     if (hasCompletedWizard) {
       setIsFirstTime(false);
@@ -48,6 +56,10 @@ export const AppProvider = ({ children }) => {
 
     if (savedLanguage) {
       setCurrentLanguage(savedLanguage);
+    }
+
+    if (hasCompletedOnboarding) {
+      setIsOnboardingComplete(true);
     }
   }, []);
 
@@ -63,6 +75,10 @@ export const AppProvider = ({ children }) => {
       setUser(userData);
       setIsAuthenticated(true);
       localStorage.setItem("currentUser", JSON.stringify(userData));
+
+      // Skip login mode selection and go directly to system binding
+      setOnboardingStep("systemBinding");
+
       return true;
     }
     return false;
@@ -71,12 +87,53 @@ export const AppProvider = ({ children }) => {
   const logout = () => {
     setUser(null);
     setIsAuthenticated(false);
+    setOnboardingStep(null);
+    setIsOnboardingComplete(false);
+    setShowGuidedHandoverModal(false);
     localStorage.removeItem("currentUser");
+    localStorage.removeItem("hasCompletedOnboarding");
   };
 
   const changeLanguage = (languageCode) => {
     setCurrentLanguage(languageCode);
     localStorage.setItem("currentLanguage", languageCode);
+  };
+
+  // Onboarding flow functions
+  const startOnboarding = () => {
+    setOnboardingStep("loginMode");
+  };
+
+  const nextOnboardingStep = () => {
+    switch (onboardingStep) {
+      case "systemBinding":
+        setOnboardingStep("guidedHandover");
+        break;
+      case "guidedHandover":
+        completeOnboarding();
+        break;
+      default:
+        break;
+    }
+  };
+
+  const skipToHome = () => {
+    completeOnboarding();
+  };
+
+  const selectExistingHomeOwner = () => {
+    completeOnboarding();
+  };
+
+  const completeOnboarding = () => {
+    setOnboardingStep(null);
+    setIsOnboardingComplete(true);
+    setShowGuidedHandoverModal(true);
+    localStorage.setItem("hasCompletedOnboarding", "true");
+  };
+
+  const closeGuidedHandoverModal = () => {
+    setShowGuidedHandoverModal(false);
   };
 
   // Storm detection function - checks weather conditions
@@ -140,6 +197,16 @@ export const AppProvider = ({ children }) => {
     checkForStormConditions,
     currentLanguage,
     changeLanguage,
+    onboardingStep,
+    setOnboardingStep,
+    isOnboardingComplete,
+    startOnboarding,
+    nextOnboardingStep,
+    skipToHome,
+    selectExistingHomeOwner,
+    completeOnboarding,
+    showGuidedHandoverModal,
+    closeGuidedHandoverModal,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

@@ -12,20 +12,25 @@ import {
 import { Switch } from "../ui/switch";
 import { Alert } from "../ui/alert";
 import { useTheme } from "../ThemeProvider";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import WeatherTab from "./weather/WeatherTab";
 import LocationPermissionModal from "../LocationPermissionModal";
 import { useLocation } from "../../hooks/useLocation";
 import { useApp } from "../../contexts/AppContext";
+import { GuidedHandoverModal } from "../ui/GuidedHandoverModal";
 import exampleImage from "../../assets/iso-home.png";
-import logo from "../../assets/duracell-logo.png";
+import DuracellWhite from "../../assets/duracell-logo-white.svg";
+import DuracellBlack from "../../assets/duracell-logo-black.svg";
 
 export function HomePage({ onPageChange }) {
   const { theme, setTheme } = useTheme();
-  const { stormReadyMode } = useApp();
+  const { stormReadyMode, showGuidedHandoverModal, closeGuidedHandoverModal } =
+    useApp();
   const [isAnimationEnabled, setIsAnimationEnabled] = useState(true);
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [showInverterSubmenu, setShowInverterSubmenu] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const refreshTimeoutRef = useRef(null);
   const {
     location,
     loading: locationLoading,
@@ -34,6 +39,7 @@ export function HomePage({ onPageChange }) {
     requestLocation,
   } = useLocation();
   const notificationCount = 3; // Example notification count
+  const headerLogo = theme === "dark" ? DuracellWhite : DuracellBlack;
 
   // Determine storm ready alert properties based on current state
   const getStormReadyAlert = () => {
@@ -97,8 +103,29 @@ export function HomePage({ onPageChange }) {
     setTheme(theme === "light" ? "dark" : "light");
   };
 
+  const handleRefreshClick = () => {
+    console.log("Refreshing live usage data...");
+    setIsRefreshing(true);
+
+    if (refreshTimeoutRef.current) {
+      clearTimeout(refreshTimeoutRef.current);
+    }
+
+    refreshTimeoutRef.current = setTimeout(() => {
+      setIsRefreshing(false);
+      refreshTimeoutRef.current = null;
+    }, 2000);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (refreshTimeoutRef.current) {
+        clearTimeout(refreshTimeoutRef.current);
+      }
+    };
+  }, []);
   return (
-    <div className="min-h-full bg-background">
+    <div className="min-h-full bg-background relative">
       {/* Header */}
       <div className="px-6 pt-8 pb-4">
         <div className="flex items-center justify-between mb-2">
@@ -118,8 +145,8 @@ export function HomePage({ onPageChange }) {
           {/* Logo */}
           <div className="text-center">
             <img
-              src={logo}
-              alt="Duracell Logo"
+              src={headerLogo}
+              alt="Duracell logo"
               className="w-32 h-auto object-contain"
             />
           </div>
@@ -154,22 +181,25 @@ export function HomePage({ onPageChange }) {
           }}
         />
       </div>
-
+      {isRefreshing && (
+        <div className="flex items-center justify-center space-x-2 text-sm text-muted-foreground mx-6 my-3 mb-5 p-4">
+          <RotateCcw className="w-4 h-4 text-primary animate-spin" />
+          <span>Refreshing live usage data…</span>
+        </div>
+      )}
+      {/* Refreshing live usage data ui */}
       <div className="px-6 mb-2">
         <div className="flex items-center justify-between mb-3">
           <h4 className="text-xl text-foreground text-left">
             Live Usage Monitor
           </h4>
           <button
-            onClick={() => {
-              // Add refresh logic here
-              console.log("Refreshing live usage data...");
-            }}
+            onClick={handleRefreshClick}
             className="flex flex-row items-center space-x-2 p-2 px-4 rounded-lg bg-muted hover:bg-muted/70 transition-all duration-200 hover:scale-105"
             title="Refresh live data"
           >
             <RotateCcw className="w-3 h-3 text-foreground" />
-            <span className="text-sm text-foreground">Refresh</span>
+            {/* <span className="text-sm text-foreground">Refresh</span> */}
           </button>
         </div>
       </div>
@@ -355,6 +385,15 @@ export function HomePage({ onPageChange }) {
         onClose={handleCloseModal}
         error={locationError}
       />
+
+      {/* Guided Handover Modal */}
+      {showGuidedHandoverModal && (
+        <GuidedHandoverModal
+          isOpen={showGuidedHandoverModal}
+          onClose={closeGuidedHandoverModal}
+          onPageChange={onPageChange}
+        />
+      )}
     </div>
   );
 }

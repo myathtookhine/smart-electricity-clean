@@ -1,81 +1,133 @@
-import React, { useState } from 'react';
-import { Zap, Moon, Sun, ArrowLeft, Globe } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import {
+  Moon,
+  Sun,
+  ArrowLeft,
+  Globe,
+  CheckCircle2,
+  Mail,
+  KeyRound,
+  User,
+  Copy,
+  Check,
+} from "lucide-react";
 import { useTheme } from "./ThemeProvider";
 import { Input } from "./ui/input";
-import { PasswordInput } from "./ui/password-input";
 import { Button } from "./ui/button";
 import { Field } from "./ui/field";
 import { LanguageChangeModal } from "./LanguageChangeModal";
 import duracellLogo from "../assets/duracell-logo.png";
 
-export function RegisterUser({ userType, onBack }) {
+export function RegisterUser({ onBack }) {
   // Register form states
-  const [accountName, setAccountName] = useState("");
-  const [registerPassword, setRegisterPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [email, setEmail] = useState("");
-  const [timezone, setTimezone] = useState("(UTC+0:00) London, Dublin");
-  const [verificationCode, setVerificationCode] = useState("");
-  
+  const [homeownerName, setHomeownerName] = useState("");
+  const [homeownerEmail, setHomeownerEmail] = useState("");
+  const [successDetails, setSuccessDetails] = useState(null);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showLanguageModal, setShowLanguageModal] = useState(false);
   const [currentLanguage, setCurrentLanguage] = useState("en");
+  const [copied, setCopied] = useState(false);
   const { theme, setTheme } = useTheme();
 
-  const timezones = [
-    "(UTC+0:00) London, Dublin",
-    "(UTC+1:00) Berlin, Paris",
-    "(UTC+2:00) Cairo, Helsinki",
-    "(UTC+3:00) Moscow, Istanbul",
-    "(UTC+5:00) Karachi, Tashkent",
-    "(UTC+8:00) Beijing, Singapore",
-    "(UTC+9:00) Tokyo, Seoul",
-    "(UTC-5:00) New York, Toronto",
-    "(UTC-8:00) Los Angeles, Vancouver"
-  ];
+  useEffect(() => {
+    if (!copied) return;
+    const timeout = setTimeout(() => setCopied(false), 2500);
+    return () => clearTimeout(timeout);
+  }, [copied]);
 
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    
-    if (registerPassword !== confirmPassword) {
-      setError("Passwords do not match");
+
+    if (!homeownerName.trim()) {
+      setError("Please enter the homeowner's full name");
       return;
     }
-    
-    if (!verificationCode) {
-      setError("Please enter verification code");
+
+    if (!homeownerEmail.trim()) {
+      setError("Please enter the homeowner's email address");
       return;
     }
-    
+
     setIsLoading(true);
-    
+
+    const generateTemporaryPassword = () => {
+      const charset = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+      return Array.from(
+        { length: 10 },
+        () => charset[Math.floor(Math.random() * charset.length)]
+      ).join("");
+    };
+
+    const deriveUsername = () => {
+      if (homeownerEmail.includes("@")) {
+        const candidate = homeownerEmail
+          .split("@")[0]
+          .replace(/[^a-zA-Z0-9._-]/g, "");
+
+        if (candidate.length >= 3) {
+          return candidate.toLowerCase();
+        }
+      }
+
+      const fromName = homeownerName
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, ".")
+        .replace(/\.+/g, ".")
+        .replace(/^\.|\.$/g, "");
+
+      if (fromName.length >= 3) {
+        return fromName;
+      }
+
+      const fallback = Math.random().toString(36).slice(2, 8);
+      return `user_${fallback}`;
+    };
+
     // Simulate registration process
     setTimeout(() => {
       // Here you would typically call your registration API
+      const temporaryPassword = generateTemporaryPassword();
+      const username = deriveUsername();
+
       console.log("Registration data:", {
-        accountName,
-        password: registerPassword,
-        email,
-        timezone,
-        verificationCode,
-        userType
+        homeownerName,
+        homeownerEmail,
+        username,
+        temporaryPassword,
       });
+
+      setSuccessDetails({
+        homeownerName,
+        homeownerEmail,
+        username,
+        temporaryPassword,
+      });
+
+      setHomeownerName("");
+      setHomeownerEmail("");
       setIsLoading(false);
-      // Go back to login after successful registration
-      onBack();
     }, 1000);
   };
 
-  const handleGetVerificationCode = () => {
-    if (!email) {
-      setError("Please enter your email address first");
-      return;
+  const handleCreateAnother = () => {
+    setSuccessDetails(null);
+    setError("");
+    setCopied(false);
+  };
+
+  const handleCopyPassword = async () => {
+    if (!successDetails?.temporaryPassword) return;
+    try {
+      if (navigator?.clipboard?.writeText) {
+        await navigator.clipboard.writeText(successDetails.temporaryPassword);
+        setCopied(true);
+      }
+    } catch (copyError) {
+      console.error("Failed to copy temporary password", copyError);
     }
-    // Simulate sending verification code
-    console.log("Sending verification code to:", email);
-    // You would typically call your API here
   };
 
   const handleLanguageChange = (languageCode) => {
@@ -95,7 +147,7 @@ export function RegisterUser({ userType, onBack }) {
         >
           <Globe className="w-5 h-5 text-foreground" />
         </button>
-        
+
         {/* Light/Dark Mode Toggle */}
         <button
           onClick={() => setTheme(theme === "light" ? "dark" : "light")}
@@ -120,143 +172,164 @@ export function RegisterUser({ userType, onBack }) {
       </div>
 
       {/* Main Content with Slide Animation */}
-      <div 
-        className="w-full max-w-sm space-y-6 wizard-step forward py-24"
-      >
-        {/* Logo */}
-        {/* <div className="text-center">
-          <div className="text-center">
-            <img 
-              src={duracellLogo} 
-              alt="DURACELL ENERGY" 
-              className="h-12 mx-auto mb-4 brightness-0 invert dark:brightness-100 dark:invert-0"
-            />
-          </div>
-        </div> */}
-
-        {/* User Type Indicator */}
-        <div className="text-center mb-6">
-          <div className="inline-flex items-center py-2 bg-primary/10 rounded-full">
-            <span className="text-xl font-medium text-primary capitalize">
-              {userType} Registration
-            </span>
+      <div className="w-full max-w-xl space-y-6 wizard-step forward py-24">
+        <div className="space-y-4">
+          <div className="text-center space-y-2">
+            <h1 className="text-2xl font-semibold text-foreground">
+              Create a homeowner account
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Installers can set up access for homeowners in two quick steps.
+              Enter their details, submit, and we’ll handle the welcome email
+              with credentials automatically.
+            </p>
           </div>
         </div>
 
-        {/* Register Form */}
-        <form onSubmit={handleRegisterSubmit} className="space-y-6">
-          {/* Account Name Field */}
-          <Field label="Account name">
-            <Input
-              type="text"
-              value={accountName}
-              onChange={(e) => setAccountName(e.target.value)}
-              placeholder="Account name"
-              required
-            />
-          </Field>
+        {successDetails ? (
+          <div className="space-y-6">
+            <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-3xl p-6 space-y-4">
+              <div className="flex items-start gap-3">
+                <CheckCircle2 className="w-6 h-6 text-emerald-400" />
+                <div className="space-y-1">
+                  <h2 className="text-lg font-semibold text-emerald-200">
+                    Account created for {successDetails.homeownerName}
+                  </h2>
+                  <p className="text-sm text-emerald-100/80">
+                    A welcome email is already on its way to{" "}
+                    {successDetails.homeownerEmail}. It includes the username
+                    and temporary password shown below.
+                  </p>
+                </div>
+              </div>
 
-          {/* Password Field */}
-          <Field label="Password">
-            <PasswordInput
-              value={registerPassword}
-              onChange={(e) => setRegisterPassword(e.target.value)}
-              placeholder="Password"
-              required
-            />
-          </Field>
+              <div className="bg-background/80 border border-border rounded-2xl p-4 space-y-3">
+                <div className="flex items-center gap-3">
+                  <User className="w-5 h-5 text-primary" />
+                  <div>
+                    <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                      Username
+                    </p>
+                    <p className="text-sm font-semibold text-foreground">
+                      {successDetails.username}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Mail className="w-5 h-5 text-primary" />
+                  <div>
+                    <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                      Homeowner email
+                    </p>
+                    <p className="text-sm font-medium text-foreground">
+                      {successDetails.homeownerEmail}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between gap-3 flex-wrap sm:flex-nowrap">
+                  <div className="flex items-center gap-3">
+                    <KeyRound className="w-5 h-5 text-primary" />
+                    <div>
+                      <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                        Temporary password
+                      </p>
+                      <p className="text-sm font-semibold text-foreground">
+                        {successDetails.temporaryPassword}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleCopyPassword}
+                    className="inline-flex items-center gap-2 rounded-xl border border-border bg-muted/10 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-primary transition-all duration-200 hover:bg-muted/30"
+                  >
+                    {copied ? (
+                      <>
+                        <Check className="w-4 h-4" />
+                        Copied
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-4 h-4" />
+                        Copy
+                      </>
+                    )}
+                  </button>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Homeowners can sign in with either their username or email
+                  using this temporary password.
+                </p>
+              </div>
+            </div>
 
-          {/* Confirm Password Field */}
-          <Field label="Confirm password">
-            <PasswordInput
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="Confirm password"
-              required
-            />
-          </Field>
-
-          {/* Email Field */}
-          <Field label="Email address">
-            <Input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Please enter your e-mail address"
-              required
-            />
-          </Field>
-
-          {/* Timezone Field */}
-          <Field label="Location">
-            <select
-              value={timezone}
-              onChange={(e) => setTimezone(e.target.value)}
-              className="w-full h-12 px-4 bg-background border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-              required
-            >
-              {timezones.map((tz) => (
-                <option key={tz} value={tz}>
-                  {tz}
-                </option>
-              ))}
-            </select>
-          </Field>
-
-          {/* Verification Code Field */}
-          <Field label="Verification code">
-            <div className="flex gap-2">
-              <Input
-                type="text"
-                value={verificationCode}
-                onChange={(e) => setVerificationCode(e.target.value)}
-                placeholder="Please enter the verification code"
-                required
-                className="flex-1"
-              />
+            <div className="grid gap-3 sm:grid-cols-2">
               <Button
                 type="button"
-                onClick={handleGetVerificationCode}
-                variant="primary"
-                className="px-6"
+                width="full"
+                size="lg"
+                onClick={handleCreateAnother}
               >
-                GET
+                Register New
+              </Button>
+              <Button
+                type="button"
+                variant="secondary"
+                width="full"
+                size="lg"
+                onClick={onBack}
+              >
+                Back to Login
               </Button>
             </div>
-          </Field>
+          </div>
+        ) : (
+          <form onSubmit={handleRegisterSubmit} className="space-y-6">
+            <Field label="Homeowner full name">
+              <Input
+                type="text"
+                value={homeownerName}
+                onChange={(e) => setHomeownerName(e.target.value)}
+                placeholder="e.g. Taylor Morgan"
+                required
+              />
+            </Field>
 
-          {/* Error Message */}
-          {error && (
-            <div className="bg-red-500/20 border border-red-500/30 rounded-xl p-3">
-              <p className="text-red-400 text-sm text-center">{error}</p>
-            </div>
-          )}
+            <Field label="Homeowner email">
+              <Input
+                type="email"
+                value={homeownerEmail}
+                onChange={(e) => setHomeownerEmail(e.target.value)}
+                placeholder="e.g. taylor@example.com"
+                required
+              />
+            </Field>
 
-          {/* Register Button */}
-          <Button 
-            type="submit" 
-            disabled={isLoading} 
-            width="full" 
-            size="lg"
-          >
-            {isLoading ? (
-              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-            ) : (
-              "REGISTER"
+            {error && (
+              <div className="bg-red-500/20 border border-red-500/30 rounded-xl p-3">
+                <p className="text-red-400 text-sm text-center">{error}</p>
+              </div>
             )}
-          </Button>
 
-          {/* Return Button */}
-          <Button 
-            type="button" 
-            variant="secondary" 
-            width="full" 
-            size="lg"
-            onClick={onBack}
-          >
-            RETURN
-          </Button>
-        </form>
+            <Button type="submit" disabled={isLoading} width="full" size="lg">
+              {isLoading ? (
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              ) : (
+                "Register Now"
+              )}
+            </Button>
+
+            <Button
+              type="button"
+              variant="secondary"
+              width="full"
+              size="lg"
+              onClick={onBack}
+            >
+              Back to Login
+            </Button>
+          </form>
+        )}
 
         {/* Copyright */}
         <div className="text-center pt-4">

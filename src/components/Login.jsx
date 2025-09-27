@@ -12,7 +12,6 @@ import { LanguageChangeModal } from "./LanguageChangeModal";
 import duracellLogo from "../assets/duracell-logo.png";
 
 export function Login() {
-  const [userType, setUserType] = useState("monitoring"); // "monitoring" or "service"
   const [currentView, setCurrentView] = useState("login"); // "login", "register", "forgot-password"
 
   // Login form states
@@ -66,7 +65,7 @@ export function Login() {
 
   // Show Register screen if requested
   if (currentView === "register") {
-    return <RegisterUser userType={userType} onBack={handleBackToLogin} />;
+    return <RegisterUser onBack={handleBackToLogin} />;
   }
 
   return (
@@ -117,39 +116,15 @@ export function Login() {
           </div>
         </div>
 
-        {/* User Type Tabs */}
-        <div className="flex bg-muted/30 rounded-full p-1.5 mb-6 border border-muted/40 space-x-2">
-          <button
-            onClick={() => setUserType("monitoring")}
-            className={`flex-1 py-3 px-4 rounded-full text-sm font-medium transition-all duration-300 ${
-              userType === "monitoring"
-                ? "bg-primary text-background font-semibold shadow-lg shadow-primary/25"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted/20 bg-background/50 border border-muted/30"
-            }`}
-          >
-            Monitoring
-          </button>
-          <button
-            onClick={() => setUserType("service")}
-            className={`flex-1 py-3 px-4 rounded-full text-sm font-medium transition-all duration-300 ${
-              userType === "service"
-                ? "bg-primary text-background font-semibold shadow-lg shadow-primary/25"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted/20 bg-background/50 border border-muted/30"
-            }`}
-          >
-            Service
-          </button>
-        </div>
-
         {/* Login Form */}
         <form onSubmit={handleLoginSubmit} className="space-y-6">
           {/* Username Field */}
-          <Field label="Username">
+          <Field label="Account">
             <Input
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              placeholder="Enter your username"
+              placeholder="Email or username"
               required
             />
           </Field>
@@ -159,7 +134,7 @@ export function Login() {
             <PasswordInput
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
+              placeholder="Password"
               required
             />
           </Field>

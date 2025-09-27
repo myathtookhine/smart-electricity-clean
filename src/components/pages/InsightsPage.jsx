@@ -1,6 +1,7 @@
 import { useState, useMemo, useRef, useEffect } from "react";
+import { LineChart, areaElementClasses } from "@mui/x-charts/LineChart";
 import { BarChart } from "@mui/x-charts/BarChart";
-import { PieChart } from "@mui/x-charts/PieChart";
+import { useYScale, useDrawingArea } from "@mui/x-charts/hooks";
 import {
   BarChart3,
   Zap,
@@ -15,9 +16,155 @@ import {
   Info,
   Bell,
   Moon,
+  Plus,
+  UtilityPoleIcon,
 } from "lucide-react";
 import { useTheme } from "../ThemeProvider";
+import {
+  ConsumptionSourceBreakdownChart,
+  BatteryUsageBreakdownChart,
+  SelfConsumptionRatioChart,
+} from "../AdvancedDonutCharts";
 import logo from "../../assets/duracell-logo.png";
+import DuracellWhite from "../../assets/duracell-logo-white.svg";
+import DuracellBlack from "../../assets/duracell-logo-black.svg";
+
+const clamp01 = (value) => Math.max(0, Math.min(1, value));
+
+const hexToRgb = (hex) => {
+  const normalized = hex.replace("#", "");
+  const len = normalized.length;
+  if (len !== 3 && len !== 6) return { r: 0, g: 0, b: 0 };
+  const expanded =
+    len === 3
+      ? normalized
+          .split("")
+          .map((char) => `${char}${char}`)
+          .join("")
+      : normalized;
+  const num = parseInt(expanded, 16);
+  return {
+    r: (num >> 16) & 255,
+    g: (num >> 8) & 255,
+    b: num & 255,
+  };
+};
+
+const rgbToHex = ({ r, g, b }) =>
+  `#${[r, g, b]
+    .map((channel) => channel.toString(16).padStart(2, "0"))
+    .join("")}`;
+
+const mixChannel = (channel, amount, target) =>
+  Math.round(channel + (target - channel) * amount);
+
+const mixColor = (hex, amount, target) => {
+  const { r, g, b } = hexToRgb(hex);
+  return rgbToHex({
+    r: mixChannel(r, amount, target),
+    g: mixChannel(g, amount, target),
+    b: mixChannel(b, amount, target),
+  });
+};
+
+const lightenColor = (hex, amount = 0.25) => mixColor(hex, amount, 255);
+const darkenColor = (hex, amount = 0.2) => mixColor(hex, amount, 0);
+
+const SUMMARY_TIMEFRAME_LABELS = {
+  "1day": "Daily",
+  "7days": "Weekly",
+  "30days": "Monthly",
+  "1year": "Yearly",
+};
+
+const ENERGY_PALETTE = {
+  solar: "#eab308",
+  battery: "#16a34a",
+  gridImport: "#ef4444",
+  gridExport: "#22c55e",
+  house: "#38bdf8",
+  ev: "#3b82f6",
+};
+
+const parseNumber = (value, fallback = 0) => {
+  const parsed = Number.parseFloat(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+};
+
+const buildRatioSegments = (total, configs) => {
+  if (!Number.isFinite(total) || total <= 0) {
+    return [];
+  }
+
+  let allocated = 0;
+  const lastIndex = configs.length - 1;
+
+  return configs
+    .map((config, index) => {
+      let value;
+
+      if (index === lastIndex) {
+        value = total - allocated;
+      } else {
+        const proposed = total * (config.ratio ?? 0);
+        value = Number(proposed.toFixed(1));
+        if (config.maxValue !== undefined) {
+          value = Math.min(value, config.maxValue);
+        }
+        value = Math.min(value, Math.max(total - allocated, 0));
+        allocated += value;
+      }
+
+      const finalValue = Number(Number(Math.max(value, 0)).toFixed(1));
+      if (index === lastIndex) {
+        allocated += finalValue;
+      }
+
+      return {
+        ...config,
+        value: finalValue,
+      };
+    })
+    .filter((item) => item.value > 0);
+};
+
+// Bi-directional gradient component for energy flow visualization
+function BiDirectionalGradient({
+  threshold = 0,
+  positiveColor,
+  negativeColor,
+  id,
+}) {
+  const { top, height, bottom } = useDrawingArea();
+  const svgHeight = top + bottom + height;
+  const scale = useYScale();
+  const y0 = scale(threshold);
+  const offset = svgHeight ? clamp01(y0 / svgHeight) : 0.5;
+  const upperLight = lightenColor(positiveColor, 0.35);
+  const upperDeep = darkenColor(positiveColor, 0.1);
+  const lowerLight = lightenColor(negativeColor, 0.3);
+  const lowerDeep = darkenColor(negativeColor, 0.15);
+  const upperStop = clamp01(offset - 0.015);
+  const lowerStop = clamp01(offset + 0.015);
+
+  return (
+    <defs>
+      <linearGradient
+        id={id}
+        x1="0"
+        x2="0"
+        y1="0"
+        y2={`${svgHeight}px`}
+        gradientUnits="userSpaceOnUse"
+      >
+        <stop offset={0} stopColor={upperLight} stopOpacity={0.85} />
+        <stop offset={upperStop} stopColor={upperDeep} stopOpacity={0.95} />
+        <stop offset={lowerStop} stopColor={lowerLight} stopOpacity={0.8} />
+        <stop offset={1} stopColor={lowerDeep} stopOpacity={0.95} />
+      </linearGradient>
+    </defs>
+  );
+}
 
 // Mock data for demonstration - Enhanced bidirectional flow
 const generateHourlyData = () => {
@@ -64,13 +211,6 @@ const generateHourlyData = () => {
     };
   });
 };
-
-const generateSummaryData = () => ({
-  grid: 25.4,
-  solar: 18.7,
-  battery: 12.3,
-  ev: 8.9,
-});
 
 // Generate summary report data based on time period
 const generateSummaryReportData = (timeView) => {
@@ -134,7 +274,7 @@ const generateSummaryReportData = (timeView) => {
 export function InsightsPage({ onPageChange }) {
   const { theme, setTheme } = useTheme();
   const notificationCount = 3; // Example notification count
-  const [timeView, setTimeView] = useState("today"); // 'today', '7days', '30days', '1year'
+  const [timeView, setTimeView] = useState("today"); // 'today', '7d', '30d', '1y'
   const [summaryTimeView, setSummaryTimeView] = useState("1day"); // '1day', '7days', '30days', '1year'
   const [selectedFilters, setSelectedFilters] = useState({
     grid: true,
@@ -146,7 +286,7 @@ export function InsightsPage({ onPageChange }) {
   const [activeTooltip, setActiveTooltip] = useState(null);
   const [showCalendar, setShowCalendar] = useState(false);
   const [selectedDate, setSelectedDate] = useState("2025-09-02");
-
+  const headerLogo = theme === "dark" ? DuracellWhite : DuracellBlack;
   // Refs for drag scrolling
   const scrollRef1 = useRef(null);
   const scrollRef2 = useRef(null);
@@ -251,11 +391,136 @@ export function InsightsPage({ onPageChange }) {
   }, [activeTooltip, showCalendar]);
 
   const hourlyData = useMemo(() => generateHourlyData(), []);
-  const summaryData = useMemo(() => generateSummaryData(), []);
   const summaryReportData = useMemo(
     () => generateSummaryReportData(summaryTimeView),
     [summaryTimeView]
   );
+  const summaryTimeframeLabel = useMemo(
+    () => SUMMARY_TIMEFRAME_LABELS[summaryTimeView] ?? "Custom",
+    [summaryTimeView]
+  );
+
+  const consumptionBreakdown = useMemo(() => {
+    const totalConsumption = parseNumber(summaryReportData.homeConsumption);
+
+    if (totalConsumption <= 0) {
+      return { total: 0, segments: [] };
+    }
+
+    const solarAvailable = parseNumber(summaryReportData.solarGeneration);
+    const gridImport = parseNumber(summaryReportData.gridImport);
+    const batteryCharge = parseNumber(summaryReportData.batteryCharge);
+
+    const maxGridContribution = Math.min(totalConsumption, gridImport * 0.6);
+    const maxBatteryContribution = Math.min(
+      totalConsumption,
+      batteryCharge * 0.7
+    );
+    const baseConfigs = [
+      {
+        id: "solar-to-load",
+        label: "Solar to Load",
+        ratio: 0.48,
+        color: ENERGY_PALETTE.solar,
+        legendColor: ENERGY_PALETTE.solar,
+        legendSubLabel: "Direct solar coverage",
+        maxValue: solarAvailable,
+      },
+      {
+        id: "battery-to-load",
+        label: "Battery to Load",
+        ratio: 0.24,
+        color: "#f97316",
+        legendColor: "#f97316",
+        legendSubLabel: "Stored energy",
+        maxValue: maxBatteryContribution,
+      },
+      {
+        id: "grid-to-load",
+        label: "Grid to Load",
+        ratio: 0.28,
+        color: "#2563eb",
+        legendColor: "#2563eb",
+        legendSubLabel: "Supplement from grid",
+        maxValue: maxGridContribution,
+      },
+    ];
+
+    return {
+      total: Number(totalConsumption.toFixed(1)),
+      segments: buildRatioSegments(totalConsumption, baseConfigs),
+    };
+  }, [
+    summaryReportData.homeConsumption,
+    summaryReportData.solarGeneration,
+    summaryReportData.gridImport,
+    summaryReportData.batteryCharge,
+  ]);
+
+  const batteryUsageBreakdown = useMemo(() => {
+    const batteryCharge = parseNumber(summaryReportData.batteryCharge);
+    const gridExport = parseNumber(summaryReportData.gridExport);
+    const dischargeBaseline = batteryCharge * 0.85 + gridExport * 0.2;
+    const totalDischarge = Number(Math.max(dischargeBaseline, 0).toFixed(1));
+
+    if (totalDischarge <= 0) {
+      return { total: 0, segments: [] };
+    }
+
+    const configs = [
+      {
+        id: "battery-to-house",
+        label: "To House",
+        ratio: 0.5,
+        color: ENERGY_PALETTE.house,
+        legendColor: ENERGY_PALETTE.house,
+        legendSubLabel: "Home loads",
+      },
+      {
+        id: "battery-to-grid",
+        label: "To Grid Export",
+        ratio: 0.24,
+        color: ENERGY_PALETTE.gridExport,
+        legendColor: ENERGY_PALETTE.gridExport,
+        legendSubLabel: "Grid support",
+        maxValue: gridExport,
+      },
+      {
+        id: "battery-to-ev",
+        label: "To EV Charging",
+        ratio: 0.26,
+        color: ENERGY_PALETTE.ev,
+        legendColor: ENERGY_PALETTE.ev,
+        legendSubLabel: "EV sessions",
+      },
+    ];
+
+    return {
+      total: totalDischarge,
+      segments: buildRatioSegments(totalDischarge, configs),
+    };
+  }, [summaryReportData.batteryCharge, summaryReportData.gridExport]);
+
+  const selfConsumptionStats = useMemo(() => {
+    const solarGeneration = parseNumber(summaryReportData.solarGeneration);
+    const gridExport = parseNumber(summaryReportData.gridExport);
+    if (solarGeneration <= 0) {
+      return {
+        total: 0,
+        consumed: 0,
+        exported: 0,
+      };
+    }
+
+    const exported = Math.min(gridExport, solarGeneration);
+    const consumed = Math.max(solarGeneration - exported, 0);
+
+    return {
+      total: Number(solarGeneration.toFixed(1)),
+      consumed: Number(consumed.toFixed(1)),
+      exported: Number(exported.toFixed(1)),
+    };
+  }, [summaryReportData.solarGeneration, summaryReportData.gridExport]);
 
   const toggleFilter = (filter) => {
     setSelectedFilters((prev) => ({
@@ -337,13 +602,13 @@ export function InsightsPage({ onPageChange }) {
     let periods = [];
     let labelFormat = "";
 
-    if (timeView === "7days") {
+    if (timeView === "7d") {
       periods = Array.from({ length: 7 }, (_, i) => `Day ${i + 1}`);
       labelFormat = "Day";
-    } else if (timeView === "30days") {
+    } else if (timeView === "30d") {
       periods = Array.from({ length: 30 }, (_, i) => `Day ${i + 1}`);
       labelFormat = "Day";
-    } else if (timeView === "1year") {
+    } else if (timeView === "1y") {
       periods = [
         "Jan",
         "Feb",
@@ -372,43 +637,53 @@ export function InsightsPage({ onPageChange }) {
   };
 
   const getLineConfig = () => {
-    const lines = [];
-    if (selectedFilters.grid) {
-      lines.push({
+    const baseConfig = {
+      grid: {
         dataKey: "grid",
         label: "Grid Import/Export",
-        color: "#ef4444", // red
-      });
-    }
-    if (selectedFilters.solar) {
-      lines.push({
+        strokeColor: "#f97316",
+        positiveColor: "#f97316",
+        negativeColor: "#2563eb",
+        gradientId: "grid-gradient",
+      },
+      solar: {
         dataKey: "solar",
         label: "Solar Generation",
-        color: "#eab308", // yellow
-      });
-    }
-    if (selectedFilters.battery) {
-      lines.push({
+        strokeColor: "#f59e0b",
+        positiveColor: "#f59e0b",
+        negativeColor: "#f59e0b",
+        gradientId: "solar-gradient",
+      },
+      battery: {
         dataKey: "battery",
         label: "Battery Charge/Discharge",
-        color: "#3b82f6", // blue
-      });
-    }
-    if (selectedFilters.house) {
-      lines.push({
+        strokeColor: "#fb8a22",
+        positiveColor: "#fb8a22",
+        negativeColor: "#0ea5e9",
+        gradientId: "battery-gradient",
+      },
+      house: {
         dataKey: "house",
         label: "House Load",
-        color: theme === "dark" ? "#ffffff" : "#6b7280", // white for dark mode, gray for light mode
-      });
-    }
-    if (selectedFilters.ev) {
-      lines.push({
+        strokeColor: "#38bdf8",
+        positiveColor: "#38bdf8",
+        negativeColor: "#38bdf8",
+        gradientId: "house-gradient",
+      },
+      ev: {
         dataKey: "ev",
         label: "EV Charger",
-        color: "#22c55e", // green
-      });
-    }
-    return lines;
+        strokeColor: "#0284c7",
+        positiveColor: "#0ea5e9",
+        negativeColor: "#0ea5e9",
+        gradientId: "ev-gradient",
+      },
+    };
+
+    return Object.keys(selectedFilters)
+      .filter((key) => selectedFilters[key])
+      .map((key) => baseConfig[key])
+      .filter(Boolean);
   };
 
   const getChartDimensions = () => {
@@ -427,39 +702,47 @@ export function InsightsPage({ onPageChange }) {
     return { min: -20, max: 80 };
   };
 
-  const getXAxisLabel = () => {
-    const chartData = getChartData();
+  const lineSeries = useMemo(() => getLineConfig(), [selectedFilters]);
+  const chartDataMemo = useMemo(
+    () => getChartData(),
+    [timeView, selectedFilters, hourlyData]
+  );
+
+  const getXAxisData = () => {
     if (timeView === "today") {
-      return chartData.map((item) => `${item.x}:00`);
+      return chartDataMemo.map((item) => `${item.x}:00`);
     }
-    return chartData.map((item) => item.x);
+    return chartDataMemo.map((item) => item.x);
   };
 
-  const pieData = [
-    { id: 0, value: summaryData.grid, label: "Grid", color: "#ef4444" },
-    { id: 1, value: summaryData.solar, label: "Solar", color: "#eab308" },
-    { id: 2, value: summaryData.battery, label: "Battery", color: "#3b82f6" },
-    { id: 3, value: summaryData.ev, label: "EV", color: "#22c55e" },
-  ];
+  const getXAxisLabel = () => {
+    if (timeView === "today") {
+      return chartDataMemo.map((item) => `${item.x}:00`);
+    }
+    return chartDataMemo.map((item) => item.x);
+  };
 
+  // Color scheme based on energy insights redesign spec
+  // Warm tones for generation/inflow: Solar, Battery Discharge, Grid Export
+  // Cool tones for consumption/outflow: House, EV, Grid Import, Battery Charge
   const filterIcons = [
-    { key: "grid", icon: Zap, color: "#ef4444", label: "Grid" },
-    { key: "solar", icon: Sun, color: "#eab308", label: "Solar" },
-    { key: "battery", icon: Battery, color: "#3b82f6", label: "Battery" },
+    { key: "grid", icon: Zap, color: "#f97316", label: "Grid" },
+    { key: "solar", icon: Sun, color: "#f59e0b", label: "Solar" },
+    { key: "battery", icon: Battery, color: "#fb8a22", label: "Battery" },
     {
       key: "house",
       icon: Home,
-      color: theme === "dark" ? "#ffffff" : "#6b7280",
+      color: "#38bdf8",
       label: "House",
     },
-    { key: "ev", icon: Car, color: "#22c55e", label: "EV" },
+    { key: "ev", icon: Car, color: "#0ea5e9", label: "EV" },
   ];
 
   const timeViewOptions = [
     { key: "today", label: "Today", icon: Clock },
-    { key: "7days", label: "7 Days", icon: Calendar },
-    { key: "30days", label: "30 Days", icon: Calendar },
-    { key: "1year", label: "1 Year", icon: Calendar },
+    { key: "7d", label: "7d", icon: Calendar },
+    { key: "30d", label: "30d", icon: Calendar },
+    { key: "1y", label: "1y", icon: Calendar },
   ];
 
   const summaryTimeViewOptions = [
@@ -581,8 +864,8 @@ export function InsightsPage({ onPageChange }) {
           {/* Center: Logo */}
           <div className="text-center">
             <img
-              src={logo}
-              alt="Duracell Logo"
+              src={headerLogo}
+              alt="Duracell logo"
               className="w-32 h-auto object-contain"
             />
           </div>
@@ -629,7 +912,7 @@ export function InsightsPage({ onPageChange }) {
 
       {/* Content Area */}
       <div className="px-6 space-y-6 pb-8">
-        <div className="bg-card rounded-2xl p-6 shadow-lg">
+        <div className="bg-card rounded-2xl p-4 shadow-lg">
           {timeView === "today" ? (
             <>
               {/* Interactive Bar Chart */}
@@ -637,17 +920,6 @@ export function InsightsPage({ onPageChange }) {
                 <h2 className="text-lg font-semibold text-card-foreground mb-4">
                   Real-time Energy Flow
                 </h2>
-
-                {/* Y-axis Legend */}
-                {/* <div className="mb-4 text-sm text-muted-foreground">
-                <div className="flex justify-between items-center">
-                  <span>↑ Positive: Grid Import • Battery Discharge</span>
-                  <span>↓ Negative: Grid Export • Battery Charge</span>
-                </div>
-                <div className="text-center mt-1 text-xs">
-                  {timeView === "today" ? "Power (kW)" : "Energy (kWh)"}
-                </div>
-              </div> */}
 
                 <div
                   ref={scrollRef1}
@@ -669,33 +941,13 @@ export function InsightsPage({ onPageChange }) {
                   }}
                 >
                   <div className="min-w-fit">
-                    <BarChart
+                    <LineChart
                       width={timeView === "today" ? 600 : 450}
                       height={280}
-                      colors={getLineConfig().map((line) => {
-                        // Use gradient URLs for different data types
-                        if (line.dataKey === "grid")
-                          return "url(#gridGradient)";
-                        if (line.dataKey === "solar")
-                          return "url(#solarGradient)";
-                        if (line.dataKey === "battery")
-                          return "url(#batteryGradient)";
-                        if (line.dataKey === "ev") return "url(#evGradient)";
-                        if (line.dataKey === "house")
-                          return "url(#houseGradient)";
-                        return line.color;
-                      })}
-                      series={getLineConfig().map((line) => ({
-                        data: getChartData().map(
-                          (item) => item[line.dataKey] || 0
-                        ),
-                        label: line.label,
-                        type: "bar",
-                      }))}
                       xAxis={[
                         {
-                          data: getXAxisLabel(),
-                          scaleType: "band",
+                          data: getXAxisData(),
+                          scaleType: "point",
                           tickLabelStyle: {
                             fontSize: "10px",
                             fill: theme === "dark" ? "#ffffff" : "#000000",
@@ -712,9 +964,32 @@ export function InsightsPage({ onPageChange }) {
                           },
                         },
                       ]}
-                      margin={{ left: 10, right: 10, top: 10, bottom: 50 }}
-                      grid={{ horizontal: true }}
+                      series={lineSeries.map((line) => ({
+                        data: chartDataMemo.map(
+                          (item) => item[line.dataKey] ?? 0
+                        ),
+                        label: line.label,
+                        area: true,
+                        showMark: false,
+                        color: line.strokeColor,
+                        areaFill: `url(#${line.gradientId})`,
+                        stack:
+                          line.dataKey === "solar" ||
+                          line.dataKey === "house" ||
+                          line.dataKey === "ev"
+                            ? "positive"
+                            : line.dataKey === "grid" ||
+                              line.dataKey === "battery"
+                            ? "bidirectional"
+                            : undefined,
+                      }))}
+                      margin={{ left: 40, right: 20, top: 20, bottom: 50 }}
+                      grid={{ horizontal: true, vertical: false }}
                       sx={{
+                        [`& .${areaElementClasses.root}`]: {
+                          fillOpacity: 0.7,
+                          filter: "none",
+                        },
                         "& .MuiChartsAxis-root": {
                           "& .MuiChartsAxis-tickLabel": {
                             color: theme === "dark" ? "#ffffff" : "#000000",
@@ -743,108 +1018,328 @@ export function InsightsPage({ onPageChange }) {
                             theme === "dark" ? "#4a4d50" : "#e5e5e5"
                           }`,
                         },
-                        "& .MuiChartsLabel-root": {
-                          color: theme === "dark" ? "#ffffff" : "#000000",
-                        },
-                        "& .MuiChartsLegend-label": {
-                          color: theme === "dark" ? "#ffffff" : "#000000",
+                        "& .MuiChartsLegend-root": {
+                          display: "none",
                         },
                       }}
                     >
-                      {/* Define gradients for bar chart */}
-                      <defs>
-                        <linearGradient
-                          id="gridGradient"
-                          x1="0%"
-                          y1="0%"
-                          x2="0%"
-                          y2="100%"
+                      {/* Bi-directional gradients for different energy types */}
+                      {lineSeries.map((line) => (
+                        <BiDirectionalGradient
+                          key={line.gradientId}
+                          threshold={0}
+                          positiveColor={line.positiveColor}
+                          negativeColor={line.negativeColor}
+                          id={line.gradientId}
+                        />
+                      ))}
+                    </LineChart>
+                  </div>
+                </div>
+              </div>
+
+              {/* Pill-style Legend */}
+              <div className="mt-6">
+                <div className="flex flex-wrap gap-2 justify-center">
+                  {filterIcons.map(({ key, icon: Icon, color, label }) => (
+                    <button
+                      key={key}
+                      onClick={() => toggleFilter(key)}
+                      className={`flex items-center space-x-2 px-4 py-2 rounded-full transition-all duration-300 border ${
+                        selectedFilters[key]
+                          ? "text-white border-transparent"
+                          : "bg-muted/20 text-muted-foreground border-border hover:bg-muted/30"
+                      }`}
+                      style={{
+                        backgroundColor: selectedFilters[key]
+                          ? color
+                          : undefined,
+                      }}
+                    >
+                      <Icon
+                        className="w-4 h-4"
+                        style={{
+                          color: selectedFilters[key] ? "white" : color,
+                        }}
+                      />
+                      <span className="text-sm font-medium">{label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* 2x2 Minimalist Card Grid */}
+              <div className="mt-8">
+                <h3 className="text-lg font-semibold text-card-foreground mb-4">
+                  Energy Overview
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
+                  {/* Solar Card */}
+                  <div
+                    className="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-2xl p-4 border border-amber-200/30 dark:border-amber-800/30 cursor-pointer hover:scale-105 transition-transform duration-200 relative overflow-hidden"
+                    onClick={() => {
+                      /* Navigate to solar detail view */
+                    }}
+                  >
+                    {/* Background Sparkline */}
+                    <div className="absolute inset-0 opacity-[0.25]">
+                      <svg
+                        width="100%"
+                        height="100%"
+                        viewBox="0 0 120 80"
+                        className="text-amber-600"
+                      >
+                        <path
+                          d="M0,52 C16,30 36,34 56,20 C74,10 96,40 112,28 S120,34 120,34"
+                          stroke="currentColor"
+                          strokeWidth="1.2"
+                          strokeLinecap="round"
+                          fill="none"
+                        />
+                      </svg>
+                    </div>
+
+                    <div className="flex items-center justify-between mb-2 relative z-10">
+                      <Sun className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                      <div className="text-xs text-amber-700/60 dark:text-amber-300/60">
+                        Solar
+                      </div>
+                    </div>
+                    <div className="relative z-10">
+                      {/* Main Metric */}
+                      <div className="text-xl font-bold text-amber-900 dark:text-amber-100 mb-1">
+                        {summaryReportData.solarGeneration}
+                        <span className="text-base ms-1">kWh</span>
+                      </div>
+                      {/* Context Text */}
+                      <div className="text-xs text-amber-700/70 dark:text-amber-300/70">
+                        15% less than yesterday
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Battery Card */}
+                  <div
+                    className="bg-gradient-to-br from-teal-50 to-cyan-50 dark:from-teal-900/20 dark:to-cyan-900/20 rounded-2xl p-4 border border-teal-200/30 dark:border-teal-800/30 cursor-pointer hover:scale-105 transition-transform duration-200 relative overflow-hidden"
+                    onClick={() => {
+                      /* Navigate to battery detail view */
+                    }}
+                  >
+                    {/* Background Sparkline */}
+                    <div className="absolute inset-0 opacity-[0.25]">
+                      <svg width="100%" height="100%" viewBox="0 0 120 80">
+                        <line
+                          x1="0"
+                          y1="40"
+                          x2="120"
+                          y2="40"
+                          stroke="rgba(20,184,166,0.2)"
+                          strokeWidth="0.8"
+                          strokeDasharray="4 4"
+                        />
+                        <path
+                          d="M0,46 C12,28 36,30 56,22 C78,18 96,26 112,20 S120,18 120,18"
+                          stroke="#f59e0b"
+                          strokeWidth="1.4"
+                          strokeLinecap="round"
+                          fill="none"
+                        />
+                        <path
+                          d="M0,44 C18,58 36,68 58,70 C82,72 102,60 118,66 S120,68 120,68"
+                          stroke="#14b8a6"
+                          strokeWidth="1.4"
+                          strokeLinecap="round"
+                          fill="none"
+                        />
+                      </svg>
+                    </div>
+
+                    <div className="flex items-center justify-between mb-2 relative z-10">
+                      <Battery className="w-5 h-5 text-teal-600 dark:text-teal-400" />
+                      <div className="text-xs text-teal-700/60 dark:text-teal-300/60">
+                        Battery
+                      </div>
+                    </div>
+                    <div className="relative flex justify-between items-start z-10">
+                      <div className="space-y-2">
+                        <div className="flex flex-col justify-start">
+                          <span className="text-xs font-semibold tracking-wide text-amber-600/80 dark:text-amber-300/80">
+                            Discharge
+                          </span>
+                          <div className="flex flex-row items-center space-x-1.5">
+                            <span className="text-md font-semibold text-amber-700 dark:text-amber-200">
+                              4.8
+                            </span>
+                            <span className="text-xs text-amber-700/70 dark:text-amber-300/70">
+                              kWh
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex flex-col justify-start">
+                          <span className="text-xs font-semibold tracking-wide text-teal-600/80 dark:text-teal-300/80">
+                            Charge
+                          </span>
+                          <div className="flex flex-row items-center space-x-1.5">
+                            <span className="text-md font-semibold text-amber-700 dark:text-amber-200">
+                              3.4
+                            </span>
+                            <span className="text-xs text-amber-700/70 dark:text-amber-300/70">
+                              kWh
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      {/* SOC Gauge */}
+                      <div className="absolute bottom-0 right-0 w-12 h-12 flex-shrink-0">
+                        <svg
+                          className="w-full h-full transform -rotate-90"
+                          viewBox="0 0 36 36"
                         >
-                          <stop
-                            offset="0%"
-                            stopColor="#ef4444"
-                            stopOpacity={0.8}
+                          <path
+                            className="text-teal-200 dark:text-teal-700"
+                            strokeDasharray="85, 100"
+                            d="M18 2.0845
+                              a 15.9155 15.9155 0 0 1 0 31.831
+                              a 15.9155 15.9155 0 0 1 0 -31.831"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="3"
                           />
-                          <stop
-                            offset="100%"
-                            stopColor="#dc2626"
-                            stopOpacity={1}
+                          <path
+                            className="text-teal-500 dark:text-teal-400"
+                            strokeDasharray="85, 100"
+                            d="M18 2.0845
+                              a 15.9155 15.9155 0 0 1 0 31.831
+                              a 15.9155 15.9155 0 0 1 0 -31.831"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="3"
+                            strokeLinecap="round"
                           />
-                        </linearGradient>
-                        <linearGradient
-                          id="solarGradient"
-                          x1="0%"
-                          y1="0%"
-                          x2="0%"
-                          y2="100%"
-                        >
-                          <stop
-                            offset="0%"
-                            stopColor="#fbbf24"
-                            stopOpacity={0.8}
-                          />
-                          <stop
-                            offset="100%"
-                            stopColor="#eab308"
-                            stopOpacity={1}
-                          />
-                        </linearGradient>
-                        <linearGradient
-                          id="batteryGradient"
-                          x1="0%"
-                          y1="0%"
-                          x2="0%"
-                          y2="100%"
-                        >
-                          <stop
-                            offset="0%"
-                            stopColor="#60a5fa"
-                            stopOpacity={0.8}
-                          />
-                          <stop
-                            offset="100%"
-                            stopColor="#3b82f6"
-                            stopOpacity={1}
-                          />
-                        </linearGradient>
-                        <linearGradient
-                          id="evGradient"
-                          x1="0%"
-                          y1="0%"
-                          x2="0%"
-                          y2="100%"
-                        >
-                          <stop
-                            offset="0%"
-                            stopColor="#a78bfa"
-                            stopOpacity={0.8}
-                          />
-                          <stop
-                            offset="100%"
-                            stopColor="#8b5cf6"
-                            stopOpacity={1}
-                          />
-                        </linearGradient>
-                        <linearGradient
-                          id="houseGradient"
-                          x1="0%"
-                          y1="0%"
-                          x2="0%"
-                          y2="100%"
-                        >
-                          <stop
-                            offset="0%"
-                            stopColor={theme === "dark" ? "#e5e7eb" : "#9ca3af"}
-                            stopOpacity={0.8}
-                          />
-                          <stop
-                            offset="100%"
-                            stopColor={theme === "dark" ? "#d1d5db" : "#6b7280"}
-                            stopOpacity={1}
-                          />
-                        </linearGradient>
-                      </defs>
-                    </BarChart>
+                        </svg>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <span className="text-xs font-bold text-teal-700 dark:text-teal-300">
+                            85%
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* EV Card */}
+                  <div
+                    className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-4 border border-blue-200/30 dark:border-blue-800/30 cursor-pointer hover:scale-105 transition-transform duration-200 relative overflow-hidden"
+                    onClick={() => {
+                      /* Navigate to EV detail view */
+                    }}
+                  >
+                    {/* Background Sparkline */}
+                    <div className="absolute inset-0 opacity-[0.25]">
+                      <svg
+                        width="100%"
+                        height="100%"
+                        viewBox="0 0 120 80"
+                        className="text-blue-600"
+                      >
+                        <path
+                          d="M0,58 C18,68 40,50 60,56 C78,60 98,38 118,46 S120,48 120,48"
+                          stroke="currentColor"
+                          strokeWidth="1.2"
+                          strokeLinecap="round"
+                          fill="none"
+                        />
+                      </svg>
+                    </div>
+
+                    <div className="flex items-center justify-between mb-2 relative z-10">
+                      <div className="flex flex-row items-center">
+                        <Home className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                        <Plus className="w-3 h-3 text-blue-600 dark:text-blue-400 mx-1" />
+                        <Car className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                      </div>
+                      <div className="text-xs text-blue-700/60 dark:text-blue-300/60">
+                        Home/EV
+                      </div>
+                    </div>
+                    <div className="relative z-10">
+                      {/* Main Metric */}
+                      <div className="text-xl font-bold text-blue-900 dark:text-blue-100 mb-1">
+                        3.1<span className="ms-1 text-base">kWh</span>
+                      </div>
+                      {/* Context Text */}
+                      <div className="text-xs text-blue-700/70 dark:text-blue-300/70">
+                        10% less than yesterday
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Grid Card */}
+                  <div
+                    className="bg-gradient-to-br from-gray-50 to-slate-50 dark:from-gray-900/20 dark:to-slate-900/20 rounded-2xl p-4 border border-gray-200/30 dark:border-gray-700/30 cursor-pointer hover:scale-105 transition-transform duration-200 relative overflow-hidden"
+                    onClick={() => {
+                      /* Navigate to grid detail view */
+                    }}
+                  >
+                    {/* Background Sparkline */}
+                    <div className="absolute inset-0 opacity-[0.25]">
+                      <svg width="100%" height="100%" viewBox="0 0 120 80">
+                        <line
+                          x1="0"
+                          y1="40"
+                          x2="120"
+                          y2="40"
+                          stroke="rgba(148,163,184,0.25)"
+                          strokeWidth="0.8"
+                          strokeDasharray="4 4"
+                        />
+                        <path
+                          d="M0,38 C18,24 36,36 54,28 C72,22 94,16 112,26 S120,30 120,30"
+                          stroke="#3b82f6"
+                          strokeWidth="1.4"
+                          strokeLinecap="round"
+                          fill="none"
+                        />
+                        <path
+                          d="M0,40 C20,56 42,46 60,60 C80,70 102,64 118,72 S120,74 120,74"
+                          stroke="#f97316"
+                          strokeWidth="1.4"
+                          strokeLinecap="round"
+                          fill="none"
+                        />
+                      </svg>
+                    </div>
+
+                    <div className="flex items-center justify-between mb-2 relative z-10">
+                      <UtilityPoleIcon className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+                      <div className="text-xs text-gray-700/60 dark:text-gray-300/60">
+                        Grid
+                      </div>
+                    </div>
+                    <div className="relative z-10">
+                      {/* Main Metrics Side by Side */}
+                      <div className="flex justify-between items-start mb-1">
+                        <div>
+                          <div className="text-lg font-bold text-blue-700 dark:text-blue-300">
+                            5.0<span className="text-sm">kWh</span>
+                          </div>
+                          <div className="text-[11px] uppercase tracking-wide text-blue-700/70 dark:text-blue-300/70">
+                            Import
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-lg font-bold text-orange-600 dark:text-orange-400">
+                            1.8<span className="text-sm">kWh</span>
+                          </div>
+                          <div className="text-[11px] uppercase tracking-wide text-orange-600/70 dark:text-orange-400/70">
+                            Export
+                          </div>
+                        </div>
+                      </div>
+                      {/* Context Text */}
+                      <div className="text-xs text-gray-700/70 dark:text-gray-300/70">
+                        Net Import: 3.2 kWh today
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -895,7 +1390,7 @@ export function InsightsPage({ onPageChange }) {
                           : 700
                       }
                       height={280}
-                      colors={getLineConfig().map((line) => {
+                      colors={lineSeries.map((line) => {
                         // Use gradient URLs for different data types
                         if (line.dataKey === "grid")
                           return "url(#gridGradient2)";
@@ -906,10 +1401,10 @@ export function InsightsPage({ onPageChange }) {
                         if (line.dataKey === "ev") return "url(#evGradient2)";
                         if (line.dataKey === "house")
                           return "url(#houseGradient2)";
-                        return line.color;
+                        return line.strokeColor;
                       })}
-                      series={getLineConfig().map((line) => ({
-                        data: getChartData().map(
+                      series={lineSeries.map((line) => ({
+                        data: chartDataMemo.map(
                           (item) => item[line.dataKey] || 0
                         ),
                         label: line.label,
@@ -1073,36 +1568,9 @@ export function InsightsPage({ onPageChange }) {
               </div>
             </>
           )}
-          {/* Filter Controls */}
-          <div className="mt-6">
-            <div className="flex flex-row justify-around gap-2">
-              {filterIcons.map(({ key, icon: Icon, color, label }) => (
-                <button
-                  key={key}
-                  onClick={() => toggleFilter(key)}
-                  className={`flex flex-col items-center justify-center space-y-1 rounded-lg transition-all duration-200 border flex-shrink-0 ${
-                    selectedFilters[key]
-                      ? "border-opacity-50 shadow-sm"
-                      : "border-border bg-muted/20 hover:bg-muted/30"
-                  }`}
-                  style={{
-                    width: "50px",
-                    height: "50px",
-                    backgroundColor: selectedFilters[key]
-                      ? `${color}15`
-                      : undefined,
-                    borderColor: selectedFilters[key] ? color : undefined,
-                    color: selectedFilters[key] ? color : undefined,
-                  }}
-                >
-                  <Icon className="w-4 h-4" />
-                  <span className="text-xs font-medium">{label}</span>
-                </button>
-              ))}
-            </div>
-          </div>
         </div>
 
+        {/* Summary Report Pie  */}
         <div className="space-y-3">
           <h4 className="text-xl text-foreground text-left mb-3">
             Summary Report
@@ -1173,268 +1641,50 @@ export function InsightsPage({ onPageChange }) {
               </div>
             </div>
           </div>
-          {/* Summary Pie Chart  */}
+          {/* Advanced Summary Donut Charts */}
           <div className="bg-card rounded-2xl p-4 shadow-lg border border-border/50">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-card-foreground">
-                Energy Distribution
-              </h3>
-              <div className="text-xs text-muted-foreground">
-                {summaryTimeView === "1day"
-                  ? "Daily"
-                  : summaryTimeView === "7days"
-                  ? "Weekly"
-                  : summaryTimeView === "30days"
-                  ? "Monthly"
-                  : "Yearly"}{" "}
-                Overview
+            <div className="flex flex-col gap-3 mb-6">
+              <div>
+                <h3 className="text-lg font-semibold text-card-foreground">
+                  Advanced Energy Distribution
+                </h3>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Premium donut charts synchronized with the{" "}
+                  {summaryTimeframeLabel.toLowerCase()} overview.
+                </p>
+              </div>
+              <div className="text-sm text-muted-foreground">
+                <span className="block text-[11px] uppercase tracking-wide">
+                  Timeframe
+                </span>
+                <span className="text-card-foreground font-semibold">
+                  {summaryTimeframeLabel} Overview
+                </span>
               </div>
             </div>
 
-            <div className="flex flex-col items-center">
-              <PieChart
-                width={300}
-                height={200}
-                colors={[
-                  "url(#pieGridImportGradient)", // Grid Import - Red gradient
-                  "url(#pieGridExportGradient)", // Grid Export - Green gradient
-                  "url(#pieSolarGradient)", // Solar Generation - Yellow gradient
-                  "url(#pieHomeGradient)", // Home Consumption - Gray gradient
-                  "url(#pieEvGradient)", // EV Charging - Blue gradient
-                  "url(#pieBatteryGradient)", // Battery Charge - Green gradient
-                ]}
-                series={[
-                  {
-                    data: [
-                      {
-                        id: 0,
-                        value: parseFloat(summaryReportData.gridImport),
-                        label: "Grid Import",
-                        color: "url(#pieGridImportGradient)",
-                      },
-                      {
-                        id: 1,
-                        value: parseFloat(summaryReportData.gridExport),
-                        label: "Grid Export",
-                        color: "url(#pieGridExportGradient)",
-                      },
-                      {
-                        id: 2,
-                        value: parseFloat(summaryReportData.solarGeneration),
-                        label: "Solar",
-                        color: "url(#pieSolarGradient)",
-                      },
-                      {
-                        id: 3,
-                        value: parseFloat(summaryReportData.homeConsumption),
-                        label: "Home",
-                        color: "url(#pieHomeGradient)",
-                      },
-                      {
-                        id: 4,
-                        value: parseFloat(summaryReportData.evCharging),
-                        label: "EV",
-                        color: "url(#pieEvGradient)",
-                      },
-                      {
-                        id: 5,
-                        value: parseFloat(summaryReportData.batteryCharge),
-                        label: "Battery",
-                        color: "url(#pieBatteryGradient)",
-                      },
-                    ],
-                    innerRadius: 30,
-                    outerRadius: 80,
-                    paddingAngle: 2,
-                    cornerRadius: 0,
-                  },
-                ]}
-                margin={{ top: 20, bottom: 20, left: 20, right: 20 }}
-                legend={{ hidden: true }}
-                sx={{
-                  "& .MuiChartsTooltip-root": {
-                    backgroundColor: theme === "dark" ? "#2a2d30" : "#ffffff",
-                    color: theme === "dark" ? "#ffffff" : "#000000",
-                    border: `1px solid ${
-                      theme === "dark" ? "#4a4d50" : "#e5e5e5"
-                    }`,
-                  },
-                  "& .MuiChartsLegend-root": {
-                    display: "none",
-                  },
-                }}
-              >
-                {/* Define gradients for pie chart */}
-                <defs>
-                  <radialGradient
-                    id="pieGridImportGradient"
-                    cx="50%"
-                    cy="50%"
-                    r="50%"
-                  >
-                    <stop offset="0%" stopColor="#fca5a5" stopOpacity={0.9} />
-                    <stop offset="100%" stopColor="#ef4444" stopOpacity={1} />
-                  </radialGradient>
-                  <radialGradient
-                    id="pieGridExportGradient"
-                    cx="50%"
-                    cy="50%"
-                    r="50%"
-                  >
-                    <stop offset="0%" stopColor="#86efac" stopOpacity={0.9} />
-                    <stop offset="100%" stopColor="#22c55e" stopOpacity={1} />
-                  </radialGradient>
-                  <radialGradient
-                    id="pieSolarGradient"
-                    cx="50%"
-                    cy="50%"
-                    r="50%"
-                  >
-                    <stop offset="0%" stopColor="#fde047" stopOpacity={0.9} />
-                    <stop offset="100%" stopColor="#eab308" stopOpacity={1} />
-                  </radialGradient>
-                  <radialGradient
-                    id="pieHomeGradient"
-                    cx="50%"
-                    cy="50%"
-                    r="50%"
-                  >
-                    <stop
-                      offset="0%"
-                      stopColor={theme === "dark" ? "#f3f4f6" : "#d1d5db"}
-                      stopOpacity={0.9}
-                    />
-                    <stop
-                      offset="100%"
-                      stopColor={theme === "dark" ? "#e5e7eb" : "#6b7280"}
-                      stopOpacity={1}
-                    />
-                  </radialGradient>
-                  <radialGradient id="pieEvGradient" cx="50%" cy="50%" r="50%">
-                    <stop offset="0%" stopColor="#93c5fd" stopOpacity={0.9} />
-                    <stop offset="100%" stopColor="#3b82f6" stopOpacity={1} />
-                  </radialGradient>
-                  <radialGradient
-                    id="pieBatteryGradient"
-                    cx="50%"
-                    cy="50%"
-                    r="50%"
-                  >
-                    <stop offset="0%" stopColor="#86efac" stopOpacity={0.9} />
-                    <stop offset="100%" stopColor="#16a34a" stopOpacity={1} />
-                  </radialGradient>
-                </defs>
-              </PieChart>
-
-              {/* Custom Legend */}
-              <div className="grid grid-cols-2 gap-2 mt-4 w-full max-w-xs">
-                {[
-                  {
-                    label: "Grid Import",
-                    color: "#ef4444",
-                    value: summaryReportData.gridImport,
-                    gradient:
-                      "linear-gradient(135deg, #fca5a5 0%, #ef4444 100%)",
-                  },
-                  {
-                    label: "Grid Export",
-                    color: "#22c55e",
-                    value: summaryReportData.gridExport,
-                    gradient:
-                      "linear-gradient(135deg, #86efac 0%, #22c55e 100%)",
-                  },
-                  {
-                    label: "Solar",
-                    color: "#eab308",
-                    value: summaryReportData.solarGeneration,
-                    gradient:
-                      "linear-gradient(135deg, #fde047 0%, #eab308 100%)",
-                  },
-                  {
-                    label: "Home",
-                    color: theme === "dark" ? "#e5e7eb" : "#6b7280",
-                    value: summaryReportData.homeConsumption,
-                    gradient:
-                      theme === "dark"
-                        ? "linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%)"
-                        : "linear-gradient(135deg, #d1d5db 0%, #6b7280 100%)",
-                  },
-                  {
-                    label: "EV",
-                    color: "#3b82f6",
-                    value: summaryReportData.evCharging,
-                    gradient:
-                      "linear-gradient(135deg, #93c5fd 0%, #3b82f6 100%)",
-                  },
-                  {
-                    label: "Battery",
-                    color: "#16a34a",
-                    value: summaryReportData.batteryCharge,
-                    gradient:
-                      "linear-gradient(135deg, #86efac 0%, #16a34a 100%)",
-                  },
-                ].map((item, index) => (
-                  <div key={index} className="flex items-center space-x-2">
-                    <div
-                      className="w-3 h-3 rounded-full flex-shrink-0"
-                      style={{ background: item.gradient }}
-                    ></div>
-                    <div className="flex flex-col min-w-0">
-                      <span className="text-xs text-muted-foreground truncate">
-                        {item.label}
-                      </span>
-                      <span className="text-xs font-medium text-card-foreground">
-                        {item.value} kWh
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
+            <div className="space-y-4">
+              <ConsumptionSourceBreakdownChart
+                theme={theme}
+                loadLabel="House"
+                timeframeLabel={summaryTimeframeLabel}
+                segments={consumptionBreakdown.segments}
+                total={consumptionBreakdown.total}
+              />
+              <BatteryUsageBreakdownChart
+                theme={theme}
+                timeframeLabel={summaryTimeframeLabel}
+                segments={batteryUsageBreakdown.segments}
+                total={batteryUsageBreakdown.total}
+              />
+              <SelfConsumptionRatioChart
+                theme={theme}
+                timeframeLabel={summaryTimeframeLabel}
+                consumedValue={selfConsumptionStats.consumed}
+                exportedValue={selfConsumptionStats.exported}
+                total={selfConsumptionStats.total}
+              />
             </div>
-          </div>
-
-          {/* Summary Cards - 2 col 3 row Grid */}
-          <div className="grid grid-cols-2 gap-4">
-            {summaryCards.map(({ key, label, icon: Icon, color, value }) => (
-              <div
-                key={key}
-                className="bg-card rounded-2xl p-4 shadow-lg border border-border/50 relative"
-              >
-                {/* Info Icon */}
-                <button
-                  onClick={() => toggleTooltip(key)}
-                  className="absolute top-3 right-3 w-6 h-6 rounded-full bg-muted/20 hover:bg-muted/30 flex items-center justify-center transition-colors"
-                >
-                  <Info className="w-3 h-3 text-muted-foreground" />
-                </button>
-
-                {/* Tooltip */}
-                {activeTooltip === key && (
-                  <div className="absolute top-10 right-0 z-10 w-48 p-3 bg-popover text-popover-foreground rounded-lg shadow-lg border border-border text-xs">
-                    {tooltipData[key]}
-                    <div className="absolute -top-1 right-4 w-2 h-2 bg-popover border-l border-t border-border rotate-45"></div>
-                  </div>
-                )}
-
-                {/* Card Content */}
-                <div className="flex flex-col items-center text-center space-y-2">
-                  <div
-                    className="w-10 h-10 rounded-xl flex items-center justify-center"
-                    style={{ backgroundColor: `${color}15` }}
-                  >
-                    <Icon className="w-5 h-5" style={{ color }} />
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground font-medium mb-1">
-                      {label}
-                    </p>
-                    <p className="text-lg font-bold text-card-foreground">
-                      {value} kWh
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ))}
           </div>
         </div>
       </div>

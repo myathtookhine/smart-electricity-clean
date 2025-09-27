@@ -21,6 +21,9 @@ import { Button } from "../ui/button";
 import { useApp } from "../../contexts/AppContext";
 import { useState, useEffect } from "react";
 import logo from "../../assets/duracell-logo.png";
+import DuracellWhite from "../../assets/duracell-logo-white.svg";
+import DuracellBlack from "../../assets/duracell-logo-black.svg";
+
 import {
   SystemInformationPage,
   BatteryPage,
@@ -43,6 +46,7 @@ export function SettingsPage({ onSubPageChange, onPageChange }) {
   const notificationCount = 3; // Example notification count
   const [currentView, setCurrentView] = useState("main"); // 'main', 'system-info', 'battery', 'ev-control', 'account-settings', 'edit-account', 'change-password', 'cost-summary', 'additional-support', 'user-guides', 'ev-control-guide', 'battery-config-guide', 'faqs', 'help-support'
   const [navigationStack, setNavigationStack] = useState(["main"]);
+  const headerLogo = theme === "dark" ? DuracellWhite : DuracellBlack;
 
   // Notify parent about sub-page state
   useEffect(() => {
@@ -106,8 +110,8 @@ export function SettingsPage({ onSubPageChange, onPageChange }) {
           {/* Center: Logo */}
           <div className="text-center">
             <img
-              src={logo}
-              alt="Duracell Logo"
+              src={headerLogo}
+              alt="Duracell logo"
               className="w-32 h-auto object-contain"
             />
           </div>
@@ -403,10 +407,10 @@ export function SettingsPage({ onSubPageChange, onPageChange }) {
         />
       )}
       {currentView === "user-guides" && (
-        <UserGuidesPage 
-          onBack={navigateBack} 
+        <UserGuidesPage
+          onBack={navigateBack}
           onNavigate={handleNavigate}
-          onGoHome={handleGoHome} 
+          onGoHome={handleGoHome}
         />
       )}
       {currentView === "ev-control-guide" && (

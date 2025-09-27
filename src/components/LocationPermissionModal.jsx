@@ -57,7 +57,7 @@ const LocationPermissionModal = ({
             size="sm"
             className="flex-1"
           >
-            Enable Location
+            Enable
           </Button>
         </div>
       </div>

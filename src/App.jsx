@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { PhoneMockup } from "./components/PhoneMockup";
 import { BottomNavigation } from "./components/BottomNavigation";
@@ -11,13 +11,26 @@ import { AppProvider, useApp } from "./contexts/AppContext";
 import { WeatherProvider } from "./contexts/WeatherContext";
 import { AppWizard } from "./components/AppWizard";
 import { Login } from "./components/Login";
+import { LoginModeSelection } from "./components/LoginModeSelection";
+import { SystemBinding } from "./components/SystemBinding";
+import { ChangePassword } from "./components/ChangePassword";
 
 function AppContent() {
   const [currentPage, setCurrentPage] = useState("home");
   const [previousPage, setPreviousPage] = useState("home");
   const [isInSubPage, setIsInSubPage] = useState(false);
   const [currentTime, setCurrentTime] = useState("");
-  const { isFirstTime, isAuthenticated } = useApp();
+  const [showChangePassword, setShowChangePassword] = useState(false);
+  const [showLoginLoading, setShowLoginLoading] = useState(false);
+  const { isFirstTime, isAuthenticated, onboardingStep, isOnboardingComplete } =
+    useApp();
+
+  // Ensure we're on home page when onboarding completes
+  React.useEffect(() => {
+    if (isAuthenticated && !onboardingStep && isOnboardingComplete) {
+      setCurrentPage("home");
+    }
+  }, [isAuthenticated, onboardingStep, isOnboardingComplete]);
 
   // Update current time every second
   useEffect(() => {
@@ -39,6 +52,22 @@ function AppContent() {
 
     return () => clearInterval(interval);
   }, []);
+
+  // Show loading overlay when user logs in and is on home page
+  useEffect(() => {
+    if (
+      isAuthenticated &&
+      !onboardingStep &&
+      isOnboardingComplete &&
+      currentPage === "home"
+    ) {
+      setShowLoginLoading(true);
+      const timer = setTimeout(() => {
+        setShowLoginLoading(false);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [isAuthenticated, onboardingStep, isOnboardingComplete, currentPage]);
 
   const handlePageChange = (page) => {
     setPreviousPage(currentPage);
@@ -76,6 +105,29 @@ function AppContent() {
     }
   };
 
+  const renderOnboardingStep = () => {
+    switch (onboardingStep) {
+      case "systemBinding":
+        return <SystemBinding />;
+      default:
+        return null;
+    }
+  };
+
+  const handlePasswordChangeComplete = () => {
+    setShowChangePassword(false);
+    // Return to guided handover page after password change
+    if (onboardingStep === "guidedHandover") {
+      // User can continue with the handover or complete onboarding
+    }
+  };
+
+  const handleChangePasswordBack = () => {
+    setShowChangePassword(false);
+    // If coming from guided handover, return to that step
+    // Otherwise, this handles navigation appropriately
+  };
+
   return (
     <ThemeProvider defaultTheme="dark">
       <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 dark:from-slate-900 dark:to-black flex items-center justify-center p-4">
@@ -86,9 +138,18 @@ function AppContent() {
           ) : !isAuthenticated ? (
             /* Show login if not authenticated */
             <Login />
+          ) : showChangePassword ? (
+            /* Show change password page */
+            <ChangePassword
+              onBack={handleChangePasswordBack}
+              onComplete={handlePasswordChangeComplete}
+            />
+          ) : onboardingStep ? (
+            /* Show onboarding steps after login */
+            renderOnboardingStep()
           ) : (
-            /* Show main app if authenticated */
-            <div className="flex flex-col h-full bg-background">
+            /* Show main app if authenticated and onboarding complete */
+            <div className="flex flex-col h-full bg-background relative">
               {/* iPhone Status Bar */}
               <div className="flex justify-between items-center px-8 py-3 bg-background">
                 {/* Left side - Time */}
@@ -163,6 +224,15 @@ function AppContent() {
               <div className="flex-1 overflow-y-auto scrollbar-hide">
                 <div className="pb-24">{renderPage()}</div>
               </div>
+
+              {/* Login Loading Overlay */}
+              {showLoginLoading && (
+                <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                  <div className="text-white text-xl font-semibold animate-pulse">
+                    Loading your dashboard...
+                  </div>
+                </div>
+              )}
 
               {/* Bottom Navigation */}
               {!isInSubPage && currentPage !== "weather" && (
