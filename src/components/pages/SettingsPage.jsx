@@ -42,7 +42,13 @@ import {
 
 export function SettingsPage({ onSubPageChange, onPageChange }) {
   const { theme, setTheme } = useTheme();
-  const { user, logout, batteryState } = useApp();
+  const {
+    user,
+    logout,
+    batteryState,
+    visualizationType,
+    changeVisualizationType,
+  } = useApp();
   const notificationCount = 3; // Example notification count
   const [currentView, setCurrentView] = useState("main"); // 'main', 'system-info', 'battery', 'ev-control', 'account-settings', 'edit-account', 'change-password', 'cost-summary', 'additional-support', 'user-guides', 'ev-control-guide', 'battery-config-guide', 'faqs', 'help-support'
   const [navigationStack, setNavigationStack] = useState(["main"]);
@@ -362,6 +368,51 @@ export function SettingsPage({ onSubPageChange, onPageChange }) {
                       setTheme(checked ? "dark" : "light")
                     }
                   />
+                </div>
+              </div>
+
+              {/* Home View Toggle */}
+              <div className="bg-card/50 backdrop-blur-sm rounded-3xl p-6 shadow border border-border/50">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    <div className="p-2 bg-muted rounded-full">
+                      <Smartphone className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                      <div className="text-md text-card-foreground">
+                        Home View
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        {visualizationType === "isometric"
+                          ? "Isometric View"
+                          : "Flat View"}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex rounded-lg border border-border/50 overflow-hidden bg-background/80 shadow-sm">
+                    <button
+                      type="button"
+                      onClick={() => changeVisualizationType("isometric")}
+                      className={`px-3 py-1 text-xs font-medium transition-colors duration-200 ${
+                        visualizationType === "isometric"
+                          ? "bg-primary text-primary-foreground"
+                          : "text-muted-foreground hover:bg-muted/60"
+                      }`}
+                    >
+                      Isometric
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => changeVisualizationType("flat")}
+                      className={`px-3 py-1 text-xs font-medium transition-colors duration-200 border-l border-border/40 ${
+                        visualizationType === "flat"
+                          ? "bg-primary text-primary-foreground"
+                          : "text-muted-foreground hover:bg-muted/60"
+                      }`}
+                    >
+                      Flat
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

@@ -344,7 +344,7 @@ html {
 }
 
 .home-image-wrapper {
-  margin-top: 6rem;
+  margin-top: 7rem;
 }
 
 /* Animated Dots for Connectors */
@@ -502,7 +502,540 @@ html {
   filter: blur(0.5px);
   z-index: 10;
   }
-  
+
+/* Flat visualization layout and connectors */
+.flat-top-label {
+  position: absolute;
+  top: -90px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.flat-top-label--solar {
+  left: 0%;
+}
+
+.flat-top-label--grid {
+  right: 12%;
+}
+
+.flat-bottom-row {
+  position: absolute;
+  bottom: 0px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: flex-start;
+  gap: clamp(1rem, 4vw, 1rem);
+}
+
+.flat-bottom-label {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  min-width: 120px;
+}
+
+.flat-bottom-label--home .bg-background\/90 {
+  min-width: 130px;
+}
+
+.flat-solar-connector,
+.flat-grid-connector,
+.flat-ev-connector,
+.flat-home-connector,
+.flat-battery-connector {
+  position: absolute;
+  pointer-events: none;
+}
+
+.flat-solar-connector,
+.flat-grid-connector {
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.flat-solar-connector {
+  width: 96px;
+  height: 82px;
+}
+
+.flat-solar-connector .line-down {
+  position: absolute;
+  left: 26px;
+  top: -8px;
+  width: 2px;
+  height: 57px;
+  background-color: var(--border);
+  opacity: 0.6;
+}
+
+.flat-solar-connector .line-right {
+  position: absolute;
+  left: 26px;
+  top: 48px;
+  width: 60px;
+  height: 2px;
+  background-color: var(--border);
+  opacity: 0.6;
+}
+
+.flat-solar-connector .line-down-final {
+  position: absolute;
+  left: 84px;
+  top: 48px;
+  width: 2px;
+  height: 34px;
+  background-color: var(--border);
+  opacity: 0.6;
+}
+
+.flat-solar-connector .connector-dot {
+  top: 78px;
+  left: 84px;
+}
+
+.flat-grid-connector {
+  width: 110px;
+  height: 96px;
+}
+
+.flat-grid-connector .line-down {
+  position: absolute;
+  left: 52px;
+  top: -8px;
+  width: 2px;
+  height: 65px;
+  background-color: var(--border);
+  opacity: 0.6;
+}
+
+.flat-grid-connector .line-right {
+  position: absolute;
+  left: 52px;
+  top: 56px;
+  width: 58px;
+  height: 2px;
+  background-color: var(--border);
+  opacity: 0.6;
+}
+
+.flat-grid-connector .line-down-final {
+  position: absolute;
+  left: 108px;
+  top: 56px;
+  width: 2px;
+  height: 40px;
+  background-color: var(--border);
+  opacity: 0.6;
+}
+
+.flat-grid-connector .connector-dot {
+  top: 92px;
+  left: 108px;
+}
+
+
+.flat-bottom-label .flat-home-connector,
+.flat-bottom-label .flat-battery-connector {
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.flat-bottom-label .flat-ev-connector {
+  bottom: calc(100% + 8px);
+  left: 25%;
+  transform: translateX(-50%);
+}
+
+.flat-ev-connector {
+  width: 160px;
+  height: 100px;
+}
+
+.flat-ev-connector .line-up {
+  position: absolute;
+  left: 100px;
+  bottom: -8px;
+  width: 2px;
+  height: 66px;
+  background-color: var(--border);
+  opacity: 0.6;
+}
+
+.flat-ev-connector .line-right {
+  position: absolute;
+  left: 100px;
+  bottom: 56px;
+  width: 30px;
+  height: 2px;
+  background-color: var(--border);
+  opacity: 0.6;
+}
+
+.flat-ev-connector .connector-dot {
+  left: 146px;
+  bottom: 56px;
+}
+
+.flat-home-connector {
+  width: 6px;
+  height: 96px;
+}
+
+.flat-home-connector .line-up {
+  position: absolute;
+  left: 2px;
+  bottom: 20px;
+  width: 2px;
+  height: 40px;
+  background-color: var(--border);
+  opacity: 0.6;
+}
+
+
+.flat-home-connector .connector-dot {
+  left: 2px;
+  bottom: 90px;
+}
+
+.flat-battery-connector {
+  width: 160px;
+  height: 140px;
+}
+
+.flat-battery-connector .line-up {
+  position: absolute;
+  left: 68px;
+  bottom: -8px;
+  width: 2px;
+  height: 64px;
+  background-color: var(--border);
+  opacity: 0.6;
+}
+
+.flat-battery-connector .line-left {
+  position: absolute;
+  left: 34px;
+  bottom: 54px;
+  width: 34px;
+  height: 2px;
+  background-color: var(--border);
+  opacity: 0.6;
+}
+
+.flat-battery-connector .connector-dot {
+  left: 34px;
+  bottom: 132px;
+}
+
+.flat-home-load-circle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.flat-home-load-circle .circle-animation {
+  position: absolute;
+  width: 70px;
+  height: 70px;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  animation: flat-home-load-pulse 3s ease-in-out infinite;
+  opacity: 0.6;
+}
+
+.flat-home-load-circle .circle-animation::before {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border: 2px solid #3b82f6;
+  border-radius: 50%;
+  animation: flat-home-load-rotate 4s linear infinite;
+  opacity: 0.35;
+}
+
+.connector-dot.amber {
+  background-color: #f59e0b;
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.25);
+}
+
+/* Home Load Pulsing Circle with Mesh Gradient */
+.home-load-circle-container {
+  position: absolute;
+  top: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.home-load-mesh-gradient {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 20%, rgba(59, 130, 246, 0.8) 0%, rgba(147, 51, 234, 0.6) 25%, rgba(236, 72, 153, 0.5) 50%, rgba(59, 130, 246, 0.4) 75%, rgba(16, 185, 129, 0.3) 100%),
+    radial-gradient(circle at 70% 80%, rgba(16, 185, 129, 0.7) 0%, rgba(245, 158, 11, 0.5) 30%, rgba(239, 68, 68, 0.4) 60%, rgba(139, 92, 246, 0.3) 100%);
+  animation: home-load-mesh-rotate 8s linear infinite;
+  opacity: 0.8;
+}
+
+.home-load-pulsing-circle {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  background: var(--background)/95;
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border)/30;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 0 20px rgba(59, 130, 246, 0.3),
+    0 0 40px rgba(59, 130, 246, 0.2),
+    inset 0 0 20px rgba(255, 255, 255, 0.1);
+  animation: home-load-pulse-circle 3s ease-in-out infinite;
+  z-index: 2;
+}
+
+.home-load-content {
+  text-align: center;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+@keyframes home-load-mesh-rotate {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+
+  25% {
+    transform: rotate(90deg) scale(1.05);
+  }
+
+  50% {
+    transform: rotate(180deg) scale(1);
+  }
+
+  75% {
+    transform: rotate(270deg) scale(1.05);
+  }
+
+  100% {
+    transform: rotate(360deg) scale(1);
+  }
+}
+
+@keyframes home-load-pulse-circle {
+
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow:
+      0 0 20px rgba(59, 130, 246, 0.3),
+      0 0 40px rgba(59, 130, 246, 0.2),
+      inset 0 0 20px rgba(255, 255, 255, 0.1);
+  }
+
+  50% {
+    transform: scale(1.1);
+    box-shadow:
+      0 0 30px rgba(59, 130, 246, 0.5),
+      0 0 60px rgba(59, 130, 246, 0.3),
+      inset 0 0 30px rgba(255, 255, 255, 0.2);
+  }
+}
+
+@keyframes flat-solar-dot-animation {
+  0% {
+    top: 0px;
+    left: 26px;
+  }
+
+  55% {
+    top: 48px;
+    left: 26px;
+  }
+
+  78% {
+    top: 48px;
+    left: 84px;
+  }
+
+  100% {
+    top: 78px;
+    left: 84px;
+  }
+}
+
+@keyframes flat-grid-dot-animation {
+  0% {
+    top: 92px;
+    left: 108px;
+  }
+
+  22% {
+    top: 56px;
+    left: 108px;
+  }
+
+  45% {
+    top: 56px;
+    left: 52px;
+  }
+
+  100% {
+    top: 0px;
+    left: 52px;
+  }
+}
+
+@keyframes flat-ev-dot-animation {
+  0% {
+    bottom: 56px;
+    left: 130px;
+  }
+
+  45% {
+    bottom: 56px;
+    left: 100px;
+  }
+
+  100% {
+    bottom: -8px;
+    left: 100px;
+  }
+}
+
+@keyframes flat-home-dot-animation {
+  0% {
+    bottom: 60px;
+  }
+
+  100% {
+    bottom: 20px;
+  }
+}
+
+@keyframes flat-battery-dot-animation {
+  0% {
+    bottom: 54px;
+    left: 34px;
+  }
+
+  50% {
+    bottom: 54px;
+    left: 68px;
+  }
+
+  100% {
+    bottom: -8px;
+    left: 68px;
+  }
+}
+
+.flat-solar-connector .animated-dot,
+.flat-grid-connector .animated-dot,
+.flat-ev-connector .animated-dot,
+.flat-home-connector .animated-dot,
+.flat-battery-connector .animated-dot {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  box-shadow: 0 0 6px rgba(59, 130, 246, 0.35);
+  filter: blur(0.4px);
+}
+
+.flat-solar-connector .animated-dot {
+  background-color: #f59e0b;
+  top: 0;
+  left: 26px;
+  animation: flat-solar-dot-animation 2.6s ease-in-out infinite;
+}
+
+.flat-grid-connector .animated-dot {
+  background-color: #10b981;
+  top: 92px;
+  left: 108px;
+  animation: flat-grid-dot-animation 3.2s ease-in-out infinite;
+}
+
+.flat-ev-connector .animated-dot {
+  background-color: #8b5cf6;
+  left: 130px;
+  bottom: 56px;
+  animation: flat-ev-dot-animation 3s ease-in-out infinite;
+}
+
+.flat-home-connector .animated-dot {
+  background-color: #ffffff;
+  left: 2px;
+  bottom: 60px;
+  animation: flat-home-dot-animation 2.4s ease-in-out infinite;
+  box-shadow:
+    0 0 8px rgba(255, 255, 255, 0.9),
+    0 0 16px rgba(255, 255, 255, 0.7),
+    0 0 24px rgba(255, 255, 255, 0.5),
+    0 0 32px rgba(255, 255, 255, 0.3);
+  filter: blur(0.3px);
+}
+
+.flat-battery-connector .animated-dot {
+  background-color: #f97316;
+  left: 34px;
+  bottom: 54px;
+  animation: flat-battery-dot-animation 3.1s ease-in-out infinite;
+}
+
+@keyframes flat-home-load-pulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+
+  50% {
+    transform: scale(1.18);
+    opacity: 0.2;
+  }
+}
+
+@keyframes flat-home-load-rotate {
+  0% {
+    transform: rotate(0deg);
+    border-color: #3b82f6 transparent transparent transparent;
+  }
+
+  33% {
+    border-color: transparent #22c55e transparent transparent;
+  }
+
+  66% {
+    border-color: transparent transparent #f59e0b transparent;
+  }
+
+  100% {
+    transform: rotate(360deg);
+    border-color: #3b82f6 transparent transparent transparent;
+  }
+}
   /* L1 Connector - Bend from left bubble to inverter */
   .l1-connector {
     position: absolute;

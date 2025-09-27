@@ -8,6 +8,7 @@ import {
   Play,
   Pause,
   RotateCcw,
+  HousePlug,
 } from "lucide-react";
 import { Switch } from "../ui/switch";
 import { Alert } from "../ui/alert";
@@ -22,10 +23,17 @@ import exampleImage from "../../assets/iso-home.png";
 import DuracellWhite from "../../assets/duracell-logo-white.svg";
 import DuracellBlack from "../../assets/duracell-logo-black.svg";
 
+import HomeDark from "../../assets/home-dark-mode.svg";
+import HomeLight from "../../assets/home-light-mode.svg";
+
 export function HomePage({ onPageChange }) {
   const { theme, setTheme } = useTheme();
-  const { stormReadyMode, showGuidedHandoverModal, closeGuidedHandoverModal } =
-    useApp();
+  const {
+    stormReadyMode,
+    showGuidedHandoverModal,
+    closeGuidedHandoverModal,
+    visualizationType,
+  } = useApp();
   const [isAnimationEnabled, setIsAnimationEnabled] = useState(true);
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [showInverterSubmenu, setShowInverterSubmenu] = useState(false);
@@ -124,16 +132,22 @@ export function HomePage({ onPageChange }) {
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (visualizationType !== "isometric") {
+      setShowInverterSubmenu(false);
+    }
+  }, [visualizationType]);
   return (
     <div className="min-h-full bg-background relative">
       {/* Header */}
       <div className="px-6 pt-8 pb-4">
         <div className="flex items-center justify-between mb-2">
           {/* Light/Dark Mode Toggle */}
-          <div>
+          <div className="flex items-start">
             <button
               onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-              className="p-2 rounded-xl bg-muted hover:bg-muted/30 transition-all duration-300 mr-2"
+              className="p-2 rounded-xl bg-muted hover:bg-muted/30 transition-all duration-300"
             >
               {theme === "dark" ? (
                 <Sun className="w-5 h-5 text-yellow-500" />
@@ -205,172 +219,278 @@ export function HomePage({ onPageChange }) {
       </div>
       {/* Smart Home Visualization */}
       <div className="px-6 mb-0 flex justify-center home-image-wrapper">
-        <div className="w-full max-w-sm relative pb-20">
-          {/* Animation on/off switch */}
-          {/* <div className="absolute top-2 left-0 z-10">
-            <div className="flex items-center space-x-2 bg-background/90 backdrop-blur-sm border border-border/50 rounded-lg px-2 py-1 shadow-lg">
-              <div className="flex items-center space-x-1">
-                {isAnimationEnabled ? (
-                  <Play className="w-4 h-4 text-green-500" />
-                ) : (
-                  <Pause className="w-4 h-4 text-gray-500" />
-                )}
-                <span className="text-xs font-medium text-foreground">
-                  {isAnimationEnabled ? "On" : "Off"}
-                </span>
-              </div>
-              <Switch
-                checked={isAnimationEnabled}
-                onCheckedChange={setIsAnimationEnabled}
-                className="scale-75"
-              />
-            </div>
-          </div> */}
+        {visualizationType === "isometric" ? (
+          <div className="w-full max-w-sm relative pb-20">
+            {/* Animation on/off switch */}
+            <img
+              src={exampleImage}
+              alt="Isometric smart home with solar panels and electric car charging station"
+              className="w-full h-auto rounded-2xl opacity-90"
+            />
 
-          <img
-            src={exampleImage}
-            alt="Isometric smart home with solar panels and electric car charging station"
-            className="w-full h-auto rounded-2xl"
-          />
-
-          {/* Overlay Labels and Lines */}
-          <div className="absolute inset-0">
-            {/* Solar Panel Label - Top Center */}
-            <div className="absolute -top-16 left-1/2 transform -translate-x-1/2">
-              <div className="bg-background/90 backdrop-blur-sm border border-border/50 rounded-lg px-2 py-1 text-center shadow-lg">
-                <div className="text-sm font-bold text-foreground">6.5 kW</div>
-                <div className="text-xs text-muted-foreground uppercase tracking-wide">
-                  Solar Panel
+            {/* Overlay Labels and Lines */}
+            <div className="absolute inset-0">
+              {/* Solar Panel Label - Top Center */}
+              <div className="absolute -top-16 left-1/2 transform -translate-x-1/2">
+                <div className="bg-background/90 backdrop-blur-sm border border-border/50 rounded-lg px-2 py-1 text-center shadow-lg">
+                  <div className="text-sm font-bold text-foreground">
+                    6.5 kW
+                  </div>
+                  <div className="text-xs text-muted-foreground uppercase tracking-wide">
+                    Solar Panel
+                  </div>
+                </div>
+                {/* Direct connector line pointing to solar panels on roof */}
+                <div className="solar-connector">
+                  <div className="line-vertical"></div>
+                  <div className="connector-dot"></div>
+                  {isAnimationEnabled && <div className="animated-dot"></div>}
                 </div>
               </div>
-              {/* Direct connector line pointing to solar panels on roof */}
-              <div className="solar-connector">
-                <div className="line-vertical"></div>
-                <div className="connector-dot"></div>
-                {isAnimationEnabled && <div className="animated-dot"></div>}
-              </div>
-            </div>
 
-            {/* Grid Export Label - Under image, left side */}
-            <div className="absolute top-80 left-0 mt-6">
-              <div className="bg-background/90 backdrop-blur-sm border border-border/50 rounded-lg px-2 py-1 text-center shadow-lg">
-                <div className="text-sm font-bold text-green-500">+1.2 kW</div>
-                <div className="text-xs text-muted-foreground uppercase tracking-wide">
-                  Grid Export
+              {/* Grid Export Label - Under image, left side */}
+              <div className="absolute top-80 left-0 mt-6">
+                <div className="bg-background/90 backdrop-blur-sm border border-border/50 rounded-lg px-2 py-1 text-center shadow-lg">
+                  <div className="text-sm font-bold text-green-500">
+                    +1.2 kW
+                  </div>
+                  <div className="text-xs text-muted-foreground uppercase tracking-wide">
+                    Grid Export
+                  </div>
+                </div>
+                {/* Bent connector line pointing to grid lines on left side */}
+                <div className="grid-connector">
+                  <div className="line-up"></div>
+                  <div className="line-right"></div>
+                  <div className="line-up-final"></div>
+                  <div className="connector-dot green"></div>
+                  {isAnimationEnabled && <div className="animated-dot"></div>}
                 </div>
               </div>
-              {/* Bent connector line pointing to grid lines on left side */}
-              <div className="grid-connector">
-                <div className="line-up"></div>
-                <div className="line-right"></div>
-                <div className="line-up-final"></div>
-                <div className="connector-dot green"></div>
-                {isAnimationEnabled && <div className="animated-dot"></div>}
-              </div>
-            </div>
 
-            {/* Charging Station Label - Under image, center */}
-            <div className="absolute top-80 left-1/2 transform -translate-x-1/2 mt-6">
-              <button
-                onClick={() => setShowInverterSubmenu(!showInverterSubmenu)}
-                className={`bg-background/90 backdrop-blur-sm border border-border/50 rounded-lg px-2 py-1 text-center shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 ${
-                  showInverterSubmenu ? "ring-2 ring-blue-500" : ""
-                }`}
-              >
-                <div className="text-sm font-bold text-foreground">11 kW</div>
-                <div className="text-xs text-muted-foreground uppercase tracking-wide">
-                  Invertor
-                </div>
-              </button>
+              {/* Charging Station Label - Under image, center */}
+              <div className="absolute top-80 left-1/2 transform -translate-x-1/2 mt-6">
+                <button
+                  onClick={() => setShowInverterSubmenu(!showInverterSubmenu)}
+                  className={`bg-background/90 backdrop-blur-sm border border-border/50 rounded-lg px-2 py-1 text-center shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 ${
+                    showInverterSubmenu ? "ring-2 ring-blue-500" : ""
+                  }`}
+                >
+                  <div className="text-sm font-bold text-foreground">11 kW</div>
+                  <div className="text-xs text-muted-foreground uppercase tracking-wide">
+                    Invertor
+                  </div>
+                </button>
 
-              {/* Floating Sub-Menu with L1, L2, L3 branches */}
-              {showInverterSubmenu && (
-                <div className="absolute bottom-full mb-8 left-1/2 transform -translate-x-1/2 inverter-submenu z-50">
-                  {/* Row of circular bubbles */}
-                  <div className="flex items-center justify-center space-x-8">
-                    {/* L1 Branch */}
-                    <div className="relative l1-branch z-40">
-                      <div className="w-16 h-16 bg-white/95 backdrop-blur-sm border-2 border-white-500 rounded-md flex flex-col items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-                        <div className="text-xs font-medium text-blue-500 mt-1">
-                          3.7kW
+                {/* Floating Sub-Menu with L1, L2, L3 branches */}
+                {showInverterSubmenu && (
+                  <div className="absolute bottom-full mb-8 left-1/2 transform -translate-x-1/2 inverter-submenu z-50">
+                    {/* Row of circular bubbles */}
+                    <div className="flex items-center justify-center space-x-8">
+                      {/* L1 Branch */}
+                      <div className="relative l1-branch z-40">
+                        <div className="w-16 h-16 bg-white/95 backdrop-blur-sm border-2 border-white-500 rounded-md flex flex-col items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                          <div className="text-xs font-medium text-blue-500 mt-1">
+                            3.7kW
+                          </div>
+                          <div className="text-base text-blue-500 font-bold">
+                            L1
+                          </div>
                         </div>
-                        <div className="text-base text-blue-500 font-bold">
-                          L1
+                        {/* Bend connector from L1 to Inverter */}
+                        <div className="l1-connector">
+                          <div className="line-down"></div>
+                          <div className="line-right"></div>
+                          <div className="line-down-final"></div>
                         </div>
                       </div>
-                      {/* Bend connector from L1 to Inverter */}
-                      <div className="l1-connector">
-                        <div className="line-down"></div>
-                        <div className="line-right"></div>
-                        <div className="line-down-final"></div>
-                      </div>
-                    </div>
 
-                    {/* L2 Branch */}
-                    <div className="relative l2-branch z-40">
-                      <div className="w-16 h-16 bg-white/95 backdrop-blur-sm border-2 border-white-500 rounded-md flex flex-col items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-                        <div className="text-xs font-medium text-blue-500 mt-1">
-                          3.6kW
+                      {/* L2 Branch */}
+                      <div className="relative l2-branch z-40">
+                        <div className="w-16 h-16 bg-white/95 backdrop-blur-sm border-2 border-white-500 rounded-md flex flex-col items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                          <div className="text-xs font-medium text-blue-500 mt-1">
+                            3.6kW
+                          </div>
+                          <div className="text-base text-blue-500 font-bold">
+                            L2
+                          </div>
                         </div>
-                        <div className="text-base text-blue-500 font-bold">
-                          L2
+                        {/* Direct line from L2 to Inverter (center) */}
+                        <div className="l2-connector">
+                          <div className="line-down-direct"></div>
                         </div>
                       </div>
-                      {/* Direct line from L2 to Inverter (center) */}
-                      <div className="l2-connector">
-                        <div className="line-down-direct"></div>
-                      </div>
-                    </div>
 
-                    {/* L3 Branch */}
-                    <div className="relative l3-branch z-40">
-                      <div className="w-16 h-16 bg-white/95 backdrop-blur-sm border-2 border-white-500 rounded-md flex flex-col items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-                        <div className="text-xs font-medium text-blue-500 mt-1">
-                          3.7kW
+                      {/* L3 Branch */}
+                      <div className="relative l3-branch z-40">
+                        <div className="w-16 h-16 bg-white/95 backdrop-blur-sm border-2 border-white-500 rounded-md flex flex-col items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                          <div className="text-xs font-medium text-blue-500 mt-1">
+                            3.7kW
+                          </div>
+                          <div className="text-base text-blue-500 font-bold">
+                            L3
+                          </div>
                         </div>
-                        <div className="text-base text-blue-500 font-bold">
-                          L3
+                        {/* Bend connector from L3 to Inverter */}
+                        <div className="l3-connector">
+                          <div className="line-down"></div>
+                          <div className="line-left"></div>
+                          <div className="line-down-final"></div>
                         </div>
-                      </div>
-                      {/* Bend connector from L3 to Inverter */}
-                      <div className="l3-connector">
-                        <div className="line-down"></div>
-                        <div className="line-left"></div>
-                        <div className="line-down-final"></div>
                       </div>
                     </div>
                   </div>
+                )}
+                {/* Bent connector line pointing to charging station */}
+                <div className="charger-connector">
+                  <div className="line-up"></div>
+                  <div className="line-right"></div>
+                  <div className="line-up-final"></div>
+                  <div className="connector-dot"></div>
+                  {isAnimationEnabled && <div className="animated-dot"></div>}
                 </div>
-              )}
-              {/* Bent connector line pointing to charging station */}
-              <div className="charger-connector">
-                <div className="line-up"></div>
-                <div className="line-right"></div>
-                <div className="line-up-final"></div>
-                <div className="connector-dot"></div>
-                {isAnimationEnabled && <div className="animated-dot"></div>}
               </div>
-            </div>
 
-            {/* Electric Car Label - Under image, right side */}
-            <div className="absolute top-80 right-0 mt-6">
-              <div className="bg-background/90 backdrop-blur-sm border border-border/50 rounded-lg px-2 py-1 text-center shadow-lg">
-                <div className="text-sm font-bold text-foreground">7.2 kW</div>
-                <div className="text-xs text-muted-foreground uppercase tracking-wide">
-                  Electric Car
+              {/* Electric Car Label - Under image, right side */}
+              <div className="absolute top-80 right-0 mt-6">
+                <div className="bg-background/90 backdrop-blur-sm border border-border/50 rounded-lg px-2 py-1 text-center shadow-lg">
+                  <div className="text-sm font-bold text-foreground">
+                    7.2 kW
+                  </div>
+                  <div className="text-xs text-muted-foreground uppercase tracking-wide">
+                    Electric Car
+                  </div>
+                </div>
+                {/* Bent connector line pointing to electric car */}
+                <div className="car-connector">
+                  <div className="line-up"></div>
+                  <div className="line-left"></div>
+                  <div className="line-up-final"></div>
+                  <div className="connector-dot"></div>
+                  {isAnimationEnabled && <div className="animated-dot"></div>}
                 </div>
               </div>
-              {/* Bent connector line pointing to electric car */}
-              <div className="car-connector">
-                <div className="line-up"></div>
-                <div className="line-left"></div>
-                <div className="line-up-final"></div>
-                <div className="connector-dot"></div>
-                {isAnimationEnabled && <div className="animated-dot"></div>}
+
+              {/* Home Load Circle - Center of image */}
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                <div className="home-load-circle-container">
+                  <div className="home-load-mesh-gradient"></div>
+                  <div className="home-load-pulsing-circle">
+                    <div className="home-load-content text-center">
+                      <HousePlug className="w-5 h-5 text-white mb-2" />
+                      <div className="text-md font-bold text-white">21 kWh</div>
+                      {/* <div className="text-xs text-foreground uppercase tracking-wide">
+                        Home Load
+                      </div> */}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <div className="w-full max-w-sm relative pb-20 mb-10">
+            <img
+              src={theme === "dark" ? HomeDark : HomeLight}
+              alt="Smart home flat view"
+              className="w-full h-auto mb-4"
+            />
+
+            {/* Overlay Labels and Lines for Flat View */}
+            <div className="absolute inset-0 pointer-events-none">
+              {/* Top Labels: Solar & Grid */}
+              <div className="flat-top-label flat-top-label--solar">
+                <div className="bg-background/90 backdrop-blur-sm border border-border/50 rounded-lg px-3 py-2 text-center shadow-lg">
+                  <div className="text-sm font-bold text-foreground">
+                    6.5 kW
+                  </div>
+                  <div className="text-xs text-muted-foreground uppercase tracking-wide">
+                    Solar Panel
+                  </div>
+                </div>
+                <div className="flat-solar-connector">
+                  <div className="line-down"></div>
+                  <div className="line-right"></div>
+                  <div className="line-down-final"></div>
+                  {isAnimationEnabled && <div className="animated-dot"></div>}
+                </div>
+              </div>
+
+              <div className="flat-top-label flat-top-label--grid">
+                <div className="bg-background/90 backdrop-blur-sm border border-border/50 rounded-lg px-3 py-2 text-center shadow-lg">
+                  <div className="text-sm font-bold text-green-500">
+                    +1.2 kW
+                  </div>
+                  <div className="text-xs text-muted-foreground uppercase tracking-wide">
+                    Grid Export
+                  </div>
+                </div>
+                <div className="flat-grid-connector">
+                  <div className="line-down"></div>
+                  <div className="line-right"></div>
+                  <div className="line-down-final"></div>
+                  {isAnimationEnabled && <div className="animated-dot"></div>}
+                </div>
+              </div>
+
+              {/* Bottom Labels Row: EV, Home Load, Battery */}
+              <div className="flat-bottom-row">
+                <div className="flat-bottom-label flat-bottom-label--ev">
+                  <div className="bg-background/90 backdrop-blur-sm border border-border/50 rounded-lg px-3 py-2 text-center shadow-lg">
+                    <div className="text-sm font-bold text-foreground">
+                      7.2 kW
+                    </div>
+                    <div className="text-xs text-muted-foreground uppercase tracking-wide">
+                      EV
+                    </div>
+                  </div>
+                  <div className="flat-ev-connector">
+                    <div className="line-up"></div>
+                    <div className="line-right"></div>
+                    {isAnimationEnabled && <div className="animated-dot"></div>}
+                  </div>
+                </div>
+
+                <div className="flat-bottom-label flat-bottom-label--home">
+                  <div className="home-load-circle-container">
+                    <div className="home-load-mesh-gradient"></div>
+                    <div className="home-load-pulsing-circle">
+                      <div className="home-load-content">
+                        <HousePlug className="w-5 h-5 text-white mb-2" />
+                        <div className="text-md font-bold text-white">
+                          21 kWh
+                        </div>
+                        {/* <div className="text-xs text-foreground uppercase tracking-wide">
+                          Home Load
+                        </div> */}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flat-home-connector">
+                    <div className="line-up"></div>
+                    {isAnimationEnabled && <div className="animated-dot"></div>}
+                  </div>
+                </div>
+
+                <div className="flat-bottom-label flat-bottom-label--battery">
+                  <div className="bg-background/90 backdrop-blur-sm border border-border/50 rounded-lg px-3 py-2 text-center shadow-lg">
+                    <div className="text-sm font-bold text-amber-500">
+                      18 kWh
+                    </div>
+                    <div className="text-xs text-muted-foreground uppercase tracking-wide">
+                      Battery
+                    </div>
+                  </div>
+                  <div className="flat-battery-connector">
+                    <div className="line-up"></div>
+                    <div className="line-left"></div>
+                    {isAnimationEnabled && <div className="animated-dot"></div>}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Storm Ready Mode Alert */}

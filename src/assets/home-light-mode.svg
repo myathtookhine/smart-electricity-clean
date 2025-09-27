@@ -161,4 +161,11 @@
 <path fill-rule="evenodd" clip-rule="evenodd" d="M302.855 61.5913L302.863 47.6004L312.233 47.5199L312.343 61.5387L310.888 63.2893H304.498L302.855 61.5913Z" fill="#E4E2DC"/>
 <path fill-rule="evenodd" clip-rule="evenodd" d="M304.564 44.9426L302.558 46.8035V47.6004L312.688 47.5161L312.682 46.9505L310.848 44.9855L304.564 44.9426Z" fill="#C2BEBA"/>
 <path fill-rule="evenodd" clip-rule="evenodd" d="M302.861 50.9501L312.322 59.4613L312.343 61.5385L310.887 63.2892H304.498L302.855 61.5911L302.861 50.9501Z" fill="#C2BEBA"/>
+<rect x="133" y="147" width="17" height="2" fill="white"/>
+<rect x="110" y="148" width="23" height="2" fill="white"/>
+<rect x="190" y="147" width="32" height="2" fill="white"/>
+<rect x="176" y="60" width="58" height="2" transform="rotate(90 176 60)" fill="white"/>
+<rect x="307" y="62" width="133" height="1.99999" transform="rotate(-180 307 62)" fill="white"/>
+<rect x="166" y="60" width="58" height="2" transform="rotate(90 166 60)" fill="white"/>
+<rect x="166" y="62" width="57" height="1.99999" transform="rotate(-180 166 62)" fill="white"/>
 </svg>

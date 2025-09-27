@@ -36,6 +36,12 @@ export const AppProvider = ({ children }) => {
     manuallyTriggered: false, // Debug mode or manually triggered
   });
 
+  // Visualization type state management
+  const [visualizationType, setVisualizationType] = useState(() => {
+    const saved = localStorage.getItem("visualizationType");
+    return saved || "isometric";
+  });
+
   useEffect(() => {
     // Check if user has completed wizard before
     const hasCompletedWizard = localStorage.getItem("hasCompletedWizard");
@@ -97,6 +103,11 @@ export const AppProvider = ({ children }) => {
   const changeLanguage = (languageCode) => {
     setCurrentLanguage(languageCode);
     localStorage.setItem("currentLanguage", languageCode);
+  };
+
+  const changeVisualizationType = (type) => {
+    setVisualizationType(type);
+    localStorage.setItem("visualizationType", type);
   };
 
   // Onboarding flow functions
@@ -197,6 +208,8 @@ export const AppProvider = ({ children }) => {
     checkForStormConditions,
     currentLanguage,
     changeLanguage,
+    visualizationType,
+    changeVisualizationType,
     onboardingStep,
     setOnboardingStep,
     isOnboardingComplete,
