@@ -7,8 +7,11 @@ import { InsightsPage } from "./components/pages/InsightsPage";
 import { WeatherPage } from "./components/pages/weather/WeatherPage";
 import { SettingsPage } from "./components/pages/SettingsPage";
 import { NotificationPage } from "./components/pages/NotificationPage";
+import { StormReadyModePage } from "./components/pages/SubSettings/BatteryControl/StormReadyModePage";
+import { EVControlPage, BatteryPage } from "./components/pages/SubSettings";
 import { AppProvider, useApp } from "./contexts/AppContext";
 import { WeatherProvider } from "./contexts/WeatherContext";
+import { LocationProvider } from "./contexts/LocationContext";
 import { AppWizard } from "./components/AppWizard";
 import { Login } from "./components/Login";
 import { LoginModeSelection } from "./components/LoginModeSelection";
@@ -76,6 +79,10 @@ function AppContent() {
     if (["home", "insights", "weather"].includes(page)) {
       setIsInSubPage(false);
     }
+    // Set sub-page state for direct sub-pages
+    if (["storm-ready", "ev-control", "battery"].includes(page)) {
+      setIsInSubPage(true);
+    }
   };
 
   const renderPage = () => {
@@ -100,6 +107,27 @@ function AppContent() {
         );
       case "notifications":
         return <NotificationPage onPageChange={handlePageChange} />;
+      case "storm-ready":
+        return (
+          <StormReadyModePage
+            onBack={() => handlePageChange("home")}
+            onGoHome={() => handlePageChange("home")}
+          />
+        );
+      case "ev-control":
+        return (
+          <EVControlPage
+            onBack={() => handlePageChange("home")}
+            onGoHome={() => handlePageChange("home")}
+          />
+        );
+      case "battery":
+        return (
+          <BatteryPage
+            onBack={() => handlePageChange("home")}
+            onGoHome={() => handlePageChange("home")}
+          />
+        );
       default:
         return <HomePage onPageChange={handlePageChange} />;
     }
@@ -229,7 +257,7 @@ function AppContent() {
               {showLoginLoading && (
                 <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                   <div className="text-white text-xl font-semibold animate-pulse">
-                    Loading your dashboard...
+                    Loading Live Data...
                   </div>
                 </div>
               )}
@@ -253,7 +281,9 @@ function App() {
   return (
     <AppProvider>
       <WeatherProvider>
-        <AppContent />
+        <LocationProvider>
+          <AppContent />
+        </LocationProvider>
       </WeatherProvider>
     </AppProvider>
   );

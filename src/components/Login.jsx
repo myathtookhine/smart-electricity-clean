@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion } from "framer-motion";
 import { Zap, Moon, Sun, Globe } from "lucide-react";
 import { useApp } from "../contexts/AppContext";
 import { useTheme } from "./ThemeProvider";
@@ -9,7 +10,8 @@ import { Field } from "./ui/field";
 import { ForgotPassword } from "./ForgotPassword";
 import { RegisterUser } from "./RegisterUser";
 import { LanguageChangeModal } from "./LanguageChangeModal";
-import duracellLogo from "../assets/duracell-logo.png";
+import logoDark from "../assets/duracell-logo-white.svg";
+import logoLight from "../assets/duracell-logo-black.svg";
 
 export function Login() {
   const [currentView, setCurrentView] = useState("login"); // "login", "register", "forgot-password"
@@ -69,75 +71,80 @@ export function Login() {
   }
 
   return (
-    <div className="h-full bg-background flex flex-col items-center justify-center p-6 relative overflow-hidden">
+    <div className="h-full bg-background flex flex-col items-center justify-center p-6 relative overflow-hidden pt-32">
       {/* Top Right Controls */}
-      <div className="absolute top-12 right-6 z-50 flex items-center space-x-3">
+      <div className="absolute top-16 w-full px-6 z-50">
         {/* Language Toggle */}
-        <button
-          onClick={() => setShowLanguageModal(true)}
-          className="p-2 rounded-xl bg-muted/20 hover:bg-muted/30 transition-all duration-300"
-        >
-          <Globe className="w-5 h-5 text-foreground" />
-        </button>
 
-        {/* Light/Dark Mode Toggle */}
-        <button
-          onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-          className="p-2 rounded-xl bg-muted/20 hover:bg-muted/30 transition-all duration-300"
-        >
-          {theme === "dark" ? (
-            <Sun className="w-5 h-5 text-yellow-500" />
-          ) : (
-            <Moon className="w-5 h-5 text-slate-600" />
-          )}
-        </button>
+        <div className="flex justify-between items-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+          >
+            <div className="text-center">
+              <img
+                src={theme === "dark" ? logoDark : logoLight}
+                alt="DURACELL ENERGY"
+                className="h-6 mx-auto"
+              />
+            </div>
+          </motion.div>
+          <div className="flex flex-row space-x-4">
+            <button
+              onClick={() => setShowLanguageModal(true)}
+              className="p-2 rounded-xl bg-muted/20 hover:bg-muted/30 transition-all duration-300"
+            >
+              <Globe className="w-5 h-5 text-foreground" />
+            </button>
+
+            {/* Light/Dark Mode Toggle */}
+            <button
+              onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+              className="p-2 rounded-xl bg-muted/20 hover:bg-muted/30 transition-all duration-300"
+            >
+              {theme === "dark" ? (
+                <Sun className="w-5 h-5 text-yellow-500" />
+              ) : (
+                <Moon className="w-5 h-5 text-slate-600" />
+              )}
+            </button>
+          </div>
+        </div>
       </div>
-
-      {/* Background Pattern */}
-      {/* <div className="absolute inset-0 opacity-5">
-        <div className="absolute top-20 left-10 w-32 h-32 border border-foreground/10 rounded-full"></div>
-        <div className="absolute bottom-32 right-16 w-24 h-24 border border-foreground/10 rounded-full"></div>
-        <div className="absolute top-1/2 right-10 w-16 h-16 border border-foreground/10 rounded-full"></div>
-      </div> */}
 
       {/* Main Content */}
       <div className="w-full max-w-sm space-y-6">
-        {/* Logo */}
-        <div className="text-center mb-8">
-          {/* <div className="w-16 h-16 bg-gradient-to-br from-primary to-primary/80 rounded-3xl flex items-center justify-center shadow-2xl mx-auto mb-4">
-            <Zap className="w-8 h-8 text-white" strokeWidth={1.5} />
-          </div> */}
-          <div className="text-center">
-            <img
-              src={duracellLogo}
-              alt="DURACELL ENERGY"
-              className="h-12 mx-auto mb-4 brightness-0 invert dark:brightness-100 dark:invert-0"
-            />
-          </div>
-        </div>
-
         {/* Login Form */}
         <form onSubmit={handleLoginSubmit} className="space-y-6">
           {/* Username Field */}
-          <Field label="Account">
-            <Input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Email or username"
-              required
-            />
-          </Field>
+          <div>
+            <Field label="Account">
+              <div>
+                <Input
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="Email or username"
+                  required
+                />
+              </div>
+            </Field>
+          </div>
 
           {/* Password Field */}
-          <Field label="Password">
-            <PasswordInput
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Password"
-              required
-            />
-          </Field>
+          <div>
+            <Field label="Password">
+              <div>
+                <PasswordInput
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Password"
+                  required
+                />
+              </div>
+            </Field>
+          </div>
 
           {/* Error Message */}
           {error && (
@@ -147,19 +154,29 @@ export function Login() {
           )}
 
           {/* Login Button */}
-          <Button type="submit" disabled={isLoading} width="full" size="lg">
-            {isLoading ? (
-              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-            ) : (
-              "Sign In"
-            )}
-          </Button>
+          <div>
+            <div>
+              <Button type="submit" disabled={isLoading} width="full" size="lg">
+                {isLoading ? (
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                ) : (
+                  "Sign In"
+                )}
+              </Button>
+            </div>
+          </div>
 
           {/* Forgot Password */}
           <div className="text-center">
-            <Button variant="link" type="button" onClick={handleForgotPassword}>
-              Forgot password?
-            </Button>
+            <div>
+              <Button
+                variant="link"
+                type="button"
+                onClick={handleForgotPassword}
+              >
+                Forgot password?
+              </Button>
+            </div>
           </div>
 
           {/* Register New User Button */}
@@ -175,15 +192,17 @@ export function Login() {
               </div>
             </div>
 
-            <Button
-              type="button"
-              variant="secondary"
-              width="full"
-              size="lg"
-              onClick={handleRegisterUser}
-            >
-              Register New User
-            </Button>
+            <div>
+              <Button
+                type="button"
+                variant="secondary"
+                width="full"
+                size="lg"
+                onClick={handleRegisterUser}
+              >
+                Register New User
+              </Button>
+            </div>
           </div>
         </form>
 

@@ -1,16 +1,22 @@
 import React, { useEffect } from "react";
 import { useWeather } from "../../../hooks/useWeather";
 import { useApp } from "../../../contexts/AppContext";
+import { useLocationContext } from "../../../contexts/LocationContext";
 import { getWeatherIcon } from "../../../utils/weatherIcons";
 import {
   MapPin,
   Thermometer,
   CircleQuestionMark,
   ArrowRightCircle,
+  Settings,
 } from "lucide-react";
 
-const WeatherTab = ({ lat, lon, className = "", onClick, onWeatherClick }) => {
-  const { weather, loading, error } = useWeather(lat, lon);
+const WeatherTab = ({ className = "", onClick, onWeatherClick }) => {
+  const { selectedLocation } = useLocationContext();
+  const { weather, loading, error } = useWeather(
+    selectedLocation?.lat,
+    selectedLocation?.lon
+  );
   const { checkForStormConditions } = useApp();
 
   // Monitor weather for storm conditions when weather data updates
@@ -53,12 +59,30 @@ const WeatherTab = ({ lat, lon, className = "", onClick, onWeatherClick }) => {
                 --°C
               </span>
             </div>
-            <p className="text-sm text-muted-foreground">Weather unavailable</p>
+            <p className="text-sm text-muted-foreground">
+              {!selectedLocation
+                ? "No location selected"
+                : "Weather unavailable"}
+            </p>
             <p className="text-xs text-muted-foreground">
-              Enable location to see weather
+              {!selectedLocation
+                ? "Add a preferred location to see weather"
+                : "Unable to fetch weather data"}
             </p>
           </div>
-          <div className="flex-shrink-0">
+          <div className="flex items-center space-x-2">
+            <button
+              className="p-2 rounded-full bg-primary/10 hover:bg-primary/20 text-primary transition-colors"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (onWeatherClick) {
+                  onWeatherClick();
+                }
+              }}
+              title="Manage weather locations"
+            >
+              <Settings className="w-4 h-4" />
+            </button>
             <CircleQuestionMark className="w-8 h-8 text-muted-foreground" />
           </div>
         </div>
@@ -116,7 +140,9 @@ const WeatherTab = ({ lat, lon, className = "", onClick, onWeatherClick }) => {
           <div className="flex flex-col items-start space-y-1">
             <div className="flex items-center">
               <MapPin className="w-4 h-4 text-muted-foreground mr-2" />
-              <p className="text-sm text-muted-foreground">{weather.name}</p>
+              <p className="text-sm text-muted-foreground">
+                {selectedLocation?.name || weather.name}
+              </p>
             </div>
           </div>
         </div>

@@ -137,6 +137,76 @@ export function ReserveBatteryPowerPage({ onBack, onGoHome }) {
             </div>
           </div>
 
+          {/* SOC Reserve Percentage */}
+          {settings.enabled && (
+            <div className="bg-card/50 backdrop-blur-sm rounded-3xl p-6 shadow border border-border/50">
+              <h3 className="text-lg text-card-foreground font-semibold mb-4 flex items-center">
+                <Gauge className="w-5 h-5 text-green-500 mr-2" />
+                SOC Reserve Percentage
+              </h3>
+              <p className="text-sm text-muted-foreground mb-6">
+                Set the minimum battery level to maintain
+              </p>
+
+              {/* Current Value Display */}
+              <div className="text-center mb-8">
+                <div className="text-4xl font-bold text-foreground">
+                  {settings.socReservePercent}%
+                </div>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Minimum battery level
+                </p>
+              </div>
+
+              {/* Slider */}
+              <div className={`space-y-4 ${isDisabled ? "opacity-50" : ""}`}>
+                <div className="relative">
+                  <input
+                    type="range"
+                    min="5"
+                    max="100"
+                    value={settings.socReservePercent}
+                    onChange={(e) =>
+                      handleSliderChange(parseInt(e.target.value))
+                    }
+                    disabled={isDisabled}
+                    className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer slider"
+                    style={{
+                      background: `linear-gradient(to right, #10b981 0%, #10b981 ${
+                        ((settings.socReservePercent - 5) / 95) * 100
+                      }%, #e2e8f0 ${
+                        ((settings.socReservePercent - 5) / 95) * 100
+                      }%, #e2e8f0 100%)`,
+                    }}
+                  />
+                  <div className="flex justify-between text-xs text-muted-foreground mt-2">
+                    <span>5%</span>
+                    <span>50%</span>
+                    <span>100%</span>
+                  </div>
+                </div>
+
+                {/* Quick Select Buttons */}
+                <div className="grid grid-cols-3 gap-3">
+                  {[10, 20, 30, 40, 50, 60, 70, 80, 90].map((percentage) => (
+                    <button
+                      key={percentage}
+                      disabled={isDisabled}
+                      onClick={() => handleSliderChange(percentage)}
+                      className={`py-2 px-4 rounded-xl border transition-all duration-300 ${
+                        settings.socReservePercent === percentage
+                          ? "bg-green-500/10 border-green-500/20 text-green-500"
+                          : "bg-muted/20 border-border text-foreground hover:bg-muted/30"
+                      } ${isDisabled ? "cursor-not-allowed" : ""}`}
+                    >
+                      {percentage}%
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Time Configuration */}
           {settings.enabled && (
             <div className="bg-card/50 backdrop-blur-sm rounded-3xl p-6 shadow border border-border/50">
@@ -215,76 +285,6 @@ export function ReserveBatteryPowerPage({ onBack, onGoHome }) {
                   </div>
                 </div>
               </LocalizationProvider>
-            </div>
-          )}
-
-          {/* SOC Reserve Percentage */}
-          {settings.enabled && (
-            <div className="bg-card/50 backdrop-blur-sm rounded-3xl p-6 shadow border border-border/50">
-              <h3 className="text-lg text-card-foreground font-semibold mb-4 flex items-center">
-                <Gauge className="w-5 h-5 text-green-500 mr-2" />
-                SOC Reserve Percentage
-              </h3>
-              <p className="text-sm text-muted-foreground mb-6">
-                Set the minimum battery level to maintain
-              </p>
-
-              {/* Current Value Display */}
-              <div className="text-center mb-8">
-                <div className="text-4xl font-bold text-foreground">
-                  {settings.socReservePercent}%
-                </div>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Minimum battery level
-                </p>
-              </div>
-
-              {/* Slider */}
-              <div className={`space-y-4 ${isDisabled ? "opacity-50" : ""}`}>
-                <div className="relative">
-                  <input
-                    type="range"
-                    min="5"
-                    max="50"
-                    value={settings.socReservePercent}
-                    onChange={(e) =>
-                      handleSliderChange(parseInt(e.target.value))
-                    }
-                    disabled={isDisabled}
-                    className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer slider"
-                    style={{
-                      background: `linear-gradient(to right, #10b981 0%, #10b981 ${
-                        ((settings.socReservePercent - 5) / 45) * 100
-                      }%, #e2e8f0 ${
-                        ((settings.socReservePercent - 5) / 45) * 100
-                      }%, #e2e8f0 100%)`,
-                    }}
-                  />
-                  <div className="flex justify-between text-xs text-muted-foreground mt-2">
-                    <span>5%</span>
-                    <span>25%</span>
-                    <span>50%</span>
-                  </div>
-                </div>
-
-                {/* Quick Select Buttons */}
-                <div className="grid grid-cols-3 gap-3">
-                  {[10, 20, 30].map((percentage) => (
-                    <button
-                      key={percentage}
-                      disabled={isDisabled}
-                      onClick={() => handleSliderChange(percentage)}
-                      className={`py-2 px-4 rounded-xl border transition-all duration-300 ${
-                        settings.socReservePercent === percentage
-                          ? "bg-green-500/10 border-green-500/20 text-green-500"
-                          : "bg-muted/20 border-border text-foreground hover:bg-muted/30"
-                      } ${isDisabled ? "cursor-not-allowed" : ""}`}
-                    >
-                      {percentage}%
-                    </button>
-                  ))}
-                </div>
-              </div>
             </div>
           )}
 

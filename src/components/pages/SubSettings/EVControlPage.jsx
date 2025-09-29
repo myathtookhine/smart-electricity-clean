@@ -1,16 +1,17 @@
-import { 
-  Car, 
-  ChevronLeft, 
-  ChevronRight, 
-  Zap, 
-  Sun, 
-  Clock, 
+import {
+  Car,
+  ChevronLeft,
+  ChevronRight,
+  Zap,
+  Sun,
+  Clock,
   HelpCircle,
   AlertCircle,
-  Check
-} from 'lucide-react';
-import { useState } from 'react';
-import { Button } from '../../ui/button';
+  Check,
+  Loader2,
+} from "lucide-react";
+import { useState } from "react";
+import { Button } from "../../ui/button";
 import { BackToHomeButton } from "../../ui/BackToHomeButton";
 import { SelectChargeModeModal } from "./EVControl/SelectChargeModeModal";
 import { ChargingSchedulePage } from "./EVControl/ChargingSchedulePage";
@@ -25,6 +26,7 @@ export function EVControlPage({ onBack, onGoHome }) {
   const [tariffConfigured, setTariffConfigured] = useState(false);
   const [currentTariff, setCurrentTariff] = useState(null);
   const [chargingSchedule, setChargingSchedule] = useState(null);
+  const [isCharging, setIsCharging] = useState(true);
 
   const chargingModes = {
     "charge-now": {
@@ -257,8 +259,47 @@ export function EVControlPage({ onBack, onGoHome }) {
             className="flex items-center gap-2 mt-4"
           >
             <span>Change Mode</span>
-            <ChevronRight className="w-4 h-4" />
+            {/* <ChevronRight className="w-4 h-4" /> */}
           </Button>
+        </div>
+
+        {/* Charging Controls */}
+        <div className="bg-card/50 backdrop-blur-sm rounded-3xl p-6 shadow-xl border border-border/50">
+          {!isCharging ? (
+            <Button
+              variant="primary"
+              width="full"
+              onClick={() => setIsCharging(true)}
+              className="flex items-center gap-2"
+            >
+              <Zap className="w-4 h-4" />
+              <span>Start Charging Now</span>
+            </Button>
+          ) : (
+            <div className="text-center">
+              <div className="flex items-center justify-center mb-4">
+                <div className="relative">
+                  <div className="w-16 h-16 border-4 border-blue-500/20 rounded-full"></div>
+                  <div className="absolute inset-0 w-16 h-16 border-4 border-blue-500 rounded-full border-t-transparent animate-spin"></div>
+                  <Zap className="absolute inset-0 w-6 h-6 text-blue-500 m-auto" />
+                </div>
+              </div>
+              <h4 className="text-lg font-semibold text-foreground mb-2">
+                Charging in Progress
+              </h4>
+              <p className="text-sm text-muted-foreground mb-4">
+                Your EV is currently charging...
+              </p>
+              <Button
+                variant="secondary"
+                width="full"
+                onClick={() => setIsCharging(false)}
+                className="flex items-center gap-2"
+              >
+                <span>Stop Charging</span>
+              </Button>
+            </div>
+          )}
         </div>
 
         {/* Live Charging View */}
@@ -307,8 +348,7 @@ export function EVControlPage({ onBack, onGoHome }) {
               </div>
             )}
 
-            {(selectedMode === "charge-now" ||
-              (selectedMode === "tariff-intelligence" && tariffConfigured)) && (
+            {selectedMode === "tariff-intelligence" && tariffConfigured && (
               <div className="pt-4">
                 <div className="flex items-start space-x-4">
                   <div className="flex-1">

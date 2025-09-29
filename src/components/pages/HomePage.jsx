@@ -59,6 +59,8 @@ export function HomePage({ onPageChange }) {
         customIcon: Zap,
         showIcon: true,
         showMessage: true,
+        onClick: () => onPageChange("storm-ready"),
+        className: "cursor-pointer",
       };
     } else if (stormReadyMode.isActive) {
       return {
@@ -68,6 +70,8 @@ export function HomePage({ onPageChange }) {
         customIcon: Zap,
         showIcon: true,
         showMessage: true,
+        onClick: () => onPageChange("storm-ready"),
+        className: "cursor-pointer",
       };
     } else {
       return {
@@ -77,6 +81,8 @@ export function HomePage({ onPageChange }) {
         customIcon: Zap,
         showIcon: true,
         showMessage: true,
+        onClick: () => onPageChange("storm-ready"),
+        className: "cursor-pointer",
       };
     }
   };
@@ -271,14 +277,14 @@ export function HomePage({ onPageChange }) {
               {/* Charging Station Label - Under image, center */}
               <div className="absolute top-80 left-1/2 transform -translate-x-1/2 mt-6">
                 <button
-                  onClick={() => setShowInverterSubmenu(!showInverterSubmenu)}
+                  onClick={() => onPageChange("battery")}
                   className={`bg-background/90 backdrop-blur-sm border border-border/50 rounded-lg px-2 py-1 text-center shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 ${
                     showInverterSubmenu ? "ring-2 ring-blue-500" : ""
                   }`}
                 >
                   <div className="text-sm font-bold text-foreground">11 kW</div>
                   <div className="text-xs text-muted-foreground uppercase tracking-wide">
-                    Invertor
+                    Battery
                   </div>
                 </button>
 
@@ -353,14 +359,17 @@ export function HomePage({ onPageChange }) {
 
               {/* Electric Car Label - Under image, right side */}
               <div className="absolute top-80 right-0 mt-6">
-                <div className="bg-background/90 backdrop-blur-sm border border-border/50 rounded-lg px-2 py-1 text-center shadow-lg">
+                <button
+                  onClick={() => onPageChange("ev-control")}
+                  className="bg-background/90 backdrop-blur-sm border border-border/50 rounded-lg px-2 py-1 text-center shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 cursor-pointer pointer-events-auto"
+                >
                   <div className="text-sm font-bold text-foreground">
                     7.2 kW
                   </div>
                   <div className="text-xs text-muted-foreground uppercase tracking-wide">
-                    Electric Car
+                    EV
                   </div>
-                </div>
+                </button>
                 {/* Bent connector line pointing to electric car */}
                 <div className="car-connector">
                   <div className="line-up"></div>
@@ -388,7 +397,7 @@ export function HomePage({ onPageChange }) {
               </div>
             </div>
           </div>
-        ) : (
+        ) : visualizationType === "flat" ? (
           <div className="w-full max-w-sm relative pb-20 mb-10">
             <img
               src={theme === "dark" ? HomeDark : HomeLight}
@@ -436,14 +445,17 @@ export function HomePage({ onPageChange }) {
               {/* Bottom Labels Row: EV, Home Load, Battery */}
               <div className="flat-bottom-row">
                 <div className="flat-bottom-label flat-bottom-label--ev">
-                  <div className="bg-background/90 backdrop-blur-sm border border-border/50 rounded-lg px-3 py-2 text-center shadow-lg">
+                  <button
+                    onClick={() => onPageChange("ev-control")}
+                    className="w-16 h-16 bg-background/90 backdrop-blur-sm border border-border/50 rounded-full flex flex-col items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 cursor-pointer pointer-events-auto"
+                  >
                     <div className="text-sm font-bold text-foreground">
                       7.2 kW
                     </div>
                     <div className="text-xs text-muted-foreground uppercase tracking-wide">
                       EV
                     </div>
-                  </div>
+                  </button>
                   <div className="flat-ev-connector">
                     <div className="line-up"></div>
                     <div className="line-right"></div>
@@ -467,20 +479,23 @@ export function HomePage({ onPageChange }) {
                     </div>
                   </div>
                   <div className="flat-home-connector">
-                    <div className="line-up"></div>
+                    {/* <div className="line-up"></div> */}
                     {isAnimationEnabled && <div className="animated-dot"></div>}
                   </div>
                 </div>
 
                 <div className="flat-bottom-label flat-bottom-label--battery">
-                  <div className="bg-background/90 backdrop-blur-sm border border-border/50 rounded-lg px-3 py-2 text-center shadow-lg">
-                    <div className="text-sm font-bold text-amber-500">
+                  <button
+                    onClick={() => onPageChange("battery")}
+                    className="w-16 h-16 bg-background/90 backdrop-blur-sm border border-border/50 rounded-full flex flex-col items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 cursor-pointer pointer-events-auto"
+                  >
+                    <div className="text-sm font-bold text-foreground">
                       18 kWh
                     </div>
                     <div className="text-xs text-muted-foreground uppercase tracking-wide">
                       Battery
                     </div>
-                  </div>
+                  </button>
                   <div className="flat-battery-connector">
                     <div className="line-up"></div>
                     <div className="line-left"></div>
@@ -490,12 +505,26 @@ export function HomePage({ onPageChange }) {
               </div>
             </div>
           </div>
+        ) : (
+          <div className="w-full max-w-sm relative pb-24 mb-10 flex items-center justify-center">
+            <div className="text-center py-16">
+              <div className="text-2xl font-bold text-muted-foreground mb-2">
+                Coming Soon
+              </div>
+              <div className="text-sm text-muted-foreground">
+                Classic view is under development
+              </div>
+            </div>
+          </div>
         )}
       </div>
 
       {/* Storm Ready Mode Alert */}
       <div className="px-6 mb-6">
-        <Alert {...getStormReadyAlert()} />
+        <div className="relative">
+          <Alert {...getStormReadyAlert()} />
+          <ChevronRight className="absolute top-4 right-4 w-4 h-4 text-muted-foreground" />
+        </div>
       </div>
 
       {/* Location Permission Modal */}

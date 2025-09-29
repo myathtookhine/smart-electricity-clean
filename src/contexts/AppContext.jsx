@@ -39,7 +39,7 @@ export const AppProvider = ({ children }) => {
   // Visualization type state management
   const [visualizationType, setVisualizationType] = useState(() => {
     const saved = localStorage.getItem("visualizationType");
-    return saved || "isometric";
+    return saved || "flat";
   });
 
   useEffect(() => {

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Zap,
   Activity,
@@ -17,7 +18,7 @@ import {
 import { useApp } from "../contexts/AppContext";
 import { useTheme } from "./ThemeProvider";
 import { LanguageChangeModal } from "./LanguageChangeModal";
-import logo from "../assets/duracell-logo.png";
+import logo from "../assets/duracell-logo-white.svg";
 import wz1 from "../assets/iso-0-welcome.png";
 import wz2 from "../assets/iso-1-live.png";
 import wz3 from "../assets/iso-2-graph.png";
@@ -135,35 +136,42 @@ export function AppWizard() {
 
   return (
     <div className="h-full bg-background flex flex-col items-center justify-center p-6 relative overflow-hidden">
-      <div className="absolute top-16 w-full px-6 z-50">
-        <div className="flex justify-between items-start">
-          {/* Light/Dark Mode Toggle */}
-          <button
-            onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-            className="p-2 rounded-xl bg-muted/20 hover:bg-muted/30 transition-all duration-300"
-          >
-            {theme === "dark" ? (
-              <Sun className="w-5 h-5 text-yellow-500" />
-            ) : (
-              <Moon className="w-5 h-5 text-slate-600" />
-            )}
-          </button>
-          {/* Logo - display on all steps */}
-          <div className="mb-4">
-            <img
-              src={logo}
-              alt="Duracell Logo"
-              className="w-32 h-auto object-contain"
-            />
+      <div className="absolute top-16 w-full px-8 z-50">
+        {/* Logo - display on all steps */}
+        <motion.div
+          className="text-center mb-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+        >
+          <div className="flex justify-between items-center">
+            {/* Light/Dark Mode Toggle */}
+            {/* <button
+              onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+              className="p-2 rounded-xl bg-muted/20 hover:bg-muted/30 transition-all duration-300"
+            >
+              {theme === "dark" ? (
+                <Sun className="w-5 h-5 text-yellow-500" />
+              ) : (
+                <Moon className="w-5 h-5 text-slate-600" />
+              )}
+            </button> */}
+            <div>
+              <img
+                src={logo}
+                alt="Duracell Logo"
+                className="w-32 h-auto object-contain"
+              />
+            </div>
+            {/* Language Selection */}
+            <button
+              onClick={() => setIsLanguageModalOpen(true)}
+              className="p-2 rounded-xl bg-muted/20 hover:bg-muted/30 transition-all duration-300"
+            >
+              <Globe className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+            </button>{" "}
           </div>
-          {/* Language Selection */}
-          <button
-            onClick={() => setIsLanguageModalOpen(true)}
-            className="p-2 rounded-xl bg-muted/20 hover:bg-muted/30 transition-all duration-300"
-          >
-            <Globe className="w-5 h-5 text-slate-600 dark:text-slate-400" />
-          </button>{" "}
-        </div>
+        </motion.div>
       </div>
 
       {/* Progress Indicator */}
@@ -187,40 +195,66 @@ export function AppWizard() {
       {/* Main Content */}
       <div className="flex-1 flex flex-col items-center justify-center max-w-sm w-full relative">
         {/* Animated Container */}
-        <div
-          key={currentStep}
-          className={`wizard-step ${direction} flex flex-col items-center text-center`}
-        >
-          {/* Icon/Image Circle */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentStep}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+            className="flex flex-col items-center text-center"
+          >
+            {/* Icon/Image Circle */}
 
-          {currentWizardStep.type === "icon" ? (
-            <div className="flex flex-col items-center justify-center mb-3 overflow-hidden">
-              <div
-                className={`w-28 h-28 rounded-full bg-gradient-to-br ${currentWizardStep.bgColor} flex items-center justify-center`}
+            {currentWizardStep.type === "icon" ? (
+              <motion.div
+                className="flex flex-col items-center justify-center mb-3 overflow-hidden"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
               >
-                <Icon className="w-14 h-14 text-white" strokeWidth={1.5} />
-              </div>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center mb-3 overflow-hidden">
-              <img
-                src={currentWizardStep.image}
-                alt={currentWizardStep.title}
-                className="w-90 h-90"
-              />
-            </div>
-          )}
+                <div
+                  className={`w-28 h-28 rounded-full bg-gradient-to-br ${currentWizardStep.bgColor} flex items-center justify-center`}
+                >
+                  <Icon className="w-14 h-14 text-white" strokeWidth={1.5} />
+                </div>
+              </motion.div>
+            ) : (
+              <motion.div
+                className="flex flex-col items-center justify-center mb-3 overflow-hidden"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+              >
+                <img
+                  src={currentWizardStep.image}
+                  alt={currentWizardStep.title}
+                  className="w-90 h-90"
+                />
+              </motion.div>
+            )}
 
-          {/* Title */}
-          <h1 className="text-3xl font-semibold text-foreground mb-4">
-            {currentWizardStep.title}
-          </h1>
+            {/* Title */}
+            <motion.h1
+              className="text-3xl font-semibold text-foreground mb-4"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+            >
+              {currentWizardStep.title}
+            </motion.h1>
 
-          {/* Description */}
-          <p className="text-muted-foreground text-base leading-relaxed mb-6">
-            {currentWizardStep.description}
-          </p>
-        </div>
+            {/* Description */}
+            <motion.p
+              className="text-muted-foreground text-base leading-relaxed mb-6"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1.0, delay: 0.4 }}
+            >
+              {currentWizardStep.description}
+            </motion.p>
+          </motion.div>
+        </AnimatePresence>
       </div>
 
       {/* Navigation Buttons */}

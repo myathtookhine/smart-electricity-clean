@@ -1,13 +1,16 @@
-import { 
-  ChevronLeft, 
-  Battery, 
+import {
+  ChevronLeft,
+  Battery,
   Clock,
   Calendar,
-  Info
-} from 'lucide-react';
-import { useState, useEffect } from 'react';
-import { Switch } from '../../../ui/switch';
-import { Button } from '../../../ui/button';
+  Info,
+  Edit,
+  Save,
+  Trash2,
+} from "lucide-react";
+import { useState, useEffect } from "react";
+import { Switch } from "../../../ui/switch";
+import { Button } from "../../../ui/button";
 import { BackToHomeButton } from "../../../ui/BackToHomeButton";
 import { Popup } from "../../../ui/popup";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
@@ -26,11 +29,19 @@ export function ScheduledChargePage({ onBack, onGoHome }) {
   // Form state
   const [settings, setSettings] = useState({
     enabled: false,
-    startTime: dayjs().hour(22).minute(0), // 10:00 PM
-    endTime: dayjs().hour(7).minute(0), // 7:00 AM
+    periods: [
+      {
+        id: 1,
+        name: "Night Charge",
+        startTime: dayjs().hour(22).minute(0), // 10:00 PM
+        endTime: dayjs().hour(7).minute(0), // 7:00 AM
+      },
+    ],
     frequency: "weekdays", // 'one-time', 'weekdays', 'weekends', 'specific-days'
     specificDays: [],
   });
+
+  const [editingPeriodId, setEditingPeriodId] = useState(null);
 
   const frequencyOptions = [
     { value: "one-time", label: "One-time" },
@@ -71,13 +82,63 @@ export function ScheduledChargePage({ onBack, onGoHome }) {
 
   const isDisabled = batteryState.isConfigured && !batteryState.isOnline;
 
+  const addPeriod = () => {
+    if (settings.periods.length >= 4) return;
+    const defaultNames = [
+      "Night Charge",
+      "Morning Charge",
+      "Afternoon Charge",
+      "Evening Charge",
+    ];
+    const newPeriod = {
+      id: Math.max(...settings.periods.map((p) => p.id)) + 1,
+      name:
+        defaultNames[settings.periods.length] ||
+        `Period ${settings.periods.length + 1}`,
+      startTime: dayjs().hour(22).minute(0),
+      endTime: dayjs().hour(7).minute(0),
+    };
+    setSettings({
+      ...settings,
+      periods: [...settings.periods, newPeriod],
+    });
+  };
+
+  const removePeriod = (periodId) => {
+    if (settings.periods.length <= 1) return;
+    setSettings({
+      ...settings,
+      periods: settings.periods.filter((p) => p.id !== periodId),
+    });
+  };
+
+  const updatePeriod = (periodId, field, value) => {
+    setSettings({
+      ...settings,
+      periods: settings.periods.map((p) =>
+        p.id === periodId ? { ...p, [field]: value } : p
+      ),
+    });
+  };
+
+  const startEditingPeriod = (periodId) => {
+    setEditingPeriodId(periodId);
+  };
+
+  const savePeriodName = () => {
+    setEditingPeriodId(null);
+  };
+
   const handleSave = () => {
     if (isDisabled) return;
 
     const scheduleData = {
       enabled: settings.enabled,
-      startTime: settings.startTime.format("HH:mm"),
-      endTime: settings.endTime.format("HH:mm"),
+      periods: settings.periods.map((period) => ({
+        name: period.name,
+        startTime: period.startTime.format("HH:mm"),
+        endTime: period.endTime.format("HH:mm"),
+      })),
       frequency: settings.frequency,
       specificDays: settings.specificDays,
     };
@@ -152,82 +213,165 @@ export function ScheduledChargePage({ onBack, onGoHome }) {
 
           {/* Time Configuration */}
           {settings.enabled && (
-            <div className="bg-card/50 backdrop-blur-sm rounded-3xl p-6 shadow border border-border/50">
-              <h3 className="text-lg text-card-foreground font-semibold mb-4">
-                Charging Period
-              </h3>
-              <p className="text-sm text-muted-foreground mb-6">
-                Set the start and end times for charging
-              </p>
-
-              {/* Time Range Display */}
-              <div className="text-center mb-8">
-                <div className="text-2xl font-bold text-foreground">
-                  {formatTime(settings.startTime)} -{" "}
-                  {formatTime(settings.endTime)}
+            <div className="space-y-4">
+              <div className="bg-card/50 backdrop-blur-sm rounded-3xl p-6 shadow border border-border/50">
+                <div className="mb-3">
+                  <h3 className="text-lg text-card-foreground font-semibold">
+                    Charging Periods
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    Set multiple time periods to charge (
+                    {settings.periods.length}/4)
+                  </p>
                 </div>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Charging time period
-                </p>
+                {settings.periods.length < 4 && (
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    width="full"
+                    onClick={addPeriod}
+                    disabled={isDisabled}
+                    className={
+                      isDisabled ? "opacity-50 cursor-not-allowed" : ""
+                    }
+                  >
+                    Add
+                  </Button>
+                )}
+
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <div className="space-y-4 mt-4">
+                    {settings.periods.map((period, index) => (
+                      <div key={period.id} className="bg-muted rounded-2xl p-4">
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="flex items-center flex-1 mr-4">
+                            {editingPeriodId === period.id ? (
+                              <input
+                                type="text"
+                                value={period.name}
+                                onChange={(e) =>
+                                  updatePeriod(
+                                    period.id,
+                                    "name",
+                                    e.target.value
+                                  )
+                                }
+                                className="flex-1 bg-transparent border border-primary/20 rounded-lg px-3 py-1 text-md font-medium text-foreground outline-none focus:border-primary"
+                                placeholder="Enter period name"
+                                autoFocus
+                              />
+                            ) : (
+                              <h4 className="text-md font-medium text-foreground flex-1">
+                                {period.name || `Period ${index + 1}`}
+                              </h4>
+                            )}
+                            <button
+                              onClick={() =>
+                                editingPeriodId === period.id
+                                  ? savePeriodName()
+                                  : startEditingPeriod(period.id)
+                              }
+                              disabled={isDisabled}
+                              className={`ml-2 p-1 h-8 w-8 rounded-md hover:bg-muted/20 transition-colors ${
+                                isDisabled
+                                  ? "opacity-50 cursor-not-allowed"
+                                  : "cursor-pointer"
+                              }`}
+                            >
+                              {editingPeriodId === period.id ? (
+                                <Save className="w-4 h-4 text-green-500" />
+                              ) : (
+                                <Edit className="w-4 h-4 text-muted-foreground hover:text-foreground" />
+                              )}
+                            </button>
+                          </div>
+                          {settings.periods.length > 1 &&
+                            editingPeriodId !== period.id && (
+                              <button
+                                onClick={() => removePeriod(period.id)}
+                                disabled={isDisabled}
+                                className={`p-1 h-8 w-8 rounded-md hover:bg-red-50 transition-colors ${
+                                  isDisabled
+                                    ? "opacity-50 cursor-not-allowed"
+                                    : "cursor-pointer"
+                                }`}
+                              >
+                                <Trash2 className="w-4 h-4 text-red-500" />
+                              </button>
+                            )}
+                        </div>
+
+                        {/* Time Range Display */}
+                        <div className="text-center mb-4">
+                          <div className="text-lg font-bold text-foreground">
+                            {formatTime(period.startTime)} -{" "}
+                            {formatTime(period.endTime)}
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Charging time period
+                          </p>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-1">
+                          {/* Start Time */}
+                          <div
+                            className={`bg-background/50 rounded-xl p-4 ${
+                              isDisabled ? "opacity-50" : ""
+                            }`}
+                          >
+                            <h5 className="text-sm font-medium text-foreground mb-2 text-center">
+                              Start Time
+                            </h5>
+                            <div className="flex justify-center">
+                              <TimePicker
+                                value={period.startTime}
+                                onChange={(newValue) =>
+                                  !isDisabled &&
+                                  updatePeriod(period.id, "startTime", newValue)
+                                }
+                                disabled={isDisabled}
+                                slotProps={{
+                                  textField: {
+                                    size: "small",
+                                    sx: { width: "100px" },
+                                  },
+                                }}
+                              />
+                            </div>
+                          </div>
+
+                          {/* End Time */}
+                          <div
+                            className={`bg-background/50 rounded-xl p-4 ${
+                              isDisabled ? "opacity-50" : ""
+                            }`}
+                          >
+                            <h5 className="text-sm font-medium text-foreground mb-2 text-center">
+                              End Time
+                            </h5>
+                            <div className="flex justify-center">
+                              <TimePicker
+                                value={period.endTime}
+                                onChange={(newValue) =>
+                                  !isDisabled &&
+                                  updatePeriod(period.id, "endTime", newValue)
+                                }
+                                disabled={isDisabled}
+                                slotProps={{
+                                  textField: {
+                                    size: "small",
+                                    sx: { width: "100px" },
+                                  },
+                                }}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </LocalizationProvider>
               </div>
-
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <div className="space-y-6">
-                  {/* Start Time */}
-                  <div
-                    className={`bg-muted/10 rounded-2xl p-6 ${
-                      isDisabled ? "opacity-50" : ""
-                    }`}
-                  >
-                    <h4 className="text-md font-medium text-foreground mb-4 text-center">
-                      Start Time
-                    </h4>
-                    <div className="flex justify-center">
-                      <TimePicker
-                        value={settings.startTime}
-                        onChange={(newValue) =>
-                          !isDisabled &&
-                          setSettings({
-                            ...settings,
-                            startTime: newValue,
-                          })
-                        }
-                        disabled={isDisabled}
-                      />
-                    </div>
-                    <p className="text-xs text-muted-foreground text-center mt-3">
-                      When charging begins
-                    </p>
-                  </div>
-
-                  {/* End Time */}
-                  <div
-                    className={`bg-muted/10 rounded-2xl p-6 ${
-                      isDisabled ? "opacity-50" : ""
-                    }`}
-                  >
-                    <h4 className="text-md font-medium text-foreground mb-4 text-center">
-                      End Time
-                    </h4>
-                    <div className="flex justify-center">
-                      <TimePicker
-                        value={settings.endTime}
-                        onChange={(newValue) =>
-                          !isDisabled &&
-                          setSettings({
-                            ...settings,
-                            endTime: newValue,
-                          })
-                        }
-                        disabled={isDisabled}
-                      />
-                    </div>
-                    <p className="text-xs text-muted-foreground text-center mt-3">
-                      When charging ends
-                    </p>
-                  </div>
-                </div>
-              </LocalizationProvider>
             </div>
           )}
 
@@ -320,8 +464,17 @@ export function ScheduledChargePage({ onBack, onGoHome }) {
               <div className="flex items-start space-x-3">
                 <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
                 <p>
-                  <strong className="text-foreground">Time Period:</strong>{" "}
+                  <strong className="text-foreground">Multiple Periods:</strong>{" "}
+                  Set up to 4 different time periods for flexible charging
+                  schedules
+                </p>
+              </div>
+              <div className="flex items-start space-x-3">
+                <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                <p>
+                  <strong className="text-foreground">Time Control:</strong>{" "}
                   Battery charges only during the specified start and end times
+                  for each period
                 </p>
               </div>
               <div className="flex items-start space-x-3">
@@ -336,7 +489,7 @@ export function ScheduledChargePage({ onBack, onGoHome }) {
                 <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
                 <p>
                   <strong className="text-foreground">Smart Control:</strong>{" "}
-                  Charging automatically stops outside the scheduled period
+                  Charging automatically stops outside all scheduled periods
                 </p>
               </div>
             </div>

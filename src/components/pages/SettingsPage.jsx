@@ -373,7 +373,7 @@ export function SettingsPage({ onSubPageChange, onPageChange }) {
 
               {/* Home View Toggle */}
               <div className="bg-card/50 backdrop-blur-sm rounded-3xl p-6 shadow border border-border/50">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col items-start space-y-4">
                   <div className="flex items-center space-x-4">
                     <div className="p-2 bg-muted rounded-full">
                       <Smartphone className="w-5 h-5 text-primary" />
@@ -385,15 +385,17 @@ export function SettingsPage({ onSubPageChange, onPageChange }) {
                       <div className="text-sm text-muted-foreground">
                         {visualizationType === "isometric"
                           ? "Isometric View"
-                          : "Flat View"}
+                          : visualizationType === "flat"
+                          ? "Flat View"
+                          : "Classic View"}
                       </div>
                     </div>
                   </div>
-                  <div className="flex rounded-lg border border-border/50 overflow-hidden bg-background/80 shadow-sm">
+                  <div className="w-full flex rounded-lg border border-border/50 overflow-hidden bg-background/80 shadow-sm">
                     <button
                       type="button"
                       onClick={() => changeVisualizationType("isometric")}
-                      className={`px-3 py-1 text-xs font-medium transition-colors duration-200 ${
+                      className={`flex-1 px-4 py-2 text-sm font-medium transition-colors duration-200 ${
                         visualizationType === "isometric"
                           ? "bg-primary text-primary-foreground"
                           : "text-muted-foreground hover:bg-muted/60"
@@ -404,13 +406,24 @@ export function SettingsPage({ onSubPageChange, onPageChange }) {
                     <button
                       type="button"
                       onClick={() => changeVisualizationType("flat")}
-                      className={`px-3 py-1 text-xs font-medium transition-colors duration-200 border-l border-border/40 ${
+                      className={`flex-1 px-4 py-2 text-sm font-medium transition-colors duration-200 border-l border-border/40 ${
                         visualizationType === "flat"
                           ? "bg-primary text-primary-foreground"
                           : "text-muted-foreground hover:bg-muted/60"
                       }`}
                     >
                       Flat
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => changeVisualizationType("classic")}
+                      className={`flex-1 px-4 py-2 text-sm font-medium transition-colors duration-200 border-l border-border/40 ${
+                        visualizationType === "classic"
+                          ? "bg-primary text-primary-foreground"
+                          : "text-muted-foreground hover:bg-muted/60"
+                      }`}
+                    >
+                      Classic
                     </button>
                   </div>
                 </div>
