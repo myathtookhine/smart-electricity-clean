@@ -190,7 +190,7 @@ export function EVControlPage({ onBack, onGoHome }) {
       </div>
 
       {/* Content Area */}
-      <div className="px-6 space-y-6 pb-8">
+      <div className="px-6 space-y-6 pb-32">
         {/* Current Charging Mode */}
         <div className="bg-card/50 backdrop-blur-sm rounded-3xl p-6 shadow-xl border border-border/50">
           <div className="flex items-center justify-between mb-4">
@@ -263,45 +263,6 @@ export function EVControlPage({ onBack, onGoHome }) {
           </Button>
         </div>
 
-        {/* Charging Controls */}
-        <div className="bg-card/50 backdrop-blur-sm rounded-3xl p-6 shadow-xl border border-border/50">
-          {!isCharging ? (
-            <Button
-              variant="primary"
-              width="full"
-              onClick={() => setIsCharging(true)}
-              className="flex items-center gap-2"
-            >
-              <Zap className="w-4 h-4" />
-              <span>Start Charging Now</span>
-            </Button>
-          ) : (
-            <div className="text-center">
-              <div className="flex items-center justify-center mb-4">
-                <div className="relative">
-                  <div className="w-16 h-16 border-4 border-blue-500/20 rounded-full"></div>
-                  <div className="absolute inset-0 w-16 h-16 border-4 border-blue-500 rounded-full border-t-transparent animate-spin"></div>
-                  <Zap className="absolute inset-0 w-6 h-6 text-blue-500 m-auto" />
-                </div>
-              </div>
-              <h4 className="text-lg font-semibold text-foreground mb-2">
-                Charging in Progress
-              </h4>
-              <p className="text-sm text-muted-foreground mb-4">
-                Your EV is currently charging...
-              </p>
-              <Button
-                variant="secondary"
-                width="full"
-                onClick={() => setIsCharging(false)}
-                className="flex items-center gap-2"
-              >
-                <span>Stop Charging</span>
-              </Button>
-            </div>
-          )}
-        </div>
-
         {/* Live Charging View */}
         <div className="bg-card/50 backdrop-blur-sm rounded-3xl p-6 shadow-xl border border-border/50">
           <h3 className="text-xl text-card-foreground font-semibold mb-4">
@@ -309,6 +270,26 @@ export function EVControlPage({ onBack, onGoHome }) {
           </h3>
 
           <div className="space-y-4">
+            {/* Charge Now mode  */}
+            {selectedMode === "charge-now" && (
+              <div className="pt-4">
+                <div className="flex items-start space-x-3">
+                  <div className="flex-1">
+                    <h4 className="font-medium text-foreground mb-2">
+                      Immediate Charging
+                    </h4>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      This mode begins charging immediately. You can set up
+                      schedules with scroll wheel time selection, charge rate
+                      slider (1.4-7.2 kW), and frequency options that mirror the
+                      battery scheduling interface.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Pure Green mode  */}
             {selectedMode === "pure-green" && (
               <div className="pt-4">
                 <div className="flex items-start space-x-3">
@@ -353,17 +334,15 @@ export function EVControlPage({ onBack, onGoHome }) {
                 <div className="flex items-start space-x-4">
                   <div className="flex-1">
                     <h4 className="font-medium text-foreground mb-2">
-                      {selectedMode === "charge-now"
-                        ? "Immediate Charging"
-                        : "Smart Tariff Charging"}
+                      Smart Tariff Charging
                     </h4>
                     <p className="text-sm text-muted-foreground mb-4">
-                      {selectedMode === "charge-now"
-                        ? "This mode begins charging immediately. You can set up schedules with scroll wheel time selection, charge rate slider (1.4-7.2 kW), and frequency options that mirror the battery scheduling interface."
-                        : "This mode charges during the cheapest electricity rates based on your tariff settings. Set up schedules using the same intuitive interface as battery scheduling."}
+                      This mode charges during the cheapest electricity rates
+                      based on your tariff settings. Set up schedules using the
+                      same intuitive interface as battery scheduling.
                     </p>
 
-                    {/* Set Charging Schedule / Tariff Settings Button */}
+                    {/* Tariff Settings Button */}
                     <Button
                       width="full"
                       variant="outline-primary"
@@ -371,9 +350,7 @@ export function EVControlPage({ onBack, onGoHome }) {
                       className={`flex items-center gap-2 ${currentColors.text} hover:${currentColors.text} ${currentColors.border} hover:${currentColors.bg}`}
                     >
                       <Clock className="w-4 h-4" />
-                      {selectedMode === "tariff-intelligence"
-                        ? "Tariff Settings"
-                        : "Set Charging Schedule"}
+                      Tariff Settings
                     </Button>
                   </div>
                 </div>
@@ -382,6 +359,49 @@ export function EVControlPage({ onBack, onGoHome }) {
           </div>
         </div>
 
+        {/* Fixed Charging Controls at Bottom */}
+        <div className="bg-background/80 backdrop-blur-xl">
+          <div className="bg-card/80 backdrop-blur-sm rounded-3xl p-5 shadow-2xl border border-border/50 max-w-2xl mx-auto">
+            {!isCharging ? (
+              <Button
+                variant="primary"
+                width="full"
+                onClick={() => setIsCharging(true)}
+                className="flex items-center justify-center gap-2 text-base py-6"
+              >
+                <Zap className="w-5 h-5" />
+                <span>Start Charging Now</span>
+              </Button>
+            ) : (
+              <div>
+                <div className="flex items-center mb-3">
+                  <div className="relative">
+                    <div className="w-12 h-12 bg-blue-500/20 rounded-full"></div>
+                    <div className="absolute inset-0 w-12 h-12 bg-blue-500/40 rounded-full animate-ping"></div>
+                    <div className="absolute inset-0 w-12 h-12 bg-blue-500/60 rounded-full animate-pulse"></div>
+                    <Zap className="absolute inset-0 w-6 h-6 text-blue-500 m-auto animate-pulse" />
+                  </div>
+                  <div className="ml-4 flex-1">
+                    <h4 className="text-base font-semibold text-foreground">
+                      Charging in Progress
+                    </h4>
+                    <p className="text-xs text-muted-foreground">
+                      Your EV is currently charging...
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  variant="secondary"
+                  width="full"
+                  onClick={() => setIsCharging(false)}
+                  className="flex items-center justify-center gap-2"
+                >
+                  <span>Stop Charging</span>
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
         {/* Back to Home Button */}
         {onGoHome && (
           <div className="mt-8">

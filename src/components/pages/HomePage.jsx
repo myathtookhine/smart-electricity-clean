@@ -9,6 +9,10 @@ import {
   Pause,
   RotateCcw,
   HousePlug,
+  SunIcon,
+  Car,
+  Battery,
+  UtilityPole,
 } from "lucide-react";
 import { Switch } from "../ui/switch";
 import { Alert } from "../ui/alert";
@@ -23,8 +27,8 @@ import exampleImage from "../../assets/iso-home.png";
 import DuracellWhite from "../../assets/duracell-logo-white.svg";
 import DuracellBlack from "../../assets/duracell-logo-black.svg";
 
-import HomeDark from "../../assets/home-dark-mode.svg";
-import HomeLight from "../../assets/home-light-mode.svg";
+import HomeDark from "../../assets/home-dark-mode-no-con.svg";
+import HomeLight from "../../assets/home-light-mode-no-con.svg";
 
 export function HomePage({ onPageChange }) {
   const { theme, setTheme } = useTheme();
@@ -224,7 +228,11 @@ export function HomePage({ onPageChange }) {
         </div>
       </div>
       {/* Smart Home Visualization */}
-      <div className="px-6 mb-0 flex justify-center home-image-wrapper">
+      <div
+        className={`px-6 mb-0 flex justify-center home-image-wrapper ${
+          visualizationType === "classic" ? "mt-4" : "mt-20"
+        }`}
+      >
         {visualizationType === "isometric" ? (
           <div className="w-full max-w-sm relative pb-20">
             {/* Animation on/off switch */}
@@ -387,10 +395,10 @@ export function HomePage({ onPageChange }) {
                   <div className="home-load-pulsing-circle">
                     <div className="home-load-content text-center">
                       <HousePlug className="w-5 h-5 text-white mb-2" />
-                      <div className="text-md font-bold text-white">21 kWh</div>
-                      {/* <div className="text-xs text-foreground uppercase tracking-wide">
+                      <div className="text-lg font-bold text-white">21 kWh</div>
+                      <div className="text-xs text-foreground uppercase tracking-wide">
                         Home Load
-                      </div> */}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -405,9 +413,295 @@ export function HomePage({ onPageChange }) {
               className="w-full h-auto mb-4"
             />
 
-            {/* Overlay Labels and Lines for Flat View */}
-            <div className="absolute inset-0 pointer-events-none">
-              {/* Top Labels: Solar & Grid */}
+            {/* Inverter to Solar Panel Connector Lines */}
+            <div className="flat-inverter-solar-connector">
+              {/* Vertical line from inverter up */}
+              <div className="line-up"></div>
+              {/* Horizontal line left to solar panels */}
+              <div className="line-left"></div>
+              {/* Static connector dot */}
+              <div className="connector-dot"></div>
+              {/* Animated square dot */}
+              {isAnimationEnabled && (
+                <div className="animated-square-dot"></div>
+              )}
+            </div>
+
+            {/* Inverter to Grid Connector Lines */}
+            <div className="flat-inverter-grid-connector">
+              {/* Vertical line from inverter up */}
+              <div className="line-up"></div>
+              {/* Horizontal line right to grid box */}
+              <div className="line-right"></div>
+              {/* Static connector dot */}
+              <div className="connector-dot"></div>
+              {/* Animated square dot */}
+              {isAnimationEnabled && (
+                <div className="animated-square-dot"></div>
+              )}
+            </div>
+
+            {/* Inverter to Car Connector Lines */}
+            <div className="flat-inverter-car-connector">
+              {/* Horizontal line left to car */}
+              <div className="line-left"></div>
+              {/* Static connector dot */}
+              {/* <div className="connector-dot"></div> */}
+              {/* Animated square dot */}
+              {isAnimationEnabled && (
+                <div className="animated-square-dot"></div>
+              )}
+            </div>
+
+            {/* Inverter to Battery Connector Lines */}
+            <div className="flat-inverter-battery-connector">
+              {/* Horizontal line right to battery */}
+              <div className="line-right"></div>
+              {/* Static connector dot */}
+              <div className="connector-dot"></div>
+              {/* Animated square dot */}
+              {isAnimationEnabled && (
+                <div className="animated-square-dot"></div>
+              )}
+            </div>
+
+            {/* Energy Labels */}
+            {/* Top Part Labels */}
+            <div className="absolute -top-16 left-2 flex flex-col items-center gap-1">
+              <div className="bg-background/90 backdrop-blur-sm border border-border/50 rounded-lg px-3 py-2 shadow-lg flex items-center gap-2">
+                <SunIcon className="w-4 h-4 text-yellow-500" />
+                <span className="text-sm font-bold text-foreground">
+                  12 kWh
+                </span>
+              </div>
+              <span className="text-xs text-muted-foreground uppercase tracking-wide">
+                Solar
+              </span>
+            </div>
+
+            <div className="absolute -top-16 right-2 flex flex-col items-center gap-1">
+              <div className="bg-background/90 backdrop-blur-sm border border-border/50 rounded-lg px-3 py-2 shadow-lg flex items-center gap-2">
+                <UtilityPole className="w-4 h-4 text-blue-500" />
+                <span className="text-sm font-bold text-foreground">
+                  24 kWh
+                </span>
+              </div>
+              <span className="text-xs text-muted-foreground uppercase tracking-wide">
+                Grid
+              </span>
+            </div>
+
+            {/* Bottom Part Labels */}
+            <div className="absolute bottom-2 left-2 flex flex-col items-center gap-1">
+              <button
+                onClick={() => onPageChange("ev-control")}
+                className="bg-background/90 backdrop-blur-sm border border-border/50 rounded-lg px-3 py-2 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2 cursor-pointer"
+              >
+                <Car className="w-4 h-4 text-purple-500" />
+                <span className="text-sm font-bold text-foreground">
+                  10 kWh
+                </span>
+              </button>
+              <span className="text-xs text-muted-foreground uppercase tracking-wide">
+                EV
+              </span>
+            </div>
+
+            <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-1">
+              <div className="bg-background/90 backdrop-blur-sm border border-border/50 rounded-lg px-6 py-4 shadow-lg flex items-center gap-2">
+                <HousePlug className="w-4 h-4 text-green-500" />
+                <span className="text-sm font-bold text-foreground">
+                  35 kWh
+                </span>
+              </div>
+              <span className="text-xs text-muted-foreground uppercase tracking-wide">
+                Home Load
+              </span>
+            </div>
+
+            <div className="absolute bottom-2 right-2 flex flex-col items-center gap-1">
+              <button
+                onClick={() => onPageChange("battery")}
+                className="bg-background/90 backdrop-blur-sm border border-border/50 rounded-lg px-3 py-2 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center gap-2 cursor-pointer"
+              >
+                <Battery className="w-4 h-4 text-orange-500" />
+                <span className="text-sm font-bold text-foreground">
+                  11 kWh
+                </span>
+              </button>
+              <span className="text-xs text-muted-foreground uppercase tracking-wide">
+                Battery
+              </span>
+            </div>
+          </div>
+        ) : (
+          <div className="w-full max-w-sm relative mb-5">
+            {/* Classic View Card Container */}
+            <div className="bg-background/90 backdrop-blur-sm border border-border/50 rounded-2xl shadow-lg p-6 h-[370px] relative">
+              {/* Top Part Labels - Solar and Grid */}
+              <div className="absolute top-4 left-4 flex flex-col items-center gap-1">
+                <div className="flex flex-col items-center bg-muted/80 backdrop-blur-sm border border-border/30 rounded-lg px-3 py-2 shadow-md flex items-center">
+                  <SunIcon className="w-6 h-6 text-yellow-500 mb-2" />
+                  <div>
+                    <span className="text-md font-bold text-foreground">
+                      12 kWh
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-xs text-muted-foreground uppercase tracking-wide">
+                      Solar
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="absolute top-4 right-4 flex flex-col items-center gap-1">
+                <div className="flex flex-col items-center bg-muted/80 backdrop-blur-sm border border-border/30 rounded-lg px-3 py-2 shadow-md">
+                  <UtilityPole className="w-6 h-6 text-blue-500 mb-2" />
+                  <div>
+                    <span className="text-md font-bold text-foreground">
+                      24 kWh
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-xs text-muted-foreground uppercase tracking-wide">
+                      Grid
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Home Load Circle - Absolute Center of Card */}
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                <div className="home-load-circle-container">
+                  <div className="home-load-mesh-gradient"></div>
+                  <div className="home-load-pulsing-circle">
+                    <div className="home-load-content text-center">
+                      <HousePlug className="w-5 h-5 text-white mb-2" />
+                      <div className="text-lg font-bold text-white">21 kWh</div>
+                      <div className="text-xs text-white/90 uppercase tracking-wide">
+                        Home Load
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Connector Lines from Home Load Circle */}
+              {/* Line to Solar Label - Left and Up */}
+              <div className="classic-solar-connector">
+                <div className="line-left"></div>
+                <div className="line-up"></div>
+                {/* <div className="connector-dot"></div> */}
+                {isAnimationEnabled && <div className="animated-dot"></div>}
+              </div>
+
+              {/* Line to Grid Label - Right and Up */}
+              <div className="classic-grid-connector">
+                <div className="line-right"></div>
+                <div className="line-up"></div>
+                {/* <div className="connector-dot"></div> */}
+                {isAnimationEnabled && <div className="animated-dot"></div>}
+              </div>
+
+              {/* Line to EV Label - Left and Down */}
+              <div
+                className="classic-ev-connector cursor-pointer"
+                onClick={() => onPageChange("ev-control")}
+                title="Navigate to EV Control"
+              >
+                <div className="line-left"></div>
+                <div className="line-down"></div>
+                {isAnimationEnabled && <div className="animated-dot"></div>}
+              </div>
+
+              {/* Line to Battery Label - Right and Down */}
+              <div
+                className="classic-battery-connector cursor-pointer"
+                onClick={() => onPageChange("battery")}
+                title="Navigate to Battery"
+              >
+                <div className="line-right"></div>
+                <div className="line-down"></div>
+                {isAnimationEnabled && <div className="animated-dot"></div>}
+              </div>
+
+              {/* Bottom Part Labels - EV and Battery */}
+              <div className="absolute bottom-4 left-4 flex flex-col items-center gap-1">
+                <button
+                  onClick={() => onPageChange("ev-control")}
+                  className="flex flex-col items-center bg-muted/80 backdrop-blur-sm border border-border/30 rounded-lg px-3 py-2 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer"
+                >
+                  <Car className="w-6 h-6 text-purple-500 mb-2" />
+                  <div>
+                    <span className="text-md font-bold text-foreground">
+                      10 kWh
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-xs text-muted-foreground uppercase tracking-wide">
+                      EV
+                    </span>
+                  </div>
+                </button>
+              </div>
+
+              <div className="absolute bottom-4 right-4 flex flex-col items-center gap-1">
+                <button
+                  onClick={() => onPageChange("battery")}
+                  className="flex flex-col items-center bg-muted/80 backdrop-blur-sm border border-border/30 rounded-lg px-3 py-2 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer"
+                >
+                  <Battery className="w-6 h-6 text-orange-500 mb-2" />
+                  <div>
+                    <span className="text-md font-bold text-foreground">
+                      11 kWh
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-xs text-muted-foreground uppercase tracking-wide">
+                      Battery
+                    </span>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Storm Ready Mode Alert */}
+      <div className="px-6 mb-6">
+        <div className="relative">
+          <Alert {...getStormReadyAlert()} />
+          <ChevronRight className="absolute top-4 right-4 w-4 h-4 text-muted-foreground" />
+        </div>
+      </div>
+
+      {/* Location Permission Modal */}
+      <LocationPermissionModal
+        isOpen={showLocationModal}
+        onRequestLocation={handleLocationRequest}
+        onClose={handleCloseModal}
+        error={locationError}
+      />
+
+      {/* Guided Handover Modal */}
+      {showGuidedHandoverModal && (
+        <GuidedHandoverModal
+          isOpen={showGuidedHandoverModal}
+          onClose={closeGuidedHandoverModal}
+          onPageChange={onPageChange}
+        />
+      )}
+    </div>
+  );
+}
+
+{
+  /* Overlay Labels and Lines for Flat View */
+}
+{
+  /* <div className="absolute inset-0 pointer-events-none">
               <div className="flat-top-label flat-top-label--solar">
                 <div className="bg-background/90 backdrop-blur-sm border border-border/50 rounded-lg px-3 py-2 text-center shadow-lg">
                   <div className="text-sm font-bold text-foreground">
@@ -442,7 +736,6 @@ export function HomePage({ onPageChange }) {
                 </div>
               </div>
 
-              {/* Bottom Labels Row: EV, Home Load, Battery */}
               <div className="flat-bottom-row">
                 <div className="flat-bottom-label flat-bottom-label--ev">
                   <button
@@ -472,14 +765,10 @@ export function HomePage({ onPageChange }) {
                         <div className="text-md font-bold text-white">
                           21 kWh
                         </div>
-                        {/* <div className="text-xs text-foreground uppercase tracking-wide">
-                          Home Load
-                        </div> */}
                       </div>
                     </div>
                   </div>
                   <div className="flat-home-connector">
-                    {/* <div className="line-up"></div> */}
                     {isAnimationEnabled && <div className="animated-dot"></div>}
                   </div>
                 </div>
@@ -503,46 +792,5 @@ export function HomePage({ onPageChange }) {
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-        ) : (
-          <div className="w-full max-w-sm relative pb-24 mb-10 flex items-center justify-center">
-            <div className="text-center py-16">
-              <div className="text-2xl font-bold text-muted-foreground mb-2">
-                Coming Soon
-              </div>
-              <div className="text-sm text-muted-foreground">
-                Classic view is under development
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Storm Ready Mode Alert */}
-      <div className="px-6 mb-6">
-        <div className="relative">
-          <Alert {...getStormReadyAlert()} />
-          <ChevronRight className="absolute top-4 right-4 w-4 h-4 text-muted-foreground" />
-        </div>
-      </div>
-
-      {/* Location Permission Modal */}
-      <LocationPermissionModal
-        isOpen={showLocationModal}
-        onRequestLocation={handleLocationRequest}
-        onClose={handleCloseModal}
-        error={locationError}
-      />
-
-      {/* Guided Handover Modal */}
-      {showGuidedHandoverModal && (
-        <GuidedHandoverModal
-          isOpen={showGuidedHandoverModal}
-          onClose={closeGuidedHandoverModal}
-          onPageChange={onPageChange}
-        />
-      )}
-    </div>
-  );
+            </div> */
 }
