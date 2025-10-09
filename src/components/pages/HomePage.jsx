@@ -389,14 +389,22 @@ export function HomePage({ onPageChange }) {
               </div>
 
               {/* Home Load Circle - Center of image */}
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                <div className="home-load-circle-container">
-                  <div className="home-load-mesh-gradient"></div>
-                  <div className="home-load-pulsing-circle">
-                    <div className="home-load-content text-center">
-                      <HousePlug className="w-5 h-5 text-white mb-2" />
-                      <div className="text-lg font-bold text-white">21 kWh</div>
-                      <div className="text-xs text-foreground uppercase tracking-wide">
+              <div className="absolute top-0 left-14 transform -translate-x-1/2 -translate-y-1/2">
+                <div className="relative w-28 h-24 flex items-center justify-center">
+                  {/* Content container - square shape */}
+                  <div
+                    className="relative bg-gradient-to-br from-orange-500 via-amber-400 to-yellow-500 border border-orange-300/50 rounded-lg px-4 py-2 shadow-lg flex flex-col items-center gap-2 w-full h-full justify-center"
+                    style={{
+                      boxShadow:
+                        "0 0 20px rgba(249, 115, 22, 0.3), 0 0 40px rgba(249, 115, 22, 0.2), inset 0 0 20px rgba(255, 255, 255, 0.1)",
+                    }}
+                  >
+                    <HousePlug className="w-6 h-6 text-background" />
+                    <div className="flex flex-col items-center">
+                      <div className="text-lg font-bold text-background">
+                        21 kWh
+                      </div>
+                      <div className="text-[10px] text-background/90 uppercase tracking-wide">
                         Home Load
                       </div>
                     </div>
@@ -647,10 +655,7 @@ export function HomePage({ onPageChange }) {
               </div>
 
               <div className="absolute bottom-4 right-4 flex flex-col items-center gap-1">
-                <button
-                  onClick={() => onPageChange("battery")}
-                  className="flex flex-col items-center bg-muted/80 backdrop-blur-sm border border-border/30 rounded-lg px-3 py-2 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer"
-                >
+                <div className="flex flex-col items-center bg-muted/80 backdrop-blur-sm border border-border/30 rounded-lg px-3 py-2 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer">
                   <Battery className="w-6 h-6 text-orange-500 mb-2" />
                   <div>
                     <span className="text-md font-bold text-foreground">
@@ -662,7 +667,7 @@ export function HomePage({ onPageChange }) {
                       Battery
                     </span>
                   </div>
-                </button>
+                </div>
               </div>
             </div>
           </div>

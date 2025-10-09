@@ -360,48 +360,71 @@ export function EVControlPage({ onBack, onGoHome }) {
         </div>
 
         {/* Fixed Charging Controls at Bottom */}
-        <div className="bg-background/80 backdrop-blur-xl">
-          <div className="bg-card/80 backdrop-blur-sm rounded-3xl p-5 shadow-2xl border border-border/50 max-w-2xl mx-auto">
-            {!isCharging ? (
-              <Button
-                variant="primary"
-                width="full"
-                onClick={() => setIsCharging(true)}
-                className="flex items-center justify-center gap-2 text-base py-6"
-              >
-                <Zap className="w-5 h-5" />
-                <span>Start Charging Now</span>
-              </Button>
-            ) : (
-              <div>
-                <div className="flex items-center mb-3">
-                  <div className="relative">
-                    <div className="w-12 h-12 bg-blue-500/20 rounded-full"></div>
-                    <div className="absolute inset-0 w-12 h-12 bg-blue-500/40 rounded-full animate-ping"></div>
-                    <div className="absolute inset-0 w-12 h-12 bg-blue-500/60 rounded-full animate-pulse"></div>
-                    <Zap className="absolute inset-0 w-6 h-6 text-blue-500 m-auto animate-pulse" />
-                  </div>
-                  <div className="ml-4 flex-1">
-                    <h4 className="text-base font-semibold text-foreground">
-                      Charging in Progress
-                    </h4>
-                    <p className="text-xs text-muted-foreground">
-                      Your EV is currently charging...
-                    </p>
-                  </div>
+        {selectedMode === "charge-now" ? (
+          <div className="bg-background/80 backdrop-blur-xl">
+            <div className="bg-card/80 backdrop-blur-sm rounded-3xl p-5 shadow-2xl border border-border/50 max-w-2xl mx-auto">
+              <div className="flex items-center justify-center">
+                <div className="relative">
+                  <div className="w-12 h-12 bg-blue-500/20 rounded-full"></div>
+                  <div className="absolute inset-0 w-12 h-12 bg-blue-500/40 rounded-full animate-ping"></div>
+                  <div className="absolute inset-0 w-12 h-12 bg-blue-500/60 rounded-full animate-pulse"></div>
+                  <Zap className="absolute inset-0 w-6 h-6 text-blue-500 m-auto animate-pulse" />
                 </div>
-                <Button
-                  variant="secondary"
-                  width="full"
-                  onClick={() => setIsCharging(false)}
-                  className="flex items-center justify-center gap-2"
-                >
-                  <span>Stop Charging</span>
-                </Button>
+                <div className="ml-4 flex-1">
+                  <h4 className="text-base font-semibold text-foreground mb-2">
+                    Charging in Progress
+                  </h4>
+                  <p className="text-xs text-muted-foreground">
+                    Your EV is currently charging...
+                  </p>
+                </div>
               </div>
-            )}
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="bg-background/80 backdrop-blur-xl">
+            <div className="bg-card/80 backdrop-blur-sm rounded-3xl p-5 shadow-2xl border border-border/50 max-w-2xl mx-auto">
+              {!isCharging ? (
+                <Button
+                  variant="primary"
+                  width="full"
+                  onClick={() => setIsCharging(true)}
+                  className="flex items-center justify-center gap-2 text-base py-6"
+                >
+                  <Zap className="w-5 h-5" />
+                  <span>Start Charging Now</span>
+                </Button>
+              ) : (
+                <div>
+                  <div className="flex items-center mb-3">
+                    <div className="relative">
+                      <div className="w-12 h-12 bg-blue-500/20 rounded-full"></div>
+                      <div className="absolute inset-0 w-12 h-12 bg-blue-500/40 rounded-full animate-ping"></div>
+                      <div className="absolute inset-0 w-12 h-12 bg-blue-500/60 rounded-full animate-pulse"></div>
+                      <Zap className="absolute inset-0 w-6 h-6 text-blue-500 m-auto animate-pulse" />
+                    </div>
+                    <div className="ml-4 flex-1">
+                      <h4 className="text-base font-semibold text-foreground mb-2">
+                        Charging in Progress
+                      </h4>
+                      <p className="text-xs text-muted-foreground">
+                        Your EV is currently charging...
+                      </p>
+                    </div>
+                  </div>
+                  <Button
+                    variant="secondary"
+                    width="full"
+                    onClick={() => setIsCharging(false)}
+                    className="flex items-center justify-center gap-2"
+                  >
+                    <span>Stop Charging</span>
+                  </Button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
         {/* Back to Home Button */}
         {onGoHome && (
           <div className="mt-8">
