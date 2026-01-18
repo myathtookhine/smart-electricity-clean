@@ -11,14 +11,15 @@ export const useApp = () => {
 };
 
 export const AppProvider = ({ children }) => {
-  const [isFirstTime, setIsFirstTime] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState(null);
+  // Auto-authenticate with dummy credentials - no auth flow needed
+  const [isFirstTime, setIsFirstTime] = useState(false); // Skip wizard
+  const [isAuthenticated, setIsAuthenticated] = useState(true); // Always authenticated
+  const [user, setUser] = useState({ username: "demo", name: "Demo User" }); // Dummy user
   const [currentLanguage, setCurrentLanguage] = useState("en");
 
-  // New onboarding flow state
-  const [onboardingStep, setOnboardingStep] = useState(null); // 'loginMode', 'systemBinding', 'guidedHandover', null
-  const [isOnboardingComplete, setIsOnboardingComplete] = useState(false);
+  // Skip onboarding flow - always completed
+  const [onboardingStep, setOnboardingStep] = useState(null); // No onboarding steps
+  const [isOnboardingComplete, setIsOnboardingComplete] = useState(true); // Always complete
   const [showGuidedHandoverModal, setShowGuidedHandoverModal] = useState(false);
 
   // Battery state management
@@ -43,29 +44,15 @@ export const AppProvider = ({ children }) => {
   });
 
   useEffect(() => {
-    // Check if user has completed wizard before
-    const hasCompletedWizard = localStorage.getItem("hasCompletedWizard");
-    const savedUser = localStorage.getItem("currentUser");
+    // Auto-complete wizard and onboarding on first load
+    localStorage.setItem("hasCompletedWizard", "true");
+    localStorage.setItem("hasCompletedOnboarding", "true");
+    localStorage.setItem("currentUser", JSON.stringify({ username: "demo", name: "Demo User" }));
+
+    // Load saved language preference if exists
     const savedLanguage = localStorage.getItem("currentLanguage");
-    const hasCompletedOnboarding = localStorage.getItem(
-      "hasCompletedOnboarding"
-    );
-
-    if (hasCompletedWizard) {
-      setIsFirstTime(false);
-    }
-
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-      setIsAuthenticated(true);
-    }
-
     if (savedLanguage) {
       setCurrentLanguage(savedLanguage);
-    }
-
-    if (hasCompletedOnboarding) {
-      setIsOnboardingComplete(true);
     }
   }, []);
 
@@ -75,29 +62,15 @@ export const AppProvider = ({ children }) => {
   };
 
   const login = (username, password) => {
-    // Simple authentication
-    if (username === "john" && password === "123123") {
-      const userData = { username: "john", name: "John Doe" };
-      setUser(userData);
-      setIsAuthenticated(true);
-      localStorage.setItem("currentUser", JSON.stringify(userData));
-
-      // Skip login mode selection and go directly to system binding
-      setOnboardingStep("systemBinding");
-
-      return true;
-    }
-    return false;
+    // Authentication bypassed - always succeed
+    // Keeping this function for compatibility but it's not needed
+    return true;
   };
 
   const logout = () => {
-    setUser(null);
-    setIsAuthenticated(false);
-    setOnboardingStep(null);
-    setIsOnboardingComplete(false);
-    setShowGuidedHandoverModal(false);
-    localStorage.removeItem("currentUser");
-    localStorage.removeItem("hasCompletedOnboarding");
+    // Since we're bypassing auth, logout just reloads the page
+    // which will auto-authenticate again with dummy user
+    window.location.reload();
   };
 
   const changeLanguage = (languageCode) => {
