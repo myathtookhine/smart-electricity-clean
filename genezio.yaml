@@ -1,0 +1,12 @@
+frontend:
+    path: .
+    publish: dist
+    scripts:
+        build:
+            - npm run build
+        deploy:
+            - npm install
+    subdomain: smart-electricity-clean
+name: smart-electricity-clean
+region: us-east-1
+yamlVersion: 2
