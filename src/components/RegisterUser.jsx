@@ -16,7 +16,6 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Field } from "./ui/field";
 import { LanguageChangeModal } from "./LanguageChangeModal";
-import duracellLogo from "../assets/duracell-logo.png";
 
 export function RegisterUser({ onBack }) {
   // Register form states

@@ -20,9 +20,7 @@ import { Switch } from "../ui/switch";
 import { Button } from "../ui/button";
 import { useApp } from "../../contexts/AppContext";
 import { useState, useEffect } from "react";
-import logo from "../../assets/duracell-logo.png";
-import DuracellWhite from "../../assets/duracell-logo-white.svg";
-import DuracellBlack from "../../assets/duracell-logo-black.svg";
+
 
 import {
   SystemInformationPage,
@@ -52,7 +50,7 @@ export function SettingsPage({ onSubPageChange, onPageChange }) {
   const notificationCount = 3; // Example notification count
   const [currentView, setCurrentView] = useState("main"); // 'main', 'system-info', 'battery', 'ev-control', 'account-settings', 'edit-account', 'change-password', 'cost-summary', 'additional-support', 'user-guides', 'ev-control-guide', 'battery-config-guide', 'faqs', 'help-support'
   const [navigationStack, setNavigationStack] = useState(["main"]);
-  const headerLogo = theme === "dark" ? DuracellWhite : DuracellBlack;
+
 
   // Notify parent about sub-page state
   useEffect(() => {
@@ -113,13 +111,11 @@ export function SettingsPage({ onSubPageChange, onPageChange }) {
             </button>
           </div>
 
-          {/* Center: Logo */}
+          {/* Center: Title */}
           <div className="text-center">
-            <img
-              src={headerLogo}
-              alt="Duracell logo"
-              className="w-32 h-auto object-contain"
-            />
+            <h1 className="text-xl font-bold text-foreground mx-auto">
+              Clean Electricity
+            </h1>
           </div>
 
           {/* Right: Notifications */}

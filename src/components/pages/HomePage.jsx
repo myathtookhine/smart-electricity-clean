@@ -24,8 +24,7 @@ import { useLocation } from "../../hooks/useLocation";
 import { useApp } from "../../contexts/AppContext";
 import { GuidedHandoverModal } from "../ui/GuidedHandoverModal";
 import exampleImage from "../../assets/iso-home.png";
-import DuracellWhite from "../../assets/duracell-logo-white.svg";
-import DuracellBlack from "../../assets/duracell-logo-black.svg";
+
 
 import HomeDark from "../../assets/home-dark-mode-no-con.svg";
 import HomeLight from "../../assets/home-light-mode-no-con.svg";
@@ -51,7 +50,7 @@ export function HomePage({ onPageChange }) {
     requestLocation,
   } = useLocation();
   const notificationCount = 3; // Example notification count
-  const headerLogo = theme === "dark" ? DuracellWhite : DuracellBlack;
+
 
   // Determine storm ready alert properties based on current state
   const getStormReadyAlert = () => {
@@ -166,13 +165,11 @@ export function HomePage({ onPageChange }) {
               )}
             </button>
           </div>
-          {/* Logo */}
+          {/* Title */}
           <div className="text-center">
-            <img
-              src={headerLogo}
-              alt="Duracell logo"
-              className="w-32 h-auto object-contain"
-            />
+            <h1 className="text-xl font-bold text-foreground mx-auto">
+              Clean Electricity
+            </h1>
           </div>
 
           {/* Right: Notifications */}

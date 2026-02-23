@@ -25,9 +25,7 @@ import {
   BatteryUsageBreakdownChart,
   SelfConsumptionRatioChart,
 } from "../AdvancedDonutCharts";
-import logo from "../../assets/duracell-logo.png";
-import DuracellWhite from "../../assets/duracell-logo-white.svg";
-import DuracellBlack from "../../assets/duracell-logo-black.svg";
+
 
 const clamp01 = (value) => Math.max(0, Math.min(1, value));
 
@@ -286,7 +284,7 @@ export function InsightsPage({ onPageChange }) {
   const [activeTooltip, setActiveTooltip] = useState(null);
   const [showCalendar, setShowCalendar] = useState(false);
   const [selectedDate, setSelectedDate] = useState("2025-09-02");
-  const headerLogo = theme === "dark" ? DuracellWhite : DuracellBlack;
+
   // Refs for drag scrolling
   const scrollRef1 = useRef(null);
   const scrollRef2 = useRef(null);
@@ -861,13 +859,11 @@ export function InsightsPage({ onPageChange }) {
             </button>
           </div>
 
-          {/* Center: Logo */}
+          {/* Center: Title */}
           <div className="text-center">
-            <img
-              src={headerLogo}
-              alt="Duracell logo"
-              className="w-32 h-auto object-contain"
-            />
+            <h1 className="text-xl font-bold text-foreground mx-auto">
+              Clean Electricity
+            </h1>
           </div>
 
           {/* Right: Notifications */}

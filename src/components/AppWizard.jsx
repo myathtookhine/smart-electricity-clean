@@ -18,7 +18,7 @@ import {
 import { useApp } from "../contexts/AppContext";
 import { useTheme } from "./ThemeProvider";
 import { LanguageChangeModal } from "./LanguageChangeModal";
-import logo from "../assets/duracell-logo-white.svg";
+
 import wz1 from "../assets/iso-0-welcome.png";
 import wz2 from "../assets/iso-1-live.png";
 import wz3 from "../assets/iso-2-graph.png";
@@ -157,11 +157,9 @@ export function AppWizard() {
               )}
             </button> */}
             <div>
-              <img
-                src={logo}
-                alt="Duracell Logo"
-                className="w-32 h-auto object-contain"
-              />
+              <h1 className="text-xl font-bold text-foreground mx-auto">
+                Clean Electricity
+              </h1>
             </div>
             {/* Language Selection */}
             <button

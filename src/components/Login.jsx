@@ -10,8 +10,7 @@ import { Field } from "./ui/field";
 import { ForgotPassword } from "./ForgotPassword";
 import { RegisterUser } from "./RegisterUser";
 import { LanguageChangeModal } from "./LanguageChangeModal";
-import logoDark from "../assets/duracell-logo-white.svg";
-import logoLight from "../assets/duracell-logo-black.svg";
+
 
 export function Login() {
   const [currentView, setCurrentView] = useState("login"); // "login", "register", "forgot-password"
@@ -83,11 +82,9 @@ export function Login() {
             transition={{ duration: 0.6, ease: "easeOut" }}
           >
             <div className="text-center">
-              <img
-                src={theme === "dark" ? logoDark : logoLight}
-                alt="DURACELL ENERGY"
-                className="h-6 mx-auto"
-              />
+              <h1 className="text-xl font-bold text-foreground mx-auto">
+                Clean Electricity
+              </h1>
             </div>
           </motion.div>
           <div className="flex flex-row space-x-4">
